@@ -1,0 +1,10 @@
+---
+## /* vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab smarttab autoindent: */
+
+virtualbox_package: "virtualbox-6.1"
+virtualbox_state: "latest"
+virtualbox_deb_url: "https://download.virtualbox.org/virtualbox/debian"
+virtualbox_deb_key_id: "B9F8D658297AF3EFC18D5CDFA2F683C52980AECF"
+virtualbox_deb_key_url: "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
+
+virtualbox_rhel_key_url: "https://www.virtualbox.org/download/oracle_vbox.asc"

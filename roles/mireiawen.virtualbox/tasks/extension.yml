@@ -1,0 +1,41 @@
+---
+## /* vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab smarttab autoindent: */
+
+- name: "Get the current VirtualBox version"
+  shell: "VBoxManage --version |cut -d'r' -f'1'"
+  register: "virtualbox_version"
+  changed_when: false
+
+- name: "Get temporary directory"
+  tempfile:
+    state: "directory"
+    suffix: "vbox"
+  register: "vbox_temp"
+
+- name: "Download the extension pack"
+  get_url:
+    url: "https://download.virtualbox.org/virtualbox/{{ virtualbox_version.stdout }}/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version.stdout }}.vbox-extpack"
+    dest: "{{ vbox_temp.path }}/Oracle_VM_VirtualBox_Extension_Pack.vbox-extpack"
+
+- name: "Get the license file from extpack"
+  unarchive:
+    remote_src: true
+    src: "{{ vbox_temp.path }}/Oracle_VM_VirtualBox_Extension_Pack.vbox-extpack"
+    dest: "{{ vbox_temp.path }}"
+
+- name: "Get the license shasum"
+  stat:
+    get_checksum: true
+    get_attributes: false
+    get_mime: false
+    checksum_algorithm: "sha256"
+    path: "{{ vbox_temp.path }}/ExtPack-license.txt"
+  register: "vbox_license_sha"
+
+- name: "Install the extension pack"
+  command: "VBoxManage extpack install --accept-license='{{ vbox_license_sha.stat.checksum }}' --replace '{{ vbox_temp.path }}/Oracle_VM_VirtualBox_Extension_Pack.vbox-extpack'"
+
+- name: "Remove the temporary folder"
+  file:
+    path: "{{ vbox_temp.path }}"
+    state: "absent"

@@ -1,0 +1,13 @@
+---
+## /* vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab smarttab autoindent: */
+
+- name: "Add the Oracle VirtualBox key"
+  apt_key:
+    id: "{{ virtualbox_deb_key_id }}"
+    url: "{{ virtualbox_deb_key_url }}"
+    state: "present"
+- name: "Add the VirtualBox repository"
+  apt_repository:
+    repo: "deb [arch=amd64] {{ virtualbox_deb_url }} {{ ansible_distribution_release }} contrib"
+    filename: "virtualbox"
+    state: "present"

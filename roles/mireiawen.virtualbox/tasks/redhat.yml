@@ -1,0 +1,24 @@
+---
+## /* vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab smarttab autoindent: */
+
+- name: "Check if the VirtualBox repository is already configured"
+  stat:
+    path: "{{ virtualbox_repo_file }}"
+  register: "virtualbox_repofile_result"
+
+- name: "Add the VirtualBox repository"
+  yum:
+    name: "{{ epel_repo_url }}"
+    state: "present"
+  register: "result"
+  until: "result is succeeded"
+  retries: 5
+  delay: 10
+  when: "not virtualbox_repofile_result.stat.exists"
+
+- name: "Add the Oracle VirtualBox key"
+  rpm_key:
+    key: "{{ virtualbox_rhel_key_url }}"
+    state: "present"
+  when: "not virtualbox_repofile_result.stat.exists"
+  ignore_errors: "{{ ansible_check_mode }}"

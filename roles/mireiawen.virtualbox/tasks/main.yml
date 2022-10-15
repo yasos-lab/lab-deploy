@@ -1,0 +1,22 @@
+---
+## /* vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab smarttab autoindent: */
+
+- name: "Set up Debian and Ubuntu"
+  include_tasks: "debian.yml"
+  when: "ansible_distribution == 'Debian'
+         or ansible_distribution == 'Ubuntu'"
+
+- name: "Set up RedHat and CentOS"
+  include_tasks: "redhat.yml"
+  when: "ansible_distribution == 'RedHat'
+         or ansible_distribution == 'CentOS'"
+
+- name: "Install the VirtualBox package"
+  package:
+    name: "{{ virtualbox_package }}"
+    state: "{{ virtualbox_state }}"
+  register: "vbox_install"
+
+- name: "Install the VirtualBox extension"
+  include_tasks: "extension.yml"
+  when: "vbox_install.changed"
