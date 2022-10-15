@@ -1,4 +1,1 @@
----
-- hosts: local
-  roles: 
-    - mireiawen.virtualbox 
+ 
