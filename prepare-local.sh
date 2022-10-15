@@ -11,4 +11,4 @@ ssh-keygen
 
 ansible-galaxy install -r requirements.yaml
 
-
+vagrant up
