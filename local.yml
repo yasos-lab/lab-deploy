@@ -1,8 +1,0 @@
----
-- name: test the ping in local
-  hosts: local
-  
-  tasks:
-  - name: test the ping 
-    ping: 
-
