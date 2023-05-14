@@ -1,12 +1,11 @@
 #!/bin/bash
 
-sudo apt update
-sudo apt install vim
-sudo apt install openssh-server
-sudo apt install ansible
-sudo apt install virtualbox
-sudo apt install vagrant
+# Install prerequisite packages: 
+apt update
+apt install ansible
 
-#ansible-galaxy install -r requirements.yaml
+# Install ansible requirements:
+ansible-galaxy install -r requirements.yml
 
-#vagrant up
+# Launch main.yml
+ansible-playbook -i inventories/local/hosts main.yml
