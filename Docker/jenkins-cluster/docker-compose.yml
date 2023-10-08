@@ -1,0 +1,22 @@
+version: '3'
+services:
+  jenkins-master:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-master
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ~/jenkins_data:/var/jenkins_home
+
+  jenkins-slave-1:
+    image: jenkins/jnlp-slave
+    container_name: jenkins-slave-1
+    depends_on:
+      - jenkins-master
+
+  jenkins-slave-2:
+    image: jenkins/jnlp-slave
+    container_name: jenkins-slave-2
+    depends_on:
+      - jenkins-master
