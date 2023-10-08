@@ -1,4 +1,0 @@
-packages_to_install: 
-  - ansible
-  - openssh-server
-  - vim
