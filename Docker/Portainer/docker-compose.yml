@@ -1,0 +1,14 @@
+---
+
+version: '3'
+
+services:
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    restart: always
+    ports:
+      - 9000:9000
+    volumes:
+      - /home/yacin/Documents/DockerVolumes/portainer/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock

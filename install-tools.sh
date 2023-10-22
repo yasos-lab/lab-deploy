@@ -1,5 +1,16 @@
 #!/bin/bash
 
+TOOLS_TO_INSTALL=(
+    "git"
+    "build-essential"
+    "docker.io"
+    "docker-compose"
+    "ansible"
+    "unzip"
+    "python3"
+    "python3-pip"
+)
+
 detect_linux_distribution() {
     if [ -f /etc/os-release ]; then
         source /etc/os-release
@@ -14,17 +25,6 @@ detect_linux_distribution() {
         LINUX_DISTRIBUTION="unknown"
     fi
 }
-
-TOOLS_TO_INSTALL=(
-    "git"
-    "build-essential"
-    "docker.io"
-    "docker-compose"
-    "ansible"
-    "unzip"
-    "python3"
-    "python3-pip"
-)
 
 install_terraform() {
     if command -v terraform &>/dev/null; then
@@ -64,16 +64,16 @@ case "$LINUX_DISTRIBUTION" in
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             sudo apt install -y "$tool"
         done
-        install_terraform
-        install_minikube_and_kubectl
+        #install_terraform
+        #install_minikube_and_kubectl
         ;;
     "redhat" | "centos" | "fedora")
         sudo yum update -y
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             sudo yum install -y "$tool"
         done
-        install_terraform
-        install_minikube_and_kubectl
+        #install_terraform
+        #install_minikube_and_kubectl
         ;;
     *)
         echo "Unsupported or unknown Linux distribution: $LINUX_DISTRIBUTION"

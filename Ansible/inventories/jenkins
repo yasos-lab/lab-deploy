@@ -1,6 +1,0 @@
-[jenkins-master]
-jenkins-master ansible_connection=docker
-
-[jenkins-slaves]
-jenkins-slave-1 ansible_connection=docker
-jenkins-slave-2 ansible_connection=docker
