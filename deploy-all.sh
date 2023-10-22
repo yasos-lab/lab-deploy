@@ -13,7 +13,3 @@ echo "[DOCKER] Setup docker."
 # Run minikube:
 echo "[KUBE] Start minikube."
 minikube start --driver=docker
-
-# Create VMs:
-echo "[VMs] Create virtual machines."
-
