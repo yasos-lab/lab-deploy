@@ -24,7 +24,6 @@ TOOLS_TO_INSTALL=(
     "unzip"
     "python3"
     "python3-pip"
-    "vagrant"
 )
 
 install_terraform() {
