@@ -64,16 +64,16 @@ case "$LINUX_DISTRIBUTION" in
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             sudo apt install -y "$tool"
         done
-        #install_terraform
-        #install_minikube_and_kubectl
+        install_terraform
+        install_minikube_and_kubectl
         ;;
     "redhat" | "centos" | "fedora")
         sudo yum update -y
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             sudo yum install -y "$tool"
         done
-        #install_terraform
-        #install_minikube_and_kubectl
+        install_terraform
+        install_minikube_and_kubectl
         ;;
     *)
         echo "Unsupported or unknown Linux distribution: $LINUX_DISTRIBUTION"
