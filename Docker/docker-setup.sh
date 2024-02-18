@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e 
+
 # Check if the user is already in the docker group
 if groups | grep -q "\bdocker\b"; then
   echo "User is already in the docker group."

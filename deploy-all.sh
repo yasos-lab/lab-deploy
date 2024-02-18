@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e 
+
 echo "[ALL] Deploy all."
 
 # Install tools:

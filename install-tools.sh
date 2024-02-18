@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e 
+
 TOOLS_TO_INSTALL=(
     "git"
     "build-essential"
