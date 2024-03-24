@@ -4,8 +4,6 @@ set -e
 
 TOOLS_TO_INSTALL=(
     "git"
-    "docker.io"
-    "docker-compose"
     "ansible"
     "unzip"
     "python3"
@@ -64,8 +62,8 @@ case "$LINUX_DISTRIBUTION" in
         apt update
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             apt install -y "$tool"
-            apt install -y build-essential
         done
+        apt install -y build-essential docker.io docker-compose
         install_terraform
         install_minikube_and_kubectl
         ;;
@@ -74,6 +72,7 @@ case "$LINUX_DISTRIBUTION" in
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             yum install -y "$tool"
         done
+        yum install -y podman
         install_terraform
         install_minikube_and_kubectl
         ;;

@@ -1,7 +1,7 @@
 debian_test:
   image: ubuntu:20.04
   before_script:
-    - echo Before script step on ubuntu
+    - echo Before script step on DEBIAN
   script:
     - bash install-tools.sh
 
