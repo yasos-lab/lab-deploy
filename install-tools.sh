@@ -69,7 +69,7 @@ case "$LINUX_DISTRIBUTION" in
         install_terraform
         install_minikube_and_kubectl
         ;;
-    "redhat" | "centos" | "fedora")
+    "redhat" | "centos" | "fedora" | "rhel")
         yum update -y
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             yum install -y "$tool"
