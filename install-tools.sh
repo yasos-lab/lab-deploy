@@ -52,7 +52,7 @@ install_minikube_and_kubectl() {
     if command -v kubectl &>/dev/null; then
         echo "kubectl is already installed."
     else
-        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        wget "https://dl.k8s.io/release/$(wget -q -O - https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
         chmod +x kubectl
         mv kubectl /usr/local/bin/
     fi
