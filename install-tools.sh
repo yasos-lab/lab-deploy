@@ -45,7 +45,7 @@ install_minikube_and_kubectl() {
     if command -v minikube &>/dev/null; then
         echo "Minikube is already installed."
     else
-        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
         install minikube-linux-amd64 /usr/local/bin/minikube
         rm minikube-linux-amd64
     fi
