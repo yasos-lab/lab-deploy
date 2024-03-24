@@ -3,6 +3,7 @@
 set -e 
 
 TOOLS_TO_INSTALL=(
+    "wget"
     "git"
     "ansible"
     "unzip"
