@@ -1,13 +1,33 @@
-debian_test:
+---
+
+stages:
+  - installing
+  - docker_test
+
+debian_install:
+  stage: installing
   image: ubuntu:20.04
   before_script:
     - echo Before script step on DEBIAN
   script:
     - bash install-tools.sh
 
-rhel_test:
+rhel_install:
+  stage: installing
   image: fedora:38
   before_script:
     - echo Before script step on RHEL
   script:
     - bash install-tools.sh
+
+debian_docker_test:
+  stage: docker_test
+  needs: [debian_install]
+  script: echo test_docker
+
+
+rhel_docker_test:
+  stage: docker_test
+  needs: [rhel_install]
+  script: echo test_docker
+
