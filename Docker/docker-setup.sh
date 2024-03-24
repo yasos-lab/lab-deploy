@@ -7,11 +7,11 @@ if groups | grep -q "\bdocker\b"; then
   echo "User is already in the docker group."
 else
   # Add the user to the docker group
-  sudo usermod -aG docker $USER
+  usermod -aG docker $USER
   echo "User added to the docker group."
   
   # Restart Docker to apply changes
-  sudo systemctl restart docker
+  systemctl restart docker
   echo "Docker daemon restarted."
 fi
 
