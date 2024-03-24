@@ -74,6 +74,7 @@ case "$LINUX_DISTRIBUTION" in
             yum install -y "$tool"
         done
         yum install -y podman
+        ln -s $(which podman) /usr/local/bin/docker
         install_terraform
         install_minikube_and_kubectl
         ;;
