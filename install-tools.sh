@@ -4,7 +4,6 @@ set -e
 
 TOOLS_TO_INSTALL=(
     "git"
-    "build-essential"
     "docker.io"
     "docker-compose"
     "ansible"
@@ -65,6 +64,7 @@ case "$LINUX_DISTRIBUTION" in
         apt update
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             apt install -y "$tool"
+            apt install -y build-essential
         done
         install_terraform
         install_minikube_and_kubectl
