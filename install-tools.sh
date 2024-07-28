@@ -9,6 +9,8 @@ TOOLS_TO_INSTALL=(
     "unzip"
     "python3"
     "python3-pip"
+    "openjdk-21-jdk"
+    "maven"
 )
 
 detect_linux_distribution() {

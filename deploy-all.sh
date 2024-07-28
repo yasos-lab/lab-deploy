@@ -17,5 +17,5 @@ echo "[DOCKER] [PORTAINER] Run portainer."
 docker-compose -f ./Docker/Portainer/docker-compose.yml up -d
 
 # Run minikube:
-#echo "[KUBE] Start minikube."
-#minikube start --driver=docker
+echo "[KUBE] Start minikube."
+minikube start --driver=docker
