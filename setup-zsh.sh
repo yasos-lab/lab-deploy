@@ -11,7 +11,7 @@ cp ./Config/.zshrc ~/.zshrc
 cp ./Config/.p10k.zsh ~/.p10k.zsh
 
 # Instructions for the user
-echo "Zsh, Powerlevel10k, and the Hack Nerd Font have been installed and configured."
+echo "Zsh and Powerlevel10k have been installed and configured."
 echo "Restart your terminal or run 'exec zsh' to start using Zsh with Powerlevel10k."
 
 # Change to Zsh
