@@ -1,8 +1,28 @@
 ---
 
 stages:
-  - tools
   - zsh
+  - tools
+
+debian_setup_zsh:
+  stage: zsh
+  image: ubuntu:20.04
+  before_script:
+    - echo Installing zsh on Debian
+    - apt install -y zsh
+  script:
+    - echo Setup zsh
+    - bash setup-zsh.sh
+
+rhel_setup_zsh:
+  stage: zsh
+  image: fedora:38
+  before_script:
+    - echo Installing zsh on RHEL
+    - yum install -y zsh
+  script:
+    - echo Setup zsh
+    - bash setup-zsh.sh
 
 debian_setup_tools:
   stage: tools
@@ -27,23 +47,3 @@ rhel_setup_tools:
     - bash docker-setup.sh
     - echo Setup minikube
     - bash setup-minikube.sh
-
-debian_setup_zsh:
-  stage: zsh
-  image: ubuntu:20.04
-  before_script:
-    - echo Installing zsh on Debian
-    - apt install -y zsh
-  script:
-    - echo Setup zsh
-    - bash setup-zsh.sh
-
-rhel_setup_zsh:
-  stage: zsh
-  image: fedora:38
-  before_script:
-    - echo Installing zsh on RHEL
-    - yum install -y zsh
-  script:
-    - echo Setup zsh
-    - bash setup-zsh.sh
