@@ -34,12 +34,12 @@ rhel_setup_zsh:
 
 debian_setup_docker:
   stage: docker
-  needs: [debian_pkgs_install]
+  needs: [debian_install_pkgs]
   script: bash docker-setup.sh
 
 rhel_setup_docker:
   stage: docker
-  needs: [rhel_pkgs_install]
+  needs: [rhel_install_pkgs]
   script: bash docker-setup.sh
 
 debian_setup_minikube:
@@ -47,8 +47,8 @@ debian_setup_minikube:
   needs: [debian_setup_docker]
   script: echo setup_minikube
 
-rhel_setup_docker:
+rhel_setup_minikube:
   stage: minikube
-  needs: [rhel_install_pkgs]
+  needs: [rhel_setup_docker]
   script: echo setup_minikube
 
