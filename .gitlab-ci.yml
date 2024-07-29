@@ -9,7 +9,7 @@ debian_setup_zsh:
   image: ubuntu:20.04
   before_script:
     - echo Installing zsh on Debian
-    - apt install -y zsh
+    - apt update && apt install -y git zsh
   script:
     - echo Setup zsh
     - bash setup-zsh.sh
@@ -19,7 +19,7 @@ rhel_setup_zsh:
   image: fedora:38
   before_script:
     - echo Installing zsh on RHEL
-    - yum install -y zsh
+    - yum install -y git which chsh zsh
   script:
     - echo Setup zsh
     - bash setup-zsh.sh
