@@ -19,7 +19,7 @@ rhel_setup_zsh:
   image: fedora:38
   before_script:
     - echo Installing zsh on RHEL
-    - yum install -y git which zsh
+    - yum install -y git which util-linux-user zsh
   script:
     - echo Setup zsh
     - bash setup-zsh.sh
