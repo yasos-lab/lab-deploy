@@ -8,10 +8,10 @@ TOOLS_TO_INSTALL=(
     "curl" 
     "git"
     "ansible"
+    "docker-compose"
     "unzip"
     "python3"
     "python3-pip"
-    "openjdk-21-jdk"
     "maven"
 )
 
@@ -68,7 +68,7 @@ case "$LINUX_DISTRIBUTION" in
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             apt install -y "$tool"
         done
-        apt install -y build-essential docker.io docker-compose
+        apt install -y build-essential docker.io openjdk-21-jdk
         install_terraform
         install_minikube_and_kubectl
         ;;
@@ -77,7 +77,7 @@ case "$LINUX_DISTRIBUTION" in
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             yum install -y "$tool"
         done
-        yum install -y podman
+        yum install -y podman java-21-openjdk-devel
         ln -s $(which podman) /usr/local/bin/docker
         install_terraform
         install_minikube_and_kubectl
