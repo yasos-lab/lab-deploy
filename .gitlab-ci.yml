@@ -1,7 +1,7 @@
 ---
 
 stages:
-  - pkgs
+  - tools
   - zsh
 
 debian_setup_tools:
