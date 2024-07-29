@@ -3,6 +3,8 @@
 set -e 
 
 TOOLS_TO_INSTALL=(
+    "util-linux-user"
+    "which"
     "zsh"
     "wget"
     "curl" 

@@ -29,12 +29,12 @@ debian_setup_tools:
   image: ubuntu:20.04
   before_script:
     - echo Installing packages on Debian
-    - bash install-tools.sh
+    # - bash install-tools.sh
   script:
     - echo Setup docker
-    - bash docker-setup.sh
+    # - bash docker-setup.sh
     - echo Setup minikube
-    - bash setup-minikube.sh
+    # - bash setup-minikube.sh
 
 rhel_setup_tools:
   stage: tools
@@ -44,6 +44,6 @@ rhel_setup_tools:
     - bash install-tools.sh
   script:
     - echo Setup docker
-    - bash docker-setup.sh
+    # - bash docker-setup.sh
     - echo Setup minikube
-    - bash setup-minikube.sh
+    # - bash setup-minikube.sh
