@@ -3,52 +3,47 @@
 stages:
   - pkgs
   - zsh
-  - docker
-  - minikube
 
-debian_install_pkgs:
-  stage: pkgs
+debian_setup_tools:
+  stage: tools
   image: ubuntu:20.04
   before_script:
-    - echo Before script step on DEBIAN
-  script:
+    - echo Installing packages on Debian
     - bash install-tools.sh
+  script:
+    - echo Setup docker
+    - bash docker-setup.sh
+    - echo Setup minikube
+    - bash setup-minikube.sh
 
-rhel_install_pkgs:
-  stage: pkgs
+rhel_setup_tools:
+  stage: tools
   image: fedora:38
   before_script:
-    - echo Before script step on RHEL
-  script:
+    - echo Installing packages on RHEL
     - bash install-tools.sh
+  script:
+    - echo Setup docker
+    - bash docker-setup.sh
+    - echo Setup minikube
+    - bash setup-minikube.sh
 
 debian_setup_zsh:
   stage: zsh
-  needs: [debian_install_pkgs]
-  script: bash setup-zsh.sh
+  image: ubuntu:20.04
+  before_script:
+    - echo Installing zsh on Debian
+    - apt install -y zsh
+  script:
+    - echo Setup zsh
+    - bash setup-zsh.sh
 
 rhel_setup_zsh:
   stage: zsh
-  needs: [rhel_install_pkgs]
-  script: bash setup-zsh.sh
-
-debian_setup_docker:
-  stage: docker
-  needs: [debian_install_pkgs]
-  script: bash docker-setup.sh
-
-rhel_setup_docker:
-  stage: docker
-  needs: [rhel_install_pkgs]
-  script: bash docker-setup.sh
-
-debian_setup_minikube:
-  stage: minikube
-  needs: [debian_setup_docker]
-  script: echo setup_minikube
-
-rhel_setup_minikube:
-  stage: minikube
-  needs: [rhel_setup_docker]
-  script: echo setup_minikube
-
+  image: fedora:38
+  before_script:
+    - echo Installing zsh on RHEL
+    - yum install -y zsh
+  script:
+    - echo Setup zsh
+    - bash setup-zsh.sh
