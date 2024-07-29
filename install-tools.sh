@@ -3,8 +3,6 @@
 set -e 
 
 TOOLS_TO_INSTALL=(
-    "util-linux-user"
-    "which"
     "zsh"
     "wget"
     "curl" 
@@ -61,7 +59,7 @@ case "$LINUX_DISTRIBUTION" in
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             yum install -y "$tool"
         done
-        yum install -y podman java-21-openjdk-devel
+        yum install -y util-linux-user podman java-21-openjdk-devel
         ln -s $(which podman) /usr/local/bin/docker
         install_terraform
         ;;
