@@ -5,7 +5,8 @@ set -e
 TOOLS_TO_INSTALL=(
     "zsh"
     "wget"
-    "curl" 
+    "curl"
+    "jq"
     "git"
     "ansible"
     "docker-compose"
