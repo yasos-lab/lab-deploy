@@ -24,3 +24,7 @@ else
   echo "Hello, World! Test: FAILED"
   echo "You should logout and login, and re-run the script"
 fi
+
+# Run Portainer:
+echo "[DOCKER] [PORTAINER] Run portainer."
+docker-compose -f ./Portainer/docker-compose.yml up -d
