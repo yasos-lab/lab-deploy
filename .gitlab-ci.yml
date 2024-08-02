@@ -3,6 +3,18 @@
 stages:
   - zsh
   - tools
+  - retrieve_secret
+
+retrieve_secret:
+  stage: retrieve_secret
+  script:
+    - echo "MEGA_EMAIL=${MEGA_EMAIL}" > secret.env
+    - echo "MEGA_PASSWORD=${MEGA_PASSWORD}" > secret.env
+  artifacts:
+    paths:
+      - secret.env
+  only:
+    - triggers
 
 debian_setup_zsh:
   stage: zsh

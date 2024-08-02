@@ -67,3 +67,7 @@ alias di="docker images"
 alias db="docker build"
 alias dr="docker run"
 alias dexec="docker exec -it"
+
+# Needed variables : 
+export GITLAB_TOKEN="<personal_access_token>"
+
