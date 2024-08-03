@@ -1,6 +1,6 @@
-#!/bin/zsh
+#!/bin/bash
 
-source ~/.zshrc
+source ~/.env
 
 # List of variable keys you want to retrieve
 VARIABLE_KEYS=("MEGA_EMAIL" "MEGA_PASSWORD")
@@ -31,12 +31,12 @@ get_variable_value() {
 for key in "${VARIABLE_KEYS[@]}"; do
     value=$(get_variable_value "$key")
     echo "Value retreaved for : $key"
-    # Check if the variable is already in .zshrc
-    if grep -q "^export $key=" ~/.zshrc; then
+    # Check if the variable is already in .env
+    if grep -q "^$key=" ~/.env; then
         # Replace the existing variable
-        sed -i "s|^export $key=.*|export $key='$value'|" ~/.zshrc
+        sed -i "s|^$key=.*|$key='$value'|" ~/.env
     else
         # Append the new variable
-        echo "export $key='$value'" >> ~/.zshrc
+        echo "$key='$value'" >> ~/.env
     fi
 done

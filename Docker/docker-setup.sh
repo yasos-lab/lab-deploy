@@ -1,9 +1,18 @@
 #!/bin/bash
 
-set -e 
+# Function to check if the script is run as root
+check_root() {
+  if [ "$EUID" -ne 0 ]; then
+    echo "This script requires root privileges. Please run with sudo."
+    exit 1
+  fi
+}
+
+# Check if the script is being run with sudo
+check_root
 
 # Check if the user is already in the docker group
-if groups | grep -q "\bdocker\b"; then
+if groups $USER | grep -q "\bdocker\b"; then
   echo "User is already in the docker group."
 else
   # Add the user to the docker group
@@ -24,7 +33,3 @@ else
   echo "Hello, World! Test: FAILED"
   echo "You should logout and login, and re-run the script"
 fi
-
-# Run Portainer:
-echo "[DOCKER] [PORTAINER] Run portainer."
-docker-compose -f ./Portainer/docker-compose.yml up -d

@@ -11,7 +11,7 @@ HISTSIZE=1000
 SAVEHIST=1000
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
-zstyle :compinstall filename '/home/yacin/.zshrc'
+zstyle :compinstall filename '~/.zshrc'
 
 autoload -Uz compinit
 compinit
@@ -20,6 +20,9 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Source .env file
+source ~/.env
 
 # Useful Aliases
 
@@ -67,7 +70,3 @@ alias di="docker images"
 alias db="docker build"
 alias dr="docker run"
 alias dexec="docker exec -it"
-
-# Needed variables : 
-export GITLAB_TOKEN="<personal_access_token>"
-

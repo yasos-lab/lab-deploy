@@ -6,7 +6,8 @@ chsh -s $(which zsh)
 # Clone the Powerlevel10k repository
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 
-# Copy .zshrc and .p10k.zsh from the current git repository to the home directory
+# Copy .env, .zshrc and .p10k.zsh from the current git repository to the home directory
+cp ./Config/.env ~/.env
 cp ./Config/.zshrc ~/.zshrc
 cp ./Config/.p10k.zsh ~/.p10k.zsh
 
