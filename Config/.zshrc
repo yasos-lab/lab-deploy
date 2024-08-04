@@ -21,9 +21,6 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Source .env file
-source ~/.env
-
 # Useful Aliases
 
 # Navigation
@@ -70,3 +67,8 @@ alias di="docker images"
 alias db="docker build"
 alias dr="docker run"
 alias dexec="docker exec -it"
+
+# Source .env file
+source ~/.env
+
+######

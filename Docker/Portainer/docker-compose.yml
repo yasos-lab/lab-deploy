@@ -10,6 +10,6 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - /home/yacin/DockerVolumes/portainer/data:/data
+      - ~/DockerVolumes/portainer/data:/data
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime
