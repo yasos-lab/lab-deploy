@@ -43,13 +43,13 @@ alias gl="git log"
 alias gp="git pull"
 alias gco="git checkout"
 alias gcm="git commit -m"
+alias gcma="git commit --amend"
+alias gcmane="git commit --amend --no-edit"
 alias gb="git branch"
 alias ga="git add"
 alias gpl="git pull"
 alias gps="git push"
-
-# Update and upgrade
-alias update="sudo apt update && sudo apt upgrade -y"
+alias gfc="git fetch --all"
 
 # Network
 alias ip="ip -c a"
