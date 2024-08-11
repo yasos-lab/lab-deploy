@@ -4,16 +4,29 @@
 chsh -s $(which zsh)
 
 # Clone the Powerlevel10k repository
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+if [ ! -d ~/.zsh/powerlevel10k ]; then
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.zsh/powerlevel10k
+fi
+
+### ZSH PLUGINS
+
+# Clone the zsh-syntax-highlighting repository
+if [ ! -d ~/.zsh/plugins/zsh-syntax-highlighting ]; then
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/plugins/zsh-syntax-highlighting
+fi
+
+# Clone the zsh-autosuggestions repository
+if [ ! -d ~/.zsh/plugins/zsh-autosuggestions ]; then
+    git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/plugins/zsh-autosuggestions
+fi
 
 # Copy .env, .zshrc and .p10k.zsh from the current git repository to the home directory
 cp ./Config/.env ~/.env
 cp ./Config/.zshrc ~/.zshrc
-cp ./Config/.p10k.zsh ~/.p10k.zsh
+cp ./Config/.p10k.zsh ~/.zsh/.p10k.zsh
 
 # Instructions for the user
-echo "Zsh and Powerlevel10k have been installed and configured."
-echo "Restart your terminal or run 'exec zsh' to start using Zsh with Powerlevel10k."
+echo "Zsh, Powerlevel10k and the plugins have been installed and configured."
 
 # Change to Zsh
 exec zsh
