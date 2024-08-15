@@ -3,7 +3,7 @@
 source ~/.env
 
 # List of variable keys you want to retrieve
-VARIABLE_KEYS=("GITHUB_PAT" "MEGA_EMAIL" "MEGA_PASSWORD")
+VARIABLE_KEYS=("GITHUB_PAT" "MEGA_EMAIL" "MEGA_PASSWORD" "POSTGRES_USER" "POSTGRES_PASSWORD")
 
 # Function to get variable value
 get_variable_value() {
@@ -40,3 +40,12 @@ for key in "${VARIABLE_KEYS[@]}"; do
         echo "$key='$value'" >> ~/.env
     fi
 done
+
+# Check if the ~/.env is sourced in ~/.zshrc
+if ! grep -Fxq "source ~/.env" ~/.zshrc; then
+    # If not, add the line to the file
+    echo "source ~/.env" >> ~/.zshrc
+    echo "~/.env successfuly sourced in ~/.zshrc file."
+else
+    echo "~/.env already sourced in ~/.zshrc file."
+fi

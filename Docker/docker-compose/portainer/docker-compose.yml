@@ -10,6 +10,9 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - ~/DockerVolumes/portainer/data:/data
+      - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime
+
+volumes:
+  portainer_data:

@@ -21,9 +21,9 @@ if [ ! -d ~/.zsh/plugins/zsh-autosuggestions ]; then
 fi
 
 # Copy .env, .zshrc and .p10k.zsh from the current git repository to the home directory
-cp ./Config/.env ~/.env
-cp ./Config/.zshrc ~/.zshrc
-cp ./Config/.p10k.zsh ~/.zsh/.p10k.zsh
+cp ./config/.env ~/.env
+cp ./config/.zshrc ~/.zshrc
+cp ./config/.p10k.zsh ~/.zsh/.p10k.zsh
 
 # Instructions for the user
 echo "Zsh, Powerlevel10k and the plugins have been installed and configured."

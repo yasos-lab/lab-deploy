@@ -34,7 +34,7 @@ else
 fi
 
 mkdir -p ~/.config/rclone
-cp ./Config/rclone.conf ~/.config/rclone/rclone.conf
+cp ./config/rclone.conf ~/.config/rclone/rclone.conf
 
 
 # Create rclone configuration fo MEGA
