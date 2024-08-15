@@ -3,12 +3,12 @@
 source ~/.env
 
 # List of variable keys you want to retrieve
-VARIABLE_KEYS=("MEGA_EMAIL" "MEGA_PASSWORD")
+VARIABLE_KEYS=("GITHUB_PAT" "MEGA_EMAIL" "MEGA_PASSWORD")
 
 # Function to get variable value
 get_variable_value() {
     local variable_key="$1"
-    local response=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "https://gitlab.com/api/v4/projects/40235593/variables/$variable_key")
+    local response=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PAT" "https://gitlab.com/api/v4/projects/40235593/variables/$variable_key")
 
     # Check if the response contains an error
     if echo "$response" | jq -e .error >/dev/null; then
