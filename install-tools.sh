@@ -3,17 +3,18 @@
 set -e 
 
 TOOLS_TO_INSTALL=(
-    "zsh"
-    "wget"
-    "curl"
-    "jq"
-    "git"
     "ansible"
+    "curl"
     "docker-compose"
-    "unzip"
+    "git"
+    "jq"
+    "maven"
+    "openssl"
     "python3"
     "python3-pip"
-    "maven"
+    "unzip"
+    "wget"
+    "zsh"
 )
 
 detect_linux_distribution() {
