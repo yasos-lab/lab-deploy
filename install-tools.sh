@@ -44,7 +44,7 @@ install_terraform() {
     fi
 }
 
-install_minikube_and_kubectl() {
+install_minikube_and_kubectl_and_helm() {
     if command -v minikube &>/dev/null; then
         echo "Minikube is already installed."
     else
@@ -61,6 +61,12 @@ install_minikube_and_kubectl() {
         chmod +x kubectl
         mv kubectl /usr/local/bin/
     fi
+    if command -v helm &>/dev/null; then
+        echo "helm is already installed."
+    else
+        echo "Installing helm."
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    fi
 }
 
 detect_linux_distribution
@@ -73,7 +79,7 @@ case "$LINUX_DISTRIBUTION" in
         done
         apt install -y build-essential docker.io openjdk-21-jdk
         install_terraform
-        install_minikube_and_kubectl
+        install_minikube_and_kubectl_and_helm
         ;;
     "redhat" | "centos" | "fedora" | "rhel")
         yum update -y
@@ -83,7 +89,7 @@ case "$LINUX_DISTRIBUTION" in
         yum install -y util-linux-user which podman java-21-openjdk-devel
         ln -s $(which podman) /usr/local/bin/docker
         install_terraform
-        install_minikube_and_kubectl
+        install_minikube_and_kubectl_and_helm
         ;;
     *)
         echo "Unsupported or unknown Linux distribution: $LINUX_DISTRIBUTION"
