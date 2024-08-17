@@ -36,6 +36,8 @@ debian_setup_tools:
   script:
     - echo Installing packages on Debian
     - bash install-tools.sh
+    - echo Setup Docker on Debian
+    - bash install-tools.sh
 
 rhel_setup_tools:
   stage: tools
