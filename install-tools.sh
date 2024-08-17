@@ -82,12 +82,13 @@ case "$LINUX_DISTRIBUTION" in
         install_minikube_and_kubectl_and_helm
         ;;
     "redhat" | "centos" | "fedora" | "rhel")
-        yum update -y
+        dnf update -y
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
-            yum install -y "$tool"
+            dnf install -y "$tool"
         done
-        yum install -y util-linux-user which podman java-21-openjdk-devel
-        ln -s $(which podman) /usr/local/bin/docker
+        dnf install -y util-linux-user which dnf-plugins-core java-21-openjdk-devel
+        dnf config-manager --add-repo=https://download.docker.com/linux/fedora/docker-ce.repo
+        dnf -y install docker-ce docker-ce-cli containerd.io
         install_terraform
         install_minikube_and_kubectl_and_helm
         ;;
@@ -101,7 +102,7 @@ if [ "$LINUX_DISTRIBUTION" == "debian" ] || [ "$LINUX_DISTRIBUTION" == "ubuntu" 
     apt autoremove -y
     apt clean
 elif [ "$LINUX_DISTRIBUTION" == "redhat" ] || [ "$LINUX_DISTRIBUTION" == "centos" ] || [ "$LINUX_DISTRIBUTION" == "fedora" ] || [ "$LINUX_DISTRIBUTION" == "rhel" ]; then
-    yum clean all
+    dnf clean all
 fi
 
 echo "Installation of tools completed for $LINUX_DISTRIBUTION."
