@@ -20,8 +20,9 @@ if [ ! -d ~/.zsh/plugins/zsh-autosuggestions ]; then
     git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/plugins/zsh-autosuggestions
 fi
 
-# Copy .env, .zshrc and .p10k.zsh from the current git repository to the home directory
+# Copy .env, .vimrc, .zshrc and .p10k.zsh from the current git repository to the home directory
 cp ./config/.env ~/.env
+cp ./config/.vimrc ~/.vimrc
 cp ./config/.zshrc ~/.zshrc
 cp ./config/.p10k.zsh ~/.zsh/.p10k.zsh
 

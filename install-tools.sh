@@ -13,6 +13,7 @@ TOOLS_TO_INSTALL=(
     "python3"
     "python3-pip"
     "unzip"
+    "vim"
     "wget"
     "zsh"
 )
