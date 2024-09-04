@@ -79,7 +79,7 @@ case "$LINUX_DISTRIBUTION" in
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             apt install -y "$tool"
         done
-        apt install -y build-essential docker.io openjdk-21-jdk
+        apt install -y build-essential docker.io openjdk-17-jdk
         install_terraform
         install_minikube_and_kubectl_and_helm
         ;;
@@ -88,7 +88,7 @@ case "$LINUX_DISTRIBUTION" in
         for tool in "${TOOLS_TO_INSTALL[@]}"; do
             dnf install -y "$tool"
         done
-        dnf install -y util-linux-user which dnf-plugins-core java-21-openjdk-devel
+        dnf install -y util-linux-user which dnf-plugins-core java-17-openjdk-devel
         dnf config-manager --add-repo=https://download.docker.com/linux/fedora/docker-ce.repo
         dnf -y install docker-ce docker-ce-cli containerd.io
         install_terraform
