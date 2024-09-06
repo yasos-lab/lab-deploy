@@ -49,3 +49,5 @@ if ! grep -Fxq "source ~/.env" ~/.zshrc; then
 else
     echo "~/.env already sourced in ~/.zshrc file."
 fi
+
+source ~/.zshrc
