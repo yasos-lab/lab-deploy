@@ -4,6 +4,7 @@ set -e
 
 TOOLS_TO_INSTALL=(
     "ansible"
+    "coreutils"
     "curl"
     "docker-compose"
     "git"
