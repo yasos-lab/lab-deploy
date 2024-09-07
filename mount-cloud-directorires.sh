@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ~/.env
+source ~/.secrets
 
 install_and_config_rclone() {
     if ! command -v rclone &> /dev/null; then
@@ -69,6 +69,6 @@ install_and_config_rclone
 
 # Mount Cloud
 mount_cloud 'mega' 'Mega' $MEGA_EMAIL $MEGA_PASSWORD
-#mount_cloud drive G-Drive $GGL_USERNAME $GGL_PASSWORD
-#mount_cloud onedrive 1-Drive $MSFT_USERNAME $MSFT_PASSWORD
-#mount_cloud dropbox Dropbox $DROPBOX_USERNAME $DROPBOX_PASSWORD
+mount_cloud drive G-Drive $GGL_EMAIL $GGL_PASSWORD
+mount_cloud onedrive 1-Drive $MSFT_EMAIL $MSFT_PASSWORD
+mount_cloud dropbox Dropbox $DROPBOX_EMAIL $DROPBOX_PASSWORD

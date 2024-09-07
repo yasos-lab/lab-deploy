@@ -1,9 +1,15 @@
 #!/bin/bash
 
-source ~/.env
+source ~/.secrets
 
 # List of variable keys you want to retrieve
-VARIABLE_KEYS=("GITHUB_PAT" "MEGA_EMAIL" "MEGA_PASSWORD" "POSTGRES_USER" "POSTGRES_PASSWORD")
+VARIABLE_KEYS=("GITHUB_PAT" 
+                "MEGA_EMAIL" "MEGA_PASSWORD" 
+                "POSTGRES_USER" "POSTGRES_PASSWORD"
+                "DROPBOX_EMAIL" "DROPBOX_PASSWORD"
+                "GGL_EMAIL" "GGL_PASSWORD"
+                "MSFT_EMAIL" "MSFT_PASSWORD"
+                )
 
 # Function to get variable value
 get_variable_value() {
@@ -31,23 +37,21 @@ get_variable_value() {
 for key in "${VARIABLE_KEYS[@]}"; do
     value=$(get_variable_value "$key")
     echo "Value retreaved for : $key"
-    # Check if the variable is already in .env
-    if grep -q "^$key=" ~/.env; then
+    # Check if the variable is already in .secrets
+    if grep -q "^$key=" ~/.secrets; then
         # Replace the existing variable
-        sed -i "s|^$key=.*|$key='$value'|" ~/.env
+        sed -i "s|^$key=.*|$key='$value'|" ~/.secrets
     else
         # Append the new variable
-        echo "$key='$value'" >> ~/.env
+        echo "$key='$value'" >> ~/.secrets
     fi
 done
 
-# Check if the ~/.env is sourced in ~/.zshrc
-if ! grep -Fxq "source ~/.env" ~/.zshrc; then
+# Check if the ~/.secrets is sourced in ~/.zshrc
+if ! grep -Fxq "source ~/.secrets" ~/.zshrc; then
     # If not, add the line to the file
-    echo "source ~/.env" >> ~/.zshrc
-    echo "~/.env successfuly sourced in ~/.zshrc file."
+    echo "source ~/.secrets" >> ~/.zshrc
+    echo "~/.secrets successfuly sourced in ~/.zshrc file."
 else
-    echo "~/.env already sourced in ~/.zshrc file."
+    echo "~/.secrets already sourced in ~/.zshrc file."
 fi
-
-source ~/.zshrc
