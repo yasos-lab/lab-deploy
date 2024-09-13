@@ -36,7 +36,6 @@ allow_other_users() {
 }
 
 mount_cloud() {
-
     local provider=$1
     local mount_label=$2
     local provider_username=$3
@@ -68,7 +67,7 @@ install_and_config_rclone
 #allow_other_users
 
 # Mount Cloud
-mount_cloud 'mega' 'Mega' $MEGA_EMAIL $MEGA_PASSWORD
+mount_cloud mega Mega $MEGA_EMAIL $MEGA_PASSWORD
 mount_cloud drive G-Drive $GGL_EMAIL $GGL_PASSWORD
 mount_cloud onedrive 1-Drive $MSFT_EMAIL $MSFT_PASSWORD
 mount_cloud dropbox Dropbox $DROPBOX_EMAIL $DROPBOX_PASSWORD
