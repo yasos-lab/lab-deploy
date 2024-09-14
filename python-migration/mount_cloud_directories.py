@@ -11,7 +11,7 @@ def setup_rclone():
     else:
         print("rclone is already installed.")
     
-    os.makedirs(f"{const.HOME_DIR}/.config/rclone")
+    os.makedirs(f"{const.HOME_DIR}/.config/rclone", exist_ok=True)
     open(f"{const.HOME_DIR}/.config/rclone/rclone.conf", 'a').close()
     print("rclone config file created.")
 
@@ -31,16 +31,17 @@ def mount_cloud(provider, mount_label, username, password):
 
 if __name__ == "__main__":
     # Setup Rclone
-    #setup_rclone()
+    setup_rclone()
 
     # Get BW creds
     bw_email = get_var_from_gitlab_project(const.BW_EMAIL_GITLAB_VAR_KEY, const.GITLAB_PID, const.GITLAB_PAT)
     bw_password = get_var_from_gitlab_project(const.BW_PASSWORD_GITLAB_VAR_KEY, const.GITLAB_PID, const.GITLAB_PAT)
-
+    
     # Mount multiple cloud providers
-    for provider in cloud_provider:
+    for provider in const.CLOUD_PROVIDERS:
         provider_bw_id = get_var_from_gitlab_project(provider['gitlab_var_key_bw_id'], const.GITLAB_PID, const.GITLAB_PAT)
+        print(f"{provider['label']} bw id is : {provider_bw_id}")
         provider_username, provider_password = get_cred_from_bitwarden(const.BW_BINARY, bw_email, bw_password, provider_bw_id)
-        print(f"{provider_username} // {provider_password}")
-        
+        mount_cloud(provider['provider'], provider['label'], provider_username, provider_password)
+
 

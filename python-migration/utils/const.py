@@ -18,12 +18,12 @@ CLOUD_PROVIDERS = [
     {
         'provider': 'onedrive',
         'label': '1-Drive',
-        'gitlab_var_key_bw_id': 'MSFT_BW_EMAIL'
+        'gitlab_var_key_bw_id': 'MSFT_BW_ID'
     },
     {
         'provider': 'dropbox', 
         'label': 'Dropbox', 
-        'gitlab_var_key_bw_id': 'DROPBOX_BW_EMAIL'
+        'gitlab_var_key_bw_id': 'DROPBOX_BW_ID'
     }
 ]
 
