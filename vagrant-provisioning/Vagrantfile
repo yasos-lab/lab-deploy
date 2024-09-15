@@ -1,0 +1,49 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    # Configure each VM
+  
+    # Define the Linux server VM
+    config.vm.define "ubuntu" do |ubuntu|
+      ubuntu.vm.box = "ubuntu/focal64"  # Ubuntu 20.04 LTS box
+      ubuntu.vm.hostname = "ubuntu"
+      ubuntu.vm.network "private_network", ip: "192.168.56.10"  # Static IP
+      ubuntu.vm.provider "virtualbox" do |vb|
+        vb.memory = "2048"
+        vb.cpus = 2
+      end
+      ubuntu.vm.provision "shell", path: "scripts/setup_ubuntu.sh", args: [ENV['CONFIG_USER'], ENV['CONFIG_PASS']]
+    end
+  
+    # Define the Windows 10 VM
+    config.vm.define "windows" do |win|
+      win.vm.box = "universalvishwa/windows-10-professional-x64"  # Windows 10 box
+      win.vm.hostname = "windows"
+      win.vm.network "private_network", ip: "192.168.56.11"  # Static IP
+      win.vm.provider "virtualbox" do |vb|
+        vb.memory = "4096"
+        vb.cpus = 2
+      end
+      win.vm.provision "shell", path: "scripts/setup_windows.bat", inline: "cmd.exe /c scripts/setup_windows.bat", args: [ENV['CONFIG_USER'], ENV['CONFIG_PASS']]
+    end
+  
+    # Define the FreeBSD/TrueNAS VM
+    config.vm.define "truenas" do |truenas|
+      truenas.vm.box = "freebsd/FreeBSD-12.2-RELEASE"  # FreeBSD box
+      truenas.vm.hostname = "truenas"
+      truenas.vm.network "private_network", ip: "192.168.56.12"  # Static IP
+      truenas.vm.provider "virtualbox" do |vb|
+        vb.memory = "2048"
+        vb.cpus = 2
+      end
+      truenas.vm.provision "shell", path: "scripts/setup_truenas.sh", args: [ENV['CONFIG_USER'], ENV['CONFIG_PASS']]
+    end
+  
+    # Common VM settings (optional)
+    config.vm.provider "virtualbox" do |vb|
+      vb.gui = false  # Set to true if you want to see VM GUI
+      vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    end
+  end
+  
