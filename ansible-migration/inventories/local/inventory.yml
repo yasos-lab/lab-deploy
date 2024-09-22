@@ -3,29 +3,21 @@
 all:
   hosts:
     # Your laptop acts both as controller and target
-    laptop:
+    ubuntu_laptop:
       ansible_host: localhost  # This refers to your own machine
+      ansible_user: "{{ lookup('env', 'USER') }}"
+    debian_server:
+      ansible_host: 192.168.1.73  # Replace with your Linux server's IP
+      ansible_user: "{{ lookup('env', 'USER') }}"
 
   children:
-    linux_machines:
+    linux:
       hosts:
-        laptop:
-        linux_server:
-          ansible_host: 192.168.1.10  # Replace with your Linux server's IP
-
-    windows_machines:
+        ubuntu_laptop:
+        debian_server:
+    laptops:
       hosts:
-        windows_machine:
-          ansible_host: 192.168.1.11  # Replace with your Windows machine's IP
-          ansible_user: Administrator  # For Windows, specify user
-          ansible_password: "your_password"
-          ansible_connection: winrm
-          ansible_winrm_transport: ntlm
-          ansible_winrm_server_cert_validation: ignore
-
-    truenas_machines:
+        ubuntu_laptop:
+    servers:
       hosts:
-        truenas:
-          ansible_host: 192.168.1.12  # Replace with your TrueNAS machine's IP
-          ansible_user: root
-
+        debian_server:

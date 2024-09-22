@@ -1,0 +1,11 @@
+---
+
+packages_to_install:
+  - coreutils
+  - curl
+  - jq
+  - openssl
+  - unzip
+  - vim
+  - wget
+  - zsh

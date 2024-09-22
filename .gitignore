@@ -2,4 +2,4 @@ docker/**/*.env
 
 .vscode/
 
-vagrant-provisioning/.vagrant/*
+vagrant-provisioning/.vagrant/
