@@ -3,21 +3,23 @@
 all:
   hosts:
     # Your laptop acts both as controller and target
-    ubuntu_laptop:
+    laptop:
       ansible_host: localhost  # This refers to your own machine
       ansible_user: "{{ lookup('env', 'USER') }}"
-    debian_server:
-      ansible_host: 192.168.1.73  # Replace with your Linux server's IP
+      ansible_become_password: "{{ lookup('env', 'PASSWORD') }}"
+    server:
+      ansible_host: 192.168.122.121  # Replace with your Linux server's IP
       ansible_user: "{{ lookup('env', 'USER') }}"
+      ansible_become_password: "{{ lookup('env', 'SERVER_PASSWORD') }}"
 
   children:
     linux:
       hosts:
-        ubuntu_laptop:
-        debian_server:
+        laptop:
+        server:
     laptops:
       hosts:
-        ubuntu_laptop:
+        laptop:
     servers:
       hosts:
-        debian_server:
+        server:
