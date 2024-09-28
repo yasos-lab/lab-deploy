@@ -1,1 +1,11 @@
 ---
+
+repositories:
+  - repo: "deb [signed-by=/etc/apt/keyrings/hashicorp.asc] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    repo_list_file: "/etc/apt/sources.list.d/hashicorp.list"
+    gpg_url: "https://apt.releases.hashicorp.com/gpg"
+    gpg_keyring: "/etc/apt/keyrings/hashicorp.asc"
+  - repo: "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
+    repo_list_file: "/etc/apt/sources.list.d/vscode.list"
+    gpg_url: "https://packages.microsoft.com/keys/microsoft.asc"
+    gpg_keyring: "/etc/apt/keyrings/microsoft.gpg"

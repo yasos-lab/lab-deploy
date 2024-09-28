@@ -5,4 +5,6 @@ ssh-keygen on the ansible controller
 ssh-copy-id yacin@localhost
 ssh-copy-id yacin@192.168.122.121
 
+export PASSWORD=
+export SERVER_PASSWORD=
 ansible-playbook -i ansible-migration/inventories/local/inventory.yml ansible-migration/playbooks/setup-all.yml
