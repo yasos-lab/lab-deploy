@@ -2,7 +2,7 @@
 
 - name: Add GPG keys and repositories
   hosts: all
-  become: true
+  become: yes
   tasks:
     - name: Ensure the keyrings directory exists
       ansible.builtin.file:

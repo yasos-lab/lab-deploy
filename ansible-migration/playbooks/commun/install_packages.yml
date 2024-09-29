@@ -2,7 +2,7 @@
 
 - name: Install packages
   hosts: all
-  become: true
+  become: yes
   tasks:
     - name: Install packages
       ansible.builtin.package:
