@@ -1,14 +1,24 @@
 ---
 
+base_repositories:
+  - name: "docker"
+    repo_url: "https://download.docker.com/linux/debian"
+    gpg_url: "https://download.docker.com/linux/debian/gpg"
+    components:
+      - "stable"
+
 base_packages:
+  - apt-transport-https
   - build-essential
+  - ca-certificates
   - coreutils
   - curl
-  - docker.io
-  - docker-compose
   - git
+  - gnupg2
   - jq
+  - lsb-release
   - openssl
+  - software-properties-common
   - unzip
   - vim
   - wget
@@ -41,3 +51,8 @@ zsh_repositories:
   - repo: https://github.com/zsh-users/zsh-autosuggestions
     dest: "{{ zsh_directory }}/plugins/zsh-autosuggestions"
     depth: 0
+
+purge_vars:
+  repositories: no
+  packages: no
+  shell: no

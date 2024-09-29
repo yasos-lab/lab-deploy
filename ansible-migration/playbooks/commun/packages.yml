@@ -1,0 +1,20 @@
+---
+
+- name: Install packages
+  hosts: all
+  become: yes
+  tasks:
+    - name: Purge packages
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ packages }}"
+      when: purge_vars.packages
+      tags: purge::packages
+
+    - name: Install packages
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: latest
+      loop: "{{ packages }}"
+      tags: Install::packages

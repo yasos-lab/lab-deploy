@@ -1,7 +1,9 @@
 ---
 
-repositories: []
+extra_repositories: []
+
+repositories: "{{ base_repositories + extra_repositories }}"
 
 extra_packages: []
 
-packages_to_install: "{{ base_packages + extra_packages }}"
+packages: "{{ base_packages + extra_packages }}"
