@@ -5,7 +5,16 @@ base_repositories:
     repo_url: "https://download.docker.com/linux/debian"
     gpg_url: "https://download.docker.com/linux/debian/gpg"
     components:
+      - "{{ ansible_lsb.codename }}"
       - "stable"
+
+  - name: "syncthing"
+    repo_url: "https://apt.syncthing.net"
+    gpg_url: "https://syncthing.net/release-key.gpg"
+    components:
+      - "syncthing"
+      - "stable"
+  
 
 base_packages:
   - apt-transport-https
@@ -19,6 +28,7 @@ base_packages:
   - lsb-release
   - openssl
   - software-properties-common
+  - syncthing
   - unzip
   - vim
   - wget

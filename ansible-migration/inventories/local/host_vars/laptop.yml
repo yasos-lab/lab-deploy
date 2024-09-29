@@ -1,10 +1,25 @@
 ---
 
-extra_repositories: []
+extra_repositories:
+  - name: "brave"
+    repo_url: "https://brave-browser-apt-release.s3.brave.com"
+    gpg_url: "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg"
+    components:
+      - "stable"
+      - "main"
+
+  - name: "vscode"
+    repo_url: "https://packages.microsoft.com/repos/code"
+    gpg_url: "https://packages.microsoft.com/keys/microsoft.asc"
+    components:
+      - "stable"
+      - "main"
 
 repositories: "{{ base_repositories + extra_repositories }}"
 
 extra_packages:
+  - brave-browser
+  - code
   - openjdk-17-jdk
   
 packages: "{{ base_packages + extra_packages }}"

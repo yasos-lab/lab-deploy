@@ -31,7 +31,7 @@
 
         - name: Add APT repositories
           ansible.builtin.apt_repository:
-            repo: "deb [signed-by=/etc/apt/trusted.gpg.d/{{ item.name }}.asc] {{ item.repo_url }} {{ ansible_lsb.codename }} {{ item.components | join(' ') }}"
+            repo: "deb [signed-by=/etc/apt/trusted.gpg.d/{{ item.name }}.asc] {{ item.repo_url }} {{ item.components | join(' ') }}"
             filename: "{{ item.name }}-archive"
             state: present
           loop: "{{ repositories }}"
