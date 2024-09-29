@@ -1,2 +1,40 @@
 ---
 
+- name: Install and setup docker
+  hosts: all
+  become: yes
+  tasks:
+    - name: Purge docker
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: latest
+      loop: "{{ docker_packages }}"
+      when: purge_vars.docker
+      tags: purge::docker
+    
+    - name: Install and setup docker
+      block:
+        - name: Install docker packages
+          ansible.builtin.package:
+            name: "{{ item }}"
+            state: latest
+          loop: "{{ docker_packages }}"
+        
+        - name: Ensure Docker service is running
+          ansible.builtin.service:
+            name: docker
+            state: started
+            enabled: yes
+        
+        - name: Create docker group if not exists
+          ansible.builtin.group:
+            name: docker
+            state: present
+        
+        - name: Add users to the docker group
+          ansible.builtin.user:
+            name: "{{ ansible_user }}"
+            groups: docker
+            append: yes
+
+      tags: setup::docker
