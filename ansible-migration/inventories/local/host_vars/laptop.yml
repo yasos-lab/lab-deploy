@@ -17,11 +17,20 @@ extra_repositories:
       - "stable"
       - "main"
 
+  - name: "virtualbox"
+    repo_url: "https://download.virtualbox.org/virtualbox/debian"
+    gpg_url: "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
+    gpg_extention: "gpg"
+    components:
+      - "{{ ansible_lsb.codename }}"
+      - "contrib"
+
 repositories: "{{ base_repositories + extra_repositories }}"
 
 extra_packages:
   - brave-browser
   - code
   - openjdk-17-jdk
+  - virtualbox
   
 packages: "{{ base_packages + extra_packages }}"

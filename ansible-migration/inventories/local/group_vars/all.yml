@@ -17,7 +17,6 @@ base_repositories:
       - "syncthing"
       - "stable"
   
-
 base_packages:
   - apt-transport-https
   - build-essential
@@ -35,6 +34,13 @@ base_packages:
   - vim
   - wget
   - zsh
+
+directories:
+  - "{{ user_home }}/Documents/OS"
+  - "{{ user_home }}/Documents/Tmp"
+  - "{{ user_home }}/Documents/Backups"
+
+
 
 docker_packages:
   - docker-ce 
