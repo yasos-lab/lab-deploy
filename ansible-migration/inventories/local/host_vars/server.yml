@@ -1,9 +1,9 @@
 ---
 
-extra_repositories: []
-
-repositories: "{{ base_repositories + extra_repositories }}"
-
 extra_packages: []
 
+extra_repositories: []
+
 packages: "{{ base_packages + extra_packages }}"
+
+repositories: "{{ base_repositories + extra_repositories }}"

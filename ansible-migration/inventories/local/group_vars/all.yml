@@ -1,22 +1,7 @@
 ---
 
-base_repositories:
-  - name: "docker"
-    repo_url: "https://download.docker.com/linux/debian"
-    gpg_url: "https://download.docker.com/linux/debian/gpg"
-    gpg_extention: "asc"
-    components:
-      - "{{ ansible_lsb.codename }}"
-      - "stable"
+backup_directory: "{{ documents_directory }}/Backups"
 
-  - name: "syncthing"
-    repo_url: "https://apt.syncthing.net"
-    gpg_url: "https://syncthing.net/release-key.gpg"
-    gpg_extention: "gpg"
-    components:
-      - "syncthing"
-      - "stable"
-  
 base_packages:
   - apt-transport-https
   - build-essential
@@ -35,24 +20,23 @@ base_packages:
   - wget
   - zsh
 
-directories:
-  - "{{ user_home }}/Documents/OS"
-  - "{{ user_home }}/Documents/Tmp"
-  - "{{ user_home }}/Documents/Backups"
+base_repositories:
+  - name: "docker"
+    repo_url: "https://download.docker.com/linux/debian"
+    gpg_url: "https://download.docker.com/linux/debian/gpg"
+    gpg_extention: "asc"
+    components:
+      - "{{ ansible_lsb.codename }}"
+      - "stable"
 
-
-
-docker_packages:
-  - docker-ce 
-  - docker-ce-cli
-  - containerd.io 
-  - docker-compose
-  - docker-buildx-plugin 
-  - docker-compose-plugin
-
-user_home: "/home/{{ ansible_user }}"
-zsh_directory: "{{ user_home }}/.zsh"
-
+  - name: "syncthing"
+    repo_url: "https://apt.syncthing.net"
+    gpg_url: "https://syncthing.net/release-key.gpg"
+    gpg_extention: "gpg"
+    components:
+      - "syncthing"
+      - "stable"
+  
 config_files:
   - file: .vimrc
     dest_path: "{{ user_home }}"
@@ -67,6 +51,46 @@ config_files:
     dest_path: "{{ zsh_directory }}"
     mode: '0644'
 
+directories:
+  - "{{ documents_directory }}"
+  - "{{ documents_directory }}/OS"
+  - "{{ documents_directory }}/Tmp"
+  - "{{ documents_directory }}/VMs"
+  - "{{ documents_directory }}/Family"
+  - "{{ documents_directory }}/Friends"
+  - "{{ documents_directory }}/ApkApps"
+  - "{{ documents_directory }}/Gallery"
+  - "{{ documents_directory }}/Invoices"
+  - "{{ documents_directory }}/OnlineCourses"
+  - "{{ backup_directory }}"
+  - "{{ backup_directory }}/Accounts"
+  - "{{ backup_directory }}/Accounts/SocialMedia"
+  - "{{ backup_directory }}/Accounts/Email"
+  - "{{ backup_directory }}/Websites"
+  - "{{ backup_directory }}/Apps"
+  - "{{ backup_directory }}/Apps/Whatsapp"
+  - "{{ zsh_directory }}"
+
+docker_packages:
+  - docker-ce 
+  - docker-ce-cli
+  - containerd.io 
+  - docker-compose
+  - docker-buildx-plugin 
+  - docker-compose-plugin
+
+documents_directory: "{{ user_home }}/Documents"
+
+purge_vars:
+  repositories: no
+  packages: no
+  shell: no
+  docker: no
+
+user_home: "/home/{{ ansible_user }}"
+
+zsh_directory: "{{ user_home }}/.zsh"
+
 zsh_repositories:
   - repo: https://github.com/romkatv/powerlevel10k.git
     dest: "{{ zsh_directory }}/powerlevel10k"
@@ -77,9 +101,3 @@ zsh_repositories:
   - repo: https://github.com/zsh-users/zsh-autosuggestions
     dest: "{{ zsh_directory }}/plugins/zsh-autosuggestions"
     depth: 0
-
-purge_vars:
-  repositories: no
-  packages: no
-  shell: no
-  docker: no

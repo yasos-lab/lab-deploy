@@ -1,0 +1,13 @@
+---
+
+- name: Install packages
+  hosts: all
+  tasks:
+    - name: Ensure directories are created
+      ansible.builtin.file:
+        name: "{{ item }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        state: directory
+      loop: "{{ directories_to_create }}"
+      tags: create::directories
