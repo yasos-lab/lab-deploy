@@ -7,4 +7,4 @@ ssh-copy-id yacin@192.168.122.121
 
 export PASSWORD=
 export SERVER_PASSWORD=
-ansible-playbook -i ansible-migration/inventories/local/inventory.yml ansible-migration/playbooks/setup-all.yml
+ansible-playbook -i inventories/local/inventory.yml playbooks/setup-all.yml

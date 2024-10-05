@@ -1,0 +1,23 @@
+---
+
+- name: Install and Configure SyncThing
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure syncthing is installed
+      ansible.builtin.package:
+        name: syncthing 
+        state: present
+
+    - name: Start syncthing
+      ansible.builtin.shell: syncthing --no-browser &
+
+    - name: Wait for syncthing to start
+      ansible.builtin.wait_for:
+        port: 8384
+        delay: 10
+        timeout: 30
+
+    - name: Display syncthing Web GUI URL
+      ansible.builtin.debug:
+        msg: "SyncThing is running! Access the Web GUI at http://{{ inventory_hostname }}:8384"

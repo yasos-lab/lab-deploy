@@ -82,10 +82,20 @@ docker_packages:
 documents_directory: "{{ user_home }}/Documents"
 
 purge_vars:
-  repositories: no
-  packages: no
   shell: no
   docker: no
+  packages: no
+  repositories: no
+  services: no
+
+systemd_services:
+  - name: "syncthing"
+    description: "SyncThing - Open Source Continuous File Synchronization"
+    exec_start: "syncthing -no-browser -home=/home/{{ ansible_user }}/.config/syncthing"
+    restart_policy: "on-failure"
+    restart_delay: 5
+    after: "network-online.target"
+    user: "{{ ansible_user }}"
 
 user_home: "/home/{{ ansible_user }}"
 
