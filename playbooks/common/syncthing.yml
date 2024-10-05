@@ -1,6 +1,20 @@
 ---
 
-- name: Install and Configure SyncThing
+- name: Purge syncthing
+  hosts: all
+  become: yes
+  pre_tasks:
+    - name: Skip play if purge is disabled
+      ansible.builtin.meta: end_play
+      when: not purge_vars.syncthing
+  tasks:
+    - name: Delete syncthing package
+      ansible.builtin.package:
+        name: syncthing 
+        state: absent
+  tags: purge::syncthing
+
+- name: Install syncthing
   hosts: all
   become: yes
   tasks:
@@ -21,3 +35,4 @@
     - name: Display syncthing Web GUI URL
       ansible.builtin.debug:
         msg: "SyncThing is running! Access the Web GUI at http://{{ inventory_hostname }}:8384"
+  tags: install::syncthing

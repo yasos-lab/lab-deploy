@@ -1,36 +1,41 @@
 ---
 
+- name: Purge services
+  hosts: all
+  become: yes
+  pre_tasks:
+    - name: Skip play if purge is disabled
+      ansible.builtin.meta: end_play
+      when: not purge_vars.services
+  tasks:
+    - name: Stop services
+      ansible.builtin.service:
+        name: "{{ item.name }}"
+        enabled: yes
+      loop: "{{ systemd_services }}"
+
+    - name: Remove services files
+      ansible.builtin.file:
+        name: "/etc/systemd/system/{{ item.name }}.service"
+        state: absent
+      loop: "{{ systemd_services }}"
+  tags: purge::services
+
 - name: Configure and start services
   hosts: all
   become: yes
   tasks:
-    - block:
-        - name: Stop services
-          ansible.builtin.service:
-            name: "{{ item.name }}"
-            enabled: yes
-          loop: "{{ systemd_services }}"
+    - name: Create systemd services files
+      ansible.builtin.template:
+        src: systemd_service.j2
+        dest: "/etc/systemd/system/{{ service.name }}.service"
+      loop: "{{ systemd_services }}"
+      loop_control:
+        loop_var: service
 
-        - name: Purge services files
-          ansible.builtin.file:
-            name: "/etc/systemd/system/{{ item.name }}.service"
-            state: absent
-          loop: "{{ systemd_services }}"
-      when: purge_vars.services
-      tags: purge::services
-    
-    - block:
-        - name: Create systemd services files
-          ansible.builtin.template:
-            src: systemd_service.j2
-            dest: "/etc/systemd/system/{{ service.name }}.service"
-          loop: "{{ systemd_services }}"
-          loop_control:
-            loop_var: service
-
-        - name: Enable and start service
-          ansible.builtin.service:
-            name: "{{ item.name }}"
-            enabled: yes
-          loop: "{{ systemd_services }}"
-      tags: create::services
+    - name: Enable and start service
+      ansible.builtin.service:
+        name: "{{ item.name }}"
+        enabled: yes
+      loop: "{{ systemd_services }}"
+  tags: create::services

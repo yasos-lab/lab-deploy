@@ -82,11 +82,12 @@ docker_packages:
 documents_directory: "{{ user_home }}/Documents"
 
 purge_vars:
-  shell: no
   docker: no
   packages: no
   repositories: no
+  shell: no
   services: no
+  syncthing: no
 
 systemd_services:
   - name: "syncthing"
