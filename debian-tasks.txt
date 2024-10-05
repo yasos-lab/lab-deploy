@@ -1,0 +1,14 @@
+As admin : 
+usermod -aG sudo yacin
+
+sudo touch /etc/apt/sources.list.d/backports.list && sudo echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list
+
+sudo apt install flatpak gnome-software-plugin-flatpak
+
+sudo apt install libavcodec-extra
+
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+sudo apt remove firefox-esr
+
+sudo apt remove libreoffice-*
