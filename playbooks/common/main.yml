@@ -19,3 +19,11 @@
 - name: "Setup docker"
   ansible.builtin.import_playbook: docker.yml
   tags: common::docker
+
+- name: "Install syncthing"
+  ansible.builtin.import_playbook: syncthing.yml
+  tags: common::syncthing
+
+- name: "Create and Start services"
+  ansible.builtin.import_playbook: services.yml
+  tags: common::services

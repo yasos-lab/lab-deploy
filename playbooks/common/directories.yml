@@ -2,6 +2,7 @@
 
 - name: Create directories
   hosts: all
+  become: yes
   tasks:
     - name: Ensure directories are created
       ansible.builtin.file:
@@ -9,5 +10,5 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         state: directory
-      loop: "{{ directories_to_create }}"
+      loop: "{{ directories }}"
       tags: create::directories
