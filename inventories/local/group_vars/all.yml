@@ -92,7 +92,7 @@ purge_vars:
 systemd_services:
   - name: "syncthing"
     description: "SyncThing - Open Source Continuous File Synchronization"
-    exec_start: "syncthing -no-browser -home=/home/{{ ansible_user }}/.config/syncthing"
+    exec_start: "/usr/bin/syncthing -no-browser -home=/home/{{ ansible_user }}/.config/syncthing"
     restart_policy: "on-failure"
     restart_delay: 5
     after: "network-online.target"

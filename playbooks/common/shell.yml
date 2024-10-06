@@ -6,7 +6,7 @@
   pre_tasks:
     - name: Skip play if purge is disabled
       ansible.builtin.meta: end_play
-      when: not purge_vars.shell
+      when: purge_vars.shell is false
   tasks:
     - name: Remove zsh themes and plugins
       ansible.builtin.file:

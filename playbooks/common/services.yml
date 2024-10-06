@@ -6,12 +6,12 @@
   pre_tasks:
     - name: Skip play if purge is disabled
       ansible.builtin.meta: end_play
-      when: not purge_vars.services
+      when: purge_vars.services is false
   tasks:
     - name: Stop services
       ansible.builtin.service:
         name: "{{ item.name }}"
-        enabled: yes
+        state: stopped
       loop: "{{ systemd_services }}"
 
     - name: Remove services files
@@ -33,9 +33,12 @@
       loop_control:
         loop_var: service
 
-    - name: Enable and start service
-      ansible.builtin.service:
+    - name: Enable and start services
+      ansible.builtin.systemd:
         name: "{{ item.name }}"
+        daemon_reload: yes
         enabled: yes
+        state: restarted
+
       loop: "{{ systemd_services }}"
   tags: create::services

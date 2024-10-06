@@ -6,7 +6,7 @@
   pre_tasks:
     - name: Skip play if purge is disabled
       ansible.builtin.meta: end_play
-      when: not purge_vars.repositories
+      when: purge_vars.repositories is false
   tasks:
     - name: Remove GPG keys
       ansible.builtin.file:

@@ -6,7 +6,7 @@
   pre_tasks:
     - name: Skip play if purge is disabled
       ansible.builtin.meta: end_play
-      when: not purge_vars.packages
+      when: purge_vars.packages is false
   tasks:
     - name: Purge packages
       ansible.builtin.package:
