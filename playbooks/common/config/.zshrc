@@ -43,6 +43,8 @@ alias ....="cd ../../.."
 alias ll="ls -alF"
 alias la="ls -A"
 alias l="ls -CF"
+alias dusort="du -h --max-depth=1 "$1" | sort -hr"
+
 
 # File operations
 alias cp="cp -iv"
