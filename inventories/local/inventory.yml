@@ -2,24 +2,42 @@
 
 all:
   hosts:
-    # Your laptop acts both as controller and target
-    laptop:
-      ansible_host: localhost  # This refers to your own machine
+    ubuntu_laptop:
+      ansible_host: localhost
       ansible_user: "{{ lookup('env', 'USER') }}"
       ansible_become_password: "{{ lookup('env', 'PASSWORD') }}"
-    server:
-      ansible_host: 192.168.122.121  # Replace with your Linux server's IP
+    fedora_laptop:
+      ansible_host: 192.168.122.20
+      ansible_user: "{{ lookup('env', 'USER') }}"
+      ansible_become_password: "{{ lookup('env', 'PASSWORD') }}"
+    raspberry1:
+      ansible_host: 192.168.122.10
+      ansible_user: "{{ lookup('env', 'USER') }}"
+      ansible_become_password: "{{ lookup('env', 'PI_PASSWORD') }}"
+    debian_server:
+      ansible_host: 192.168.122.121
       ansible_user: "{{ lookup('env', 'USER') }}"
       ansible_become_password: "{{ lookup('env', 'SERVER_PASSWORD') }}"
 
   children:
     linux:
       hosts:
-        laptop:
-        server:
+        ubuntu_laptop:
+        fedora_laptop:
+        debian_server:
+        raspberry1:
+    debian:
+      hosts:
+        ubuntu_laptop:
+        debian_server:
+        raspberry1:
     laptops:
       hosts:
-        laptop:
+        ubuntu_laptop:
+        fedora_laptop:
     servers:
       hosts:
-        server:
+        debian_server:
+    pis:
+      hosts:
+        raspberry1:

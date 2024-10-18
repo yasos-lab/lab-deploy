@@ -42,3 +42,18 @@
         groups: docker
         append: yes
   tags: setup::docker
+
+- name: Create and run containers
+  hosts: laptop
+  tasks:
+    - name: Create docker volumes
+      community.docker.docker_volume:
+        name: "{{ item.value }}"
+        state: present
+      loop: "{{ docker_volumes | dict2items }}"
+    
+    - name: Create docker networks
+      community.docker.docker_network:
+        name: "{{ item.value }}"
+        state: present
+      loop: "{{ docker_networks | dict2items }}"
