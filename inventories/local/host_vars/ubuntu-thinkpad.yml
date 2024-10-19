@@ -1,46 +1,12 @@
 ---
 
-docker_containers:
-  - name: portainer
-    image: portainer/portainer-ce:latest
-    restart_policy: unless-stopped
-    volumes:
-      - "{{ docker_volumes.portainer_data }}"
-    env: []
-
-docker_volumes:
-  nextcloud_db_data: nextcloud-db-data
-  nextcloud_db: nextcloud-data
-  portainer_data: portainer-data
-
-docker_networks:
-  nextcloud_network: nextcloud-net
-
-extra_packages:
-  #- brave-browser
-  - code
-  - openjdk-17-jdk
-  - virtualbox-7.1
+extra_packages: []
 
 extra_repositories:
-  - name: "brave"
-    repo_url: "https://brave-browser-apt-release.s3.brave.com"
-    gpg_url: "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg"
-    gpg_extention: "gpg"
-    components:
-      - "stable"
-      - "main"
-  - name: "vscode"
-    repo_url: "https://packages.microsoft.com/repos/code"
-    gpg_url: "https://packages.microsoft.com/keys/microsoft.asc"
-    gpg_extention: "asc"
-    components:
-      - "stable"
-      - "main"
-  - name: "virtualbox"
-    repo_url: "https://download.virtualbox.org/virtualbox/debian"
-    gpg_url: "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
+  - name: "docker"
+    repo_url: "https://download.docker.com/linux/ubuntu"
+    gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
     gpg_extention: "asc"
     components:
       - "{{ ansible_lsb.codename }}"
-      - "contrib"
+      - "stable"

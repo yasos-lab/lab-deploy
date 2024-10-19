@@ -1,0 +1,29 @@
+---
+
+extra_packages: []
+
+extra_repositories:
+  - name: "docker"
+    repo_url: "https://download.docker.com/linux/debian"
+    gpg_url: "https://download.docker.com/linux/debian/gpg"
+    gpg_extention: "asc"
+    components:
+      - "{{ ansible_lsb.codename }}"
+      - "stable"
+
+
+docker_containers:
+  - name: portainer
+    image: portainer/portainer-ce:latest
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ docker_volumes.portainer_data }}"
+    env: []
+
+docker_volumes:
+  nextcloud_db_data: nextcloud-db-data
+  nextcloud_db: nextcloud-data
+  portainer_data: portainer-data
+
+docker_networks:
+  nextcloud_network: nextcloud-net

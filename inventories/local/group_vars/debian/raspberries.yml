@@ -1,0 +1,13 @@
+---
+
+directories: []
+
+docker_containers: []
+docker_volumes: []
+docker_networks: []
+
+base_packages: []
+extra_packages: []
+
+base_repositories: []
+extra_repositories: []

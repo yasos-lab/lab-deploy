@@ -19,7 +19,7 @@
         state: absent
       loop: "{{ config_files }}"
 
-    - name: Purge git and zsh packages
+    - name: Purge zsh packages
       ansible.builtin.package:
         name: zsh
         state: absent
@@ -34,12 +34,11 @@
   hosts: all
   become: yes
   tasks:
-    - name: Ensure git and zsh present
+    - name: Ensure zsh packages present
       ansible.builtin.package:
-        name: 
-          - git
-          - zsh
+        name: "{{ item }}"
         state: present
+      loop: "{{ zsh_packages }}"
 
     - name: Ensure .zsh directory exists
       ansible.builtin.file:
