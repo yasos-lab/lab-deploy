@@ -1,0 +1,7 @@
+---
+
+docker_containers: "{{ base_docker_containers + extra_docker_containers }}"
+
+docker_volumes: "{{ base_docker_volumes + extra_docker_volumes }}"
+
+docker_networks: "{{ base_docker_networks + extra_docker_networks }}"

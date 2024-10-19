@@ -8,8 +8,6 @@ docker_containers:
       - "{{ docker_volumes.portainer_data }}"
     env: []
 
-
-
 docker_volumes:
   nextcloud_db_data: nextcloud-db-data
   nextcloud_db: nextcloud-data
@@ -46,7 +44,3 @@ extra_repositories:
     components:
       - "{{ ansible_lsb.codename }}"
       - "contrib"
-
-packages: "{{ base_packages + extra_packages }}"
-
-repositories: "{{ base_repositories + extra_repositories }}"

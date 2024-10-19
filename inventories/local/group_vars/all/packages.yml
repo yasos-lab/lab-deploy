@@ -1,0 +1,3 @@
+---
+
+packages: "{{ base_packages + extra_packages }}"

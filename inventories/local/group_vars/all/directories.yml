@@ -1,0 +1,29 @@
+---
+
+backup_directory: "{{ user_home }}/Backups"
+
+directories:
+  - "{{ user_home }}/OS"
+  - "{{ user_home }}/VMs"
+  - "{{ user_home }}/Family"
+  - "{{ user_home }}/Friends"
+  - "{{ user_home }}/Gallery"
+  - "{{ user_home }}/OnlineCourses"
+  - "{{ documents_directory }}"
+  - "{{ documents_directory }}/Tmp"
+  - "{{ documents_directory }}/ApkApps"
+  - "{{ documents_directory }}/Invoices"
+  - "{{ backup_directory }}"
+  - "{{ backup_directory }}/Accounts"
+  - "{{ backup_directory }}/Accounts/SocialMedia"
+  - "{{ backup_directory }}/Accounts/Email"
+  - "{{ backup_directory }}/Websites"
+  - "{{ backup_directory }}/Apps"
+  - "{{ backup_directory }}/Apps/Whatsapp"
+  - "{{ zsh_directory }}"
+
+documents_directory: "{{ user_home }}/Documents"
+
+user_home: "/home/{{ ansible_user }}"
+
+zsh_directory: "{{ user_home }}/.zsh"

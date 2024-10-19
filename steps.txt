@@ -7,4 +7,8 @@ ssh-copy-id yacin@192.168.122.121
 
 export PASSWORD=
 export SERVER_PASSWORD=
+
+
 ansible-playbook -i inventories/local/inventory.yml playbooks/setup-all.yml
+
+ansible-playbook -i inventories/local/inventory.yml -l ubuntu_laptop -t create::directories,setup::shell playbooks/common/main.yml

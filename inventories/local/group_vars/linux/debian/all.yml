@@ -1,0 +1,18 @@
+---
+
+base_repositories:
+  - name: "docker"
+    repo_url: "https://download.docker.com/linux/debian"
+    gpg_url: "https://download.docker.com/linux/debian/gpg"
+    gpg_extention: "asc"
+    components:
+      - "{{ ansible_lsb.codename }}"
+      - "stable"
+
+  - name: "syncthing"
+    repo_url: "https://apt.syncthing.net"
+    gpg_url: "https://syncthing.net/release-key.gpg"
+    gpg_extention: "gpg"
+    components:
+      - "syncthing"
+      - "stable"
