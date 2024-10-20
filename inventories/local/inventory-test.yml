@@ -3,21 +3,21 @@
 all:
   hosts:
     ubuntu-thinkpad:
-      ansible_host: localhost
-      ansible_user: "{{ lookup('env', 'USER') }}"
-      ansible_become_password: "{{ lookup('env', 'PASSWORD') }}"
+      ansible_host: 172.10.1.10
+      ansible_user: "test"
+      ansible_become_password: "test"
     fedora-elitebook:
-      ansible_host: 192.168.1.161
-      ansible_user: "{{ lookup('env', 'USER') }}"
-      ansible_become_password: "{{ lookup('env', 'PASSWORD') }}"
+      ansible_host: 172.10.1.20
+      ansible_user: "test"
+      ansible_become_password: "test"
     raspberry-pi-1:
-      ansible_host: 192.168.122.10
-      ansible_user: "{{ lookup('env', 'USER') }}"
-      ansible_become_password: "{{ lookup('env', 'PI_PASSWORD') }}"
+      ansible_host: 172.10.1.40
+      ansible_user: "test"
+      ansible_become_password: "test"
     debian-thinkcenter:
-      ansible_host: 192.168.122.121
-      ansible_user: "{{ lookup('env', 'USER') }}"
-      ansible_become_password: "{{ lookup('env', 'SERVER_PASSWORD') }}"
+      ansible_host: 172.10.1.30
+      ansible_user: "test"
+      ansible_become_password: "test"
 
   children:
     linux:
