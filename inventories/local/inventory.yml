@@ -4,20 +4,20 @@ all:
   hosts:
     ubuntu-thinkpad:
       ansible_host: localhost
-      ansible_user: "{{ lookup('env', 'LOCAL_USER') }}"
-      ansible_become_password: "{{ lookup('env', 'LOCAL_PASSWORD') }}"
+      ansible_user: "{{ lookup('env', 'TP_USER') }}"
+      ansible_become_password: "{{ lookup('env', 'TP_PASSWORD') }}"
     fedora-elitebook:
       ansible_host: 192.168.1.161
-      ansible_user: "{{ lookup('env', 'LOCAL_USER') }}"
-      ansible_become_password: "{{ lookup('env', 'LOCAL_PASSWORD') }}"
+      ansible_user: "{{ lookup('env', 'EB_USER') }}"
+      ansible_become_password: "{{ lookup('env', 'EB_PASSWORD') }}"
     raspberry-pi-1:
       ansible_host: 192.168.122.10
       ansible_user: "{{ lookup('env', 'PI_USER') }}"
       ansible_become_password: "{{ lookup('env', 'PI_PASSWORD') }}"
     debian-thinkcenter:
       ansible_host: 192.168.122.121
-      ansible_user: "{{ lookup('env', 'SERVER_USER') }}"
-      ansible_become_password: "{{ lookup('env', 'SERVER_PASSWORD') }}"
+      ansible_user: "{{ lookup('env', 'SVR_USER') }}"
+      ansible_become_password: "{{ lookup('env', 'SVR_PASSWORD') }}"
 
   children:
     linux:

@@ -35,6 +35,11 @@ def generate_ssh_key():
 
 def ssh_copy_id(host, user, password):
     try:
+        known_hosts_path = os.path.expanduser('~/.ssh/known_hosts')
+        print(f"Removing old SSH key associated with {host}...")
+        subprocess.run(['ssh-keygen', '-f', known_hosts_path, '-R', f'{host}'], check=True)
+        print("Old SSH key removed.")
+        print(f"Copying old SSH key to {host}...")
         subprocess.run(['sshpass', '-p', password, 'ssh-copy-id', '-o', 'StrictHostKeyChecking=no', f'{user}@{host}'], check=True)
         print(f"SSH key copied to {host} successfully.")
         return True
@@ -64,25 +69,32 @@ def export_var(name, value):
     if not os.path.exists(zshrc_file) and not os.path.exists(bashrc_file):
         print("Neither .zshrc nor .bashrc found. Please create one manually.")
 
-def main(inventory):
+def setup_controller():
     install_packages()
     generate_ssh_key()
 
-    if isinstance(inventory[0], str):
-        known_hosts_path = os.path.expanduser('~/.ssh/known_hosts')
+    user = input("Enter username for localhost: ")
+    password = getpass.getpass(prompt=f"Enter password for {user}@localhost: ")
+    
+    if ssh_copy_id('localhost', user, password):
+        os.environ['TP_USER'] = user
+        os.environ['TP_PASSWORD'] = password
+        print(f"Exported environment variables for ansible controller")
+        # Setup localhost :
+        #subprocess.run(['ansible-playbook', '-i', 'inventories/local/inventory.yml', '-l', 'ubuntu-thinkpad', 'playbooks/main.yml'], check=True)
+        # Create testing stack :
+        subprocess.run(['docker-compose', 'up', '-d'], check=True)
 
+def setup_hosts(inventory):
+    if isinstance(inventory[0], str):
         for host in inventory:
             if ssh_copy_id(host, 'test', 'test'):
                 pass
-            else:
-                subprocess.run(['ssh-keygen', '-f', known_hosts_path, '-R', f'{host}'], check=True)
-                ssh_copy_id(host, 'test', 'test')
-
 
     elif isinstance(inventory[0], dict):
         for host in inventory:
             user = input(f"Enter username for {host['host']}: ")
-            password = getpass.getpass(prompt=f"Enter password for {host['host']}: ")
+            password = getpass.getpass(prompt=f"Enter password for {user}@{host['host']}: ")
             
             if ssh_copy_id(host['host'], user, password):
                 export_var(host['user_env_name'], user)
@@ -96,13 +108,14 @@ if __name__ == "__main__":
         '172.10.1.30',
         '172.10.1.40',
     ]
-    
     inventory = [
-        {'host': 'localhost', 'user_env_name': 'LOCAL_USER', 'pass_env_name': 'LOCAL_PASS'},
-        {'host': '192.168.1.161', 'user_env_name': 'LOCAL_USER', 'pass_env_name': 'LOCAL_PASS'},
-        {'host': '192.168.122.10', 'user_env_name': 'PI_USER', 'pass_env_name': 'PI_PASS'},
-        {'host': '192.168.122.121', 'user_env_name': 'SERVER_USER', 'pass_env_name': 'SERVER_PASS'},
+        {'host': 'localhost', 'user_env_name': 'TP_USER', 'pass_env_name': 'TP_PASSWORD'},
+        {'host': '192.168.1.161', 'user_env_name': 'EB_USER', 'pass_env_name': 'EB_PASSWORD'},
+        {'host': '192.168.122.10', 'user_env_name': 'PI_USER', 'pass_env_name': 'PI_PASSWORD'},
+        {'host': '192.168.122.121', 'user_env_name': 'SVR_USER', 'pass_env_name': 'SVR_PASSWORD'},
     ]
 
-    main(test_inventory)
-    # main(inventory)
+    setup_controller()
+
+    setup_hosts(test_inventory)
+    # setup_hosts(inventory)
