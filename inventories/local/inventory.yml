@@ -2,19 +2,19 @@
 
 all:
   hosts:
-    ubuntu-thinkpad:
+    ubuntu_thinkpad:
       ansible_host: localhost
       ansible_user: "{{ lookup('env', 'TP_USER') }}"
       ansible_become_password: "{{ lookup('env', 'TP_PASSWORD') }}"
-    fedora-elitebook:
+    fedora_elitebook:
       ansible_host: 192.168.1.161
       ansible_user: "{{ lookup('env', 'EB_USER') }}"
       ansible_become_password: "{{ lookup('env', 'EB_PASSWORD') }}"
-    raspberry-pi-1:
+    raspberry_pi_1:
       ansible_host: 192.168.122.10
       ansible_user: "{{ lookup('env', 'PI_USER') }}"
       ansible_become_password: "{{ lookup('env', 'PI_PASSWORD') }}"
-    debian-thinkcenter:
+    debian_thinkcenter:
       ansible_host: 192.168.122.121
       ansible_user: "{{ lookup('env', 'SVR_USER') }}"
       ansible_become_password: "{{ lookup('env', 'SVR_PASSWORD') }}"
@@ -24,20 +24,20 @@ all:
       children:
         redhat:
           children:
-            redhat-servers:
-            redhat-laptops:
+            redhat_servers:
+            redhat_laptops:
               hosts:
-                fedora-elitebook:
+                fedora_elitebook:
         debian:
           hosts:
-            ubuntu-thinkpad:
+            ubuntu_thinkpad:
           children:
-            debian-servers:
+            debian_servers:
               hosts:
-                debian-thinkcenter:
-            debian-laptops:
+                debian_thinkcenter:
+            debian_laptops:
               hosts:
-                ubuntu-thinkpad:
+                ubuntu_thinkpad:
             raspberries:
               hosts:
-                raspberry-pi-1:
+                raspberry_pi_1:

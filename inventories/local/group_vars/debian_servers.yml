@@ -11,7 +11,6 @@ extra_repositories:
       - "{{ ansible_lsb.codename }}"
       - "stable"
 
-
 docker_containers:
   - name: portainer
     image: portainer/portainer-ce:latest

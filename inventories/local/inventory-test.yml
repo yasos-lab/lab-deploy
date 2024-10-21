@@ -2,19 +2,19 @@
 
 all:
   hosts:
-    ubuntu-thinkpad:
+    ubuntu_thinkpad:
       ansible_host: 172.10.1.10
       ansible_user: "test"
       ansible_become_password: "test"
-    fedora-elitebook:
+    fedora_elitebook:
       ansible_host: 172.10.1.20
       ansible_user: "test"
       ansible_become_password: "test"
-    raspberry-pi-1:
+    raspberry_pi_1:
       ansible_host: 172.10.1.40
       ansible_user: "test"
       ansible_become_password: "test"
-    debian-thinkcenter:
+    debian_thinkcenter:
       ansible_host: 172.10.1.30
       ansible_user: "test"
       ansible_become_password: "test"
@@ -24,18 +24,18 @@ all:
       children:
         redhat:
           children:
-            redhat-servers:
-            redhat-laptops:
+            redhat_servers:
+            redhat_laptops:
               hosts:
-                fedora-elitebook:
+                fedora_elitebook:
         debian:
           children:
-            debian-servers:
+            debian_servers:
               hosts:
-                debian-thinkcenter:
-            debian-laptops:
+                debian_thinkcenter:
+            debian_laptops:
               hosts:
-                ubuntu-thinkpad:
+                ubuntu_thinkpad:
             raspberries:
               hosts:
-                raspberry-pi-1:
+                raspberry_pi_1:

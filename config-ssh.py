@@ -81,7 +81,7 @@ def setup_controller():
         os.environ['TP_PASSWORD'] = password
         print(f"Exported environment variables for ansible controller")
         # Setup localhost :
-        #subprocess.run(['ansible-playbook', '-i', 'inventories/local/inventory.yml', '-l', 'ubuntu-thinkpad', 'playbooks/main.yml'], check=True)
+        subprocess.run(['ansible-playbook', '-i', 'inventories/local/inventory.yml', '-l', 'ubuntu-thinkpad', 'playbooks/main.yml'], check=True)
         # Create testing stack :
         subprocess.run(['docker-compose', 'up', '-d'], check=True)
 
@@ -115,7 +115,7 @@ if __name__ == "__main__":
         {'host': '192.168.122.121', 'user_env_name': 'SVR_USER', 'pass_env_name': 'SVR_PASSWORD'},
     ]
 
-    setup_controller()
+    #setup_controller()
 
     setup_hosts(test_inventory)
     # setup_hosts(inventory)
