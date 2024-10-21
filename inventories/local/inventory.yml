@@ -6,38 +6,24 @@ all:
       ansible_host: localhost
       ansible_user: "{{ lookup('env', 'TP_USER') }}"
       ansible_become_password: "{{ lookup('env', 'TP_PASSWORD') }}"
-    fedora_elitebook:
-      ansible_host: 192.168.1.161
-      ansible_user: "{{ lookup('env', 'EB_USER') }}"
-      ansible_become_password: "{{ lookup('env', 'EB_PASSWORD') }}"
-    raspberry_pi_1:
-      ansible_host: 192.168.122.10
-      ansible_user: "{{ lookup('env', 'PI_USER') }}"
-      ansible_become_password: "{{ lookup('env', 'PI_PASSWORD') }}"
     debian_thinkcenter:
       ansible_host: 192.168.122.121
       ansible_user: "{{ lookup('env', 'SVR_USER') }}"
       ansible_become_password: "{{ lookup('env', 'SVR_PASSWORD') }}"
+    raspberry_pi_1:
+      ansible_host: 192.168.122.10
+      ansible_user: "{{ lookup('env', 'PI_USER') }}"
+      ansible_become_password: "{{ lookup('env', 'PI_PASSWORD') }}"
 
   children:
-    linux:
+    debian:
       children:
-        redhat:
-          children:
-            redhat_servers:
-            redhat_laptops:
-              hosts:
-                fedora_elitebook:
-        debian:
+        debian_workstations:
           hosts:
             ubuntu_thinkpad:
-          children:
-            debian_servers:
-              hosts:
-                debian_thinkcenter:
-            debian_laptops:
-              hosts:
-                ubuntu_thinkpad:
-            raspberries:
-              hosts:
-                raspberry_pi_1:
+        debian_servers:
+          hosts:
+            debian_thinkcenter:
+        raspberries:
+          hosts:
+            raspberry_pi_1:

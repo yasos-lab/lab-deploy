@@ -8,7 +8,7 @@ extra_repositories:
     gpg_url: "https://download.docker.com/linux/debian/gpg"
     gpg_extention: "asc"
     components:
-      - "{{ ansible_lsb.codename }}"
+      - "{{ ansible_facts['distribution_release'] }}"
       - "stable"
 
 docker_containers:

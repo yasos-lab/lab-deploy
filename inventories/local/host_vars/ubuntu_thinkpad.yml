@@ -8,5 +8,5 @@ extra_repositories:
     gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
     gpg_extention: "asc"
     components:
-      - "{{ ansible_lsb.codename }}"
+      - "{{ ansible_facts['distribution_release'] }}"
       - "stable"

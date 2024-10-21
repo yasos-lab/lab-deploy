@@ -39,7 +39,7 @@ def ssh_copy_id(host, user, password):
         print(f"Removing old SSH key associated with {host}...")
         subprocess.run(['ssh-keygen', '-f', known_hosts_path, '-R', f'{host}'], check=True)
         print("Old SSH key removed.")
-        print(f"Copying old SSH key to {host}...")
+        print(f"Copying SSH key to {host}...")
         subprocess.run(['sshpass', '-p', password, 'ssh-copy-id', '-o', 'StrictHostKeyChecking=no', f'{user}@{host}'], check=True)
         print(f"SSH key copied to {host} successfully.")
         return True
@@ -81,7 +81,7 @@ def setup_controller():
         os.environ['TP_PASSWORD'] = password
         print(f"Exported environment variables for ansible controller")
         # Setup localhost :
-        subprocess.run(['ansible-playbook', '-i', 'inventories/local/inventory.yml', '-l', 'ubuntu-thinkpad', 'playbooks/main.yml'], check=True)
+        subprocess.run(['ansible-playbook', '-i', 'inventories/local/inventory.yml', '-l', 'debian_workstations', 'playbooks/main.yml'], check=True)
         # Create testing stack :
         subprocess.run(['docker-compose', 'up', '-d'], check=True)
 
@@ -106,7 +106,6 @@ if __name__ == "__main__":
         '172.10.1.10',
         '172.10.1.20',
         '172.10.1.30',
-        '172.10.1.40',
     ]
     inventory = [
         {'host': 'localhost', 'user_env_name': 'TP_USER', 'pass_env_name': 'TP_PASSWORD'},
