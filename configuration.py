@@ -1,6 +1,54 @@
 import subprocess
 import os
 import getpass
+import json
+
+def install_bitwarden_cli(version="2024.10.0"):
+    url = f"https://github.com/bitwarden/clients/releases/download/cli-v{version}/bw-linux-{version}.zip"
+    
+    subprocess.run(['curl', '-L', url, '-o', '/tmp/bw.zip'], check=True)
+    subprocess.run(['sudo', 'unzip', '-o', '/tmp/bw.zip', '-d', '/tmp'], check=True)
+    subprocess.run(['sudo', 'mv', '/tmp/bw', '/usr/local/bin/bw'], check=True)
+    subprocess.run(['sudo', 'chmod', '+x', '/usr/local/bin/bw'], check=True)
+
+    print("Bitwarden CLI installed successfully!")
+
+def set_bitwarden_session():
+    try:
+        # Step 1: Check the status to see if already logged in and unlocked
+        status_command = ["bw", "status"]
+        status_result = subprocess.run(status_command, capture_output=True, text=True)
+        
+        if status_result.returncode != 0:
+            return {"error": f"Failed to check status: {status_result.stderr.strip()}"}
+        
+        status_data = json.loads(status_result.stdout)
+        
+        if status_data.get("status") == "locked":
+            password = getpass.getpass(prompt=f"Re-Enter your bitwarden password for {status_data.get("userEmail")}: ")
+
+        elif status_data.get("status") == "unauthenticated":
+            email = input("Enter your bitwarden email: ")
+            password = getpass.getpass(prompt=f"Enter your bitwarden password for {email}: ")
+
+            login_command = ["bw", "login", email, password, "--raw"]
+            login_result = subprocess.run(login_command, capture_output=True, text=True)
+
+            if login_result.returncode != 0:
+                return {"error": f"Login failed: {login_result.stderr.strip()}"}
+
+        unlock_command = ["bw", "unlock", password, "--raw"]
+        unlock_result = subprocess.run(unlock_command, capture_output=True, text=True)
+
+        if unlock_result.returncode != 0:
+            return {"error": f"Unlock failed: {unlock_result.stderr.strip()}"}
+        # Return the session token
+        session_token = unlock_result.stdout.strip()
+        
+        export_var('BW_SESSION', session_token)
+
+    except Exception as e:
+        return {"error": str(e)}
 
 def install_packages():
     packages = ['openssh-server', 'ansible', 'sshpass']
@@ -14,8 +62,10 @@ def install_packages():
                 subprocess.run(['sudo', 'dnf', 'install', '-y'] + packages, check=True)
             else:
                 print("Unsupported distribution.")
-                exit(1)
+                exit(1)    
             
+            install_bitwarden_cli()
+        
             print("Successfully installed packages.")
     except subprocess.CalledProcessError as e:
         print(f"Error installing packages: {e}")
@@ -48,26 +98,29 @@ def ssh_copy_id(host, user, password):
         return False
 
 def export_var(name, value):
-    zshrc_file = os.path.expanduser('~/.zshrc')
-    bashrc_file = os.path.expanduser('~/.bashrc')
+    rc_files = [os.path.expanduser('~/.zshrc'), os.path.expanduser('~/.bashrc')]
+    export_line = f'export {name}="{value}"\n'
 
-    export_line = f'export {name}="{value}"'
+    for rc_file in rc_files:
+        if os.path.exists(rc_file):
+            with open(rc_file, 'r') as f:
+                lines = f.readlines()
 
-    # Append to .zshrc if it exists
-    if os.path.exists(zshrc_file):
-        with open(zshrc_file, 'a') as f:
-            f.write('\n'.join(export_line) + '\n')
-        print(f"Added environment variables to {zshrc_file}.")
+            with open(rc_file, 'w') as f:
+                found = False
+                for line in lines:
+                    if line.startswith(f'export {name}='):
+                        f.write(export_line)
+                        found = True
+                    else:
+                        f.write(line)
+                if not found:
+                    f.write(export_line)
 
-    # Append to .bashrc if it exists
-    if os.path.exists(bashrc_file):
-        with open(bashrc_file, 'a') as f:
-            f.write('\n'.join(export_line) + '\n')
-        print(f"Added environment variables to {bashrc_file}.")
+            print(f"Updated environment variables in {rc_file}.")
+            return
 
-    # If neither file exists
-    if not os.path.exists(zshrc_file) and not os.path.exists(bashrc_file):
-        print("Neither .zshrc nor .bashrc found. Please create one manually.")
+    print("Neither .zshrc nor .bashrc found. Please create one manually.")
 
 def setup_controller():
     install_packages()
@@ -114,7 +167,11 @@ if __name__ == "__main__":
         {'host': '192.168.122.121', 'user_env_name': 'SVR_USER', 'pass_env_name': 'SVR_PASSWORD'},
     ]
 
+
+    # install_packages()
+    set_bitwarden_session()
+
     #setup_controller()
 
-    setup_hosts(test_inventory)
+    #setup_hosts(test_inventory)
     # setup_hosts(inventory)
