@@ -1,15 +1,22 @@
+import subprocess
+from utils import setup_controller, setup_inventory
+from consts import TEST_INVENTORY, PROD_INVENTORY
 
 def main():
-    return
+    setup_controller()
+    
+    # Setup localhost : # To refacto
+    subprocess.run(['ansible-playbook', '-i', 'inventories/local/inventory.yml', '-l', 'debian_workstations', 'playbooks/main.yml'], check=True)
+    
+    # Create testing stack :
+    subprocess.run(['docker-compose', 'up', '-d'], check=True)
+    
+    setup_inventory(TEST_INVENTORY)
+
+    #setup_inventory(PROD_INVENTORY)
+    
+
+    
 
 if __name__ == "__main__":
-    
-    # install_packages()
-    #set_bitwarden_session()
-    username = get_bw_secret_by_id('username', '5f298ff0-2430-49b4-889b-b1de00f2407d')
-    print(username)
-
-    #setup_controller()
-
-    #setup_hosts(test_inventory)
-    # setup_hosts(inventory)
+    main()

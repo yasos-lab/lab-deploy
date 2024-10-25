@@ -1,9 +1,5 @@
-import subprocess
-import os
-import getpass
-import json
-import shutil
-import consts
+import os, subprocess, shutil, getpass, consts
+from secrets import get_var_from_gitlab_project, get_bw_secret_by_id
 
 def install_bitwarden_cli():
     if shutil.which("bw"):
@@ -19,7 +15,7 @@ def install_bitwarden_cli():
 
     print("Bitwarden CLI installed successfully!")
 
-def install_packages():    
+def install_packages():
     try:
         with open('/etc/os-release') as f:
             content = f.read()
@@ -85,3 +81,34 @@ def ssh_copy_id(host, user, password):
     except subprocess.CalledProcessError as e:
         print(f"Error copying SSH key to {host}: {e}")
         return False
+
+## To Refacto
+def setup_controller():
+    install_packages()
+    generate_ssh_key()
+
+    user = input("Enter username for localhost: ")
+    password = getpass.getpass(prompt=f"Enter password for {user}@localhost: ")
+    
+    if ssh_copy_id('localhost', user, password):
+        pass
+
+def setup_inventory(inventory):
+    try:
+        for host in inventory:
+            if 'bw_item_id_gitlab_var_key' in host:
+                bw_item_id = get_var_from_gitlab_project(host['bw_item_id_gitlab_var_key'])
+                username = get_bw_secret_by_id('username', bw_item_id)
+                password = get_bw_secret_by_id('password', bw_item_id)
+            elif 'username' in host and 'password' in host:
+                username = host['username']
+                password = host['password']
+            else:
+                raise KeyError("The inventory must have 'bw_item_id_gitlab_var_key' or 'username' and 'password' in host dictionary")
+
+            if ssh_copy_id(host['ip'], username, password):
+                print(f"Host {host['name']} is ready!")
+            else:
+                print(f"Error setting up host {host['name']}: {e}")
+    except Exception as e:
+        print(f"Error setting up inventory {inventory}: {e}")

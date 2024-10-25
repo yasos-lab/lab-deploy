@@ -1,10 +1,6 @@
-import subprocess
-import requests
-import getpass
-import json
-import os
-import consts
-from utils import export_var
+import os, subprocess, getpass
+import requests, json
+from consts import GITLAB_PAT, GITLAB_PID
 
 def get_gitlab_pat():
     if('GITLAB_PAT' in os.environ):
@@ -23,8 +19,8 @@ def get_gitlab_pat():
         return gitlap_pat
 
 def get_var_from_gitlab_project(variable_key):
-    url = f"https://gitlab.com/api/v4/projects/{consts.GITLAB_PID}/variables/{variable_key}"
-    headers = {"PRIVATE-TOKEN": consts.GITLAB_PAT}
+    url = f"https://gitlab.com/api/v4/projects/{GITLAB_PID}/variables/{variable_key}"
+    headers = {"PRIVATE-TOKEN": GITLAB_PAT}
     
     response = requests.get(url, headers=headers)
     response_data = response.json()
@@ -86,5 +82,10 @@ def get_bw_secret_by_id(secret, item_id):
     except subprocess.CalledProcessError:
         raise RuntimeError(f"Secret '{secret}' or item with ID '{item_id}' not found.")
 
+def test():
+    item_id = get_var_from_gitlab_project('TP_HOST_BW_ID')
+    set_bitwarden_session()
+    print(get_bw_secret_by_id('username', item_id))
+
 if __name__ == "__main__":
-    print(get_gitlab_pat())
+    test()
