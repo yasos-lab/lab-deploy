@@ -1,0 +1,62 @@
+---
+
+- name: Purge Zsh
+  block:
+    - name: Remove zsh themes and plugins
+      ansible.builtin.file:
+        name: "{{ zsh_directory }}"
+        state: absent
+
+    - name: Remove config files
+      ansible.builtin.file:
+        name: "{{ item.dest_path }}/{{ item.file }}"
+        state: absent
+      loop: "{{ config_files }}"
+
+    - name: Purge zsh packages
+      ansible.builtin.package:
+        name: zsh
+        state: absent
+
+    - name: Change the default shell to Bash
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        shell: /bin/bash
+  when: purge_vars.shell is true
+  tags: purge::shell
+
+- name: Setup shell
+  block:
+    - name: Ensure zsh packages present
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ zsh_packages }}"
+
+    - name: Ensure .zsh directory exists
+      ansible.builtin.file:
+        path: "{{ zsh_directory }}"
+        state: directory
+
+    - name: Clone zsh theme and plugins repositories
+      ansible.builtin.git:
+        repo: "{{ item.repo }}"
+        dest: "{{ item.dest }}"
+        depth: "{{ item.depth }}"
+        update: no
+      loop: "{{ zsh_repositories }}"
+
+    - name: Ensure configuration files are copied
+      ansible.builtin.copy:
+        src: "config/{{ item.file }}"
+        dest: "{{ item.dest_path }}/{{ item.file }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "{{ item.mode }}"
+      loop: "{{ config_files }}"
+
+    - name: Change the default shell to Zsh
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        shell: /bin/zsh
+  tags: setup::shell

@@ -1,0 +1,9 @@
+---
+
+- name: Setup controller node
+  hosts: ubuntu_thinkpad
+  become: yes
+  handlers:
+    - import_tasks: "handlers/handlers.yml"
+  tasks:
+    - ansible.builtin.import_tasks: "tasks/repositories.yml"
