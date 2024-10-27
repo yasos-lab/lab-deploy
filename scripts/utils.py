@@ -34,29 +34,34 @@ def install_packages():
         print(f"Error installing packages: {e}")
         exit(1)
 
-def export_var(name, value):
-    export_line = f'export {name}="{value}"\n'
+def export_var(name, value, persist=True):
 
-    for rc_file in consts.RC_FILES:
-        if os.path.exists(rc_file):
-            with open(rc_file, 'r') as f:
-                lines = f.readlines()
+    os.environ[name] = value
+    print(f"Exported {name}={value}")
 
-            with open(rc_file, 'w') as f:
-                found = False
-                for line in lines:
-                    if line.startswith(f'export {name}='):
+    if persist:
+        export_line = f'export {name}="{value}"\n'
+
+        for rc_file in consts.RC_FILES:
+            if os.path.exists(rc_file):
+                with open(rc_file, 'r') as f:
+                    lines = f.readlines()
+
+                with open(rc_file, 'w') as f:
+                    found = False
+                    for line in lines:
+                        if line.startswith(f'export {name}='):
+                            f.write(export_line)
+                            found = True
+                        else:
+                            f.write(line)
+                    if not found:
                         f.write(export_line)
-                        found = True
-                    else:
-                        f.write(line)
-                if not found:
-                    f.write(export_line)
-            os.system(f"source {rc_file}")
-            print(f"Updated environment variables in {rc_file}.")
-            return
+                os.system(f"source {rc_file}")
+                print(f"Updated environment variables in {rc_file}.")
+                return
 
-    print("Neither .zshrc nor .bashrc found. Please create one manually.")
+        print("Neither .zshrc nor .bashrc found. Please create one manually.")
 
 def generate_ssh_key():
     if not os.path.exists(consts.RSA_KEY_PATH):
@@ -83,15 +88,19 @@ def ssh_copy_id(host, user, password):
         return False
 
 ## To Refacto
-def setup_controller():
-    install_packages()
-    generate_ssh_key()
+def setup_controllers():
+    for host in consts.PROD_INVENTORY:
+        if host['is_controller']:
+            install_packages()
+            generate_ssh_key()
 
-    user = input("Enter username for localhost: ")
-    password = getpass.getpass(prompt=f"Enter password for {user}@localhost: ")
-    
-    if ssh_copy_id('localhost', user, password):
-        pass
+            username = input(f"Enter username for {host['name']}: ")
+            password = getpass.getpass(prompt=f"Enter password for {username}@{host['ip']}: ")
+            
+            if ssh_copy_id(host['ip'], username, password):
+                export_var(host['username_env_var_name'], username, persist=False)
+                export_var(host['password_env_var_name'], password, persist=False)
+                print(f"Host {host['name']} is ready!")
 
 def setup_inventory(inventory):
     try:
@@ -107,6 +116,9 @@ def setup_inventory(inventory):
                 raise KeyError("The inventory must have 'bw_item_id_gitlab_var_key' or 'username' and 'password' in host dictionary")
 
             if ssh_copy_id(host['ip'], username, password):
+                if 'username_env_var_name' in host and 'password_env_var_name' in host:
+                    export_var(host['username_env_var_name'], username, persist=False)
+                    export_var(host['password_env_var_name'], password, persist=False)
                 print(f"Host {host['name']} is ready!")
             else:
                 print(f"Error setting up host {host['name']}: {e}")
