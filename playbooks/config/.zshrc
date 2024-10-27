@@ -83,7 +83,14 @@ alias db="docker build"
 alias dr="docker run"
 alias dexec="docker exec -it"
 
-# Source .secrets file
-source ~/.secrets
+# Source ~/.env file
+if [ -f ~/.env ]; then
+    source ~/.env
+fi
+
+# Source ~/.secrets file
+if [ -f ~/.secrets ]; then
+    source ~/.secrets
+fi
 
 ######

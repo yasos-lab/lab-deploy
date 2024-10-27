@@ -2,10 +2,10 @@ import os
 
 BW_VERSION = '2024.10.0'
 
+ENV_FILE = os.path.expanduser('~/.env')
+
 GITLAB_PAT = os.getenv('GITLAB_PAT')
 GITLAB_PID = '40235593'
-
-REQUIRED_PACKAGES = ['openssh-server', 'ansible', 'sshpass']
 
 KNOWN_HOSTS_PATH = os.path.expanduser('~/.ssh/known_hosts')
 
@@ -24,9 +24,13 @@ PROD_INVENTORY = [
     }
 ]
 
-RC_FILES = [os.path.expanduser('~/.zshrc'), os.path.expanduser('~/.bashrc')]
+RC_FILES = [os.path.expanduser('~/.bashrc'), os.path.expanduser('~/.zshrc')]
+
+REQUIRED_PACKAGES = ['openssh-server', 'ansible', 'sshpass']
 
 RSA_KEY_PATH = os.path.expanduser('~/.ssh/id_rsa')
+
+SECRET_FILE = os.path.expanduser('~/.secrets')
 
 TEST_INVENTORY = [
     {'name': 'ubuntu_thinkpad', 'ip': '172.10.1.10', 'username': 'test', 'password': 'test'},

@@ -34,34 +34,58 @@ def install_packages():
         print(f"Error installing packages: {e}")
         exit(1)
 
-def export_var(name, value, persist=True):
-
-    os.environ[name] = value
-    print(f"Exported {name}={value}")
-
+def export_var(name, value, persist=True, secret=True):
     if persist:
+        vars_file = consts.SECRET_FILE if secret else consts.ENV_FILE
+
+        home_dir = os.path.expanduser('~')
+        simplified_vars_file = f'~{vars_file[len(home_dir):]}'
+
+        source_vars_file_block = f'''\
+# Source {simplified_vars_file} file
+if [ -f {simplified_vars_file} ]; then
+    source {simplified_vars_file}
+fi
+'''
+        
         export_line = f'export {name}="{value}"\n'
 
+        if not os.path.exists(vars_file):
+            open(vars_file, 'a').close()
+            
+            with open(vars_file, 'a') as f:
+                f.write(export_line)
+        else:
+            with open(vars_file, 'r') as f:
+                    lines = f.readlines()
+
+            with open(vars_file, 'w') as f:
+                found = False
+                for line in lines:
+                    if line.startswith(f'export {name}='):
+                        f.write(export_line)
+                        found = True
+                    else:
+                        f.write(line)
+                if not found:
+                    f.write(export_line)
+            print(f"Updated environment variables in {vars_file}.")
         for rc_file in consts.RC_FILES:
             if os.path.exists(rc_file):
                 with open(rc_file, 'r') as f:
                     lines = f.readlines()
-
-                with open(rc_file, 'w') as f:
-                    found = False
-                    for line in lines:
-                        if line.startswith(f'export {name}='):
-                            f.write(export_line)
-                            found = True
-                        else:
-                            f.write(line)
-                    if not found:
-                        f.write(export_line)
-                os.system(f"source {rc_file}")
-                print(f"Updated environment variables in {rc_file}.")
-                return
-
-        print("Neither .zshrc nor .bashrc found. Please create one manually.")
+                if source_vars_file_block.strip() not in ''.join(lines).strip():
+                    with open(rc_file, 'a') as f:
+                        f.write('\n' + source_vars_file_block)
+                    print(f"Source block added to {rc_file}.")
+                else:
+                    print("Source block already exists in the file.")
+            else:
+                print(f"{rc_file} not found !")
+        
+    else:
+        os.environ[name] = value
+        print(f"Exported {name}")
 
 def generate_ssh_key():
     if not os.path.exists(consts.RSA_KEY_PATH):
