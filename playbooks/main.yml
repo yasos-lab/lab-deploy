@@ -1,25 +1,25 @@
 ---
 
 - name: "Create Directories"
-  ansible.builtin.import_playbook: directories.yml
+  ansible.builtin.import_playbook: 01_directories.yml
   tags: common::directories
 
 - name: "Add repositories"
-  ansible.builtin.import_playbook: repositories.yml
+  ansible.builtin.import_playbook: 02_repositories.yml
   tags: common::repositories
 
 - name: "Install packages"
-  ansible.builtin.import_playbook: packages.yml
+  ansible.builtin.import_playbook: 03_packages.yml
   tags: common::packages
 
 - name: "Setup shell"
-  ansible.builtin.import_playbook: shell.yml
+  ansible.builtin.import_playbook: 04_shell.yml
   tags: common::shell
 
 - name: "Setup docker"
-  ansible.builtin.import_playbook: docker.yml
+  ansible.builtin.import_playbook: 05_docker.yml
   tags: common::docker
 
 - name: "Create and Start services"
-  ansible.builtin.import_playbook: services.yml
+  ansible.builtin.import_playbook: 06_services.yml
   tags: common::services

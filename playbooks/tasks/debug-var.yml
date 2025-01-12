@@ -1,7 +1,0 @@
----
-
-- name: Debug var
-  block:
-    - name: Display the var to debug     
-      ansible.builtin.debug:
-        msg: "Variable to debug: {{ var_to_debug }}"
