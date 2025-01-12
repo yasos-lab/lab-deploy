@@ -11,7 +11,7 @@ all:
       ansible_user: "{{ lookup('env', 'TC_SVR_USER') }}"
       ansible_become_password: "{{ lookup('env', 'TC_SVR_PASSWORD') }}"
     raspberry_pi_1:
-      ansible_host: 192.168.122.10
+      ansible_host: 192.168.1.30
       ansible_user: "{{ lookup('env', 'PI_1_USER') }}"
       ansible_become_password: "{{ lookup('env', 'PI_1_PASSWORD') }}"
 
