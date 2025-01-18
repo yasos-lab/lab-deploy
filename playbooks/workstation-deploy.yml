@@ -19,25 +19,25 @@
     - name: Deploy
       block:
         - name: Import directories tasks
-          ansible.builtin.import_tasks: tasks/directories.yml
+          ansible.builtin.import_tasks: tasks/system/directories.yml
           tags: workstation::directories
         
         - name: Import repositories tasks
-          ansible.builtin.import_tasks: tasks/repositories.yml
+          ansible.builtin.import_tasks: tasks/system/repositories.yml
           tags: workstation::repositories
         
         - name: Import packages tasks
-          ansible.builtin.import_tasks: tasks/packages.yml
+          ansible.builtin.import_tasks: tasks/system/packages.yml
           tags: workstation::packages
         
         - name: Import shell tasks
-          ansible.builtin.import_tasks: tasks/shell.yml
+          ansible.builtin.import_tasks: tasks/system/shell.yml
           tags: workstation::shell
         
         - name: Import docker tasks
-          ansible.builtin.import_tasks: tasks/docker.yml
+          ansible.builtin.import_tasks: tasks/containers/docker.yml
           tags: workstation::docker
         
         - name: Import systemd services tasks
-          ansible.builtin.import_tasks: tasks/services.yml
+          ansible.builtin.import_tasks: tasks/system/services.yml
           tags: workstation::services
