@@ -22,7 +22,7 @@ def main():
     
     if args.controller_playbook:
         print("Running Ansible playbook for controllers...")
-        subprocess.run(['ansible-playbook', '-i', 'inventories/local/inventory.yml', '-l', 'controllers', 'playbooks/main.yml'], check=True)
+        subprocess.run(['ansible-playbook', '-i', 'inventories/local/inventory.yml', 'playbooks/workstation-deploy.yml'], check=True)
 
     if args.prepare in ["all", "docker"]:
         print("Creating testing stack...")

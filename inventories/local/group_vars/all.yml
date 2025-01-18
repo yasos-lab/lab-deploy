@@ -1,24 +1,5 @@
 ---
 
-##### REPO:START #####
-repositories: "{{ base_repositories + extra_repositories }}"
-##### REPO:END #####
-
-##### PKG:START #####
-packages: "{{ utils_packages + base_packages + extra_packages }}"
-
-utils_packages:
-  - curl
-  - git
-  - jq
-  - lsb-release
-  - openssl
-  - unzip
-  - vim
-  - wget
-##### PKG:END #####
-
-##### DIR:START #####
 backup_directory: "{{ user_home }}/Backups"
 
 config_files:
@@ -35,7 +16,7 @@ config_files:
     dest_path: "{{ zsh_directory }}"
     mode: '0644'
 
-directories:
+common_directories:
   - "{{ user_home }}/OS"
   - "{{ user_home }}/VMs"
   - "{{ user_home }}/Family"
@@ -55,39 +36,34 @@ directories:
   - "{{ backup_directory }}/Apps/Whatsapp"
   - "{{ zsh_directory }}"
 
-documents_directory: "{{ user_home }}/Documents"
+common_directories_to_remove: []
 
-user_home: "/home/{{ ansible_user }}"
-##### DIR:END #####
+common_packages:
+  - apt-transport-https
+  - build-essential
+  - ca-certificates
+  - coreutils
+  - curl
+  - gnupg2
+  - git
+  - jq
+  - lsb-release
+  - openssl
+  - software-properties-common
+  - unzip
+  - vim
+  - wget
 
-##### DKR:START #####
-docker_containers: "{{ base_docker_containers + extra_docker_containers }}"
+common_repositories:
+  - name: "syncthing"
+    repo_url: "https://apt.syncthing.net"
+    gpg_url: "https://syncthing.net/release-key.gpg"
+    gpg_extention: "gpg"
+    components:
+      - "syncthing"
+      - "stable"
 
-docker_networks: "{{ base_docker_networks + extra_docker_networks }}"
-
-docker_packages:
-  - docker-ce 
-  - docker-ce-cli
-  - containerd.io 
-  - docker-compose
-  - docker-buildx-plugin 
-  - docker-compose-plugin
-  
-docker_volumes: "{{ base_docker_volumes + extra_docker_volumes }}"
-##### DKR:END #####
-
-##### PRG:START #####
-purge_vars:
-  docker: no
-  packages: no
-  repositories: no
-  shell: no
-  services: no
-  syncthing: no
-##### PRG:END #####
-
-##### SVC:START #####
-base_services:
+common_systemd_services:
   - name: "syncthing"
     description: "SyncThing - Open Source Continuous File Synchronization"
     exec_start: "/usr/bin/syncthing -no-browser -home=/home/{{ ansible_user }}/.config/syncthing"
@@ -96,11 +72,27 @@ base_services:
     after: "network-online.target"
     user: "{{ ansible_user }}"
 
-systemd_services: "{{ base_services + extra_services }}"
-##### SVC:END #####
+documents_directory: "{{ user_home }}/Documents"
 
+user_home: "/home/{{ ansible_user }}"
 
-##### ZSH:START #####
+docker_packages:
+  - docker-ce 
+  - docker-ce-cli
+  - containerd.io 
+  - docker-compose
+  - docker-buildx-plugin 
+  - docker-compose-plugin
+
+purge_all: no
+
+purge_vars:
+  docker: no
+  packages: no
+  repositories: no
+  shell: no
+  services: no
+
 zsh_directory: "{{ user_home }}/.zsh"
 
 zsh_packages:
@@ -116,4 +108,3 @@ zsh_repositories:
   - repo: https://github.com/zsh-users/zsh-autosuggestions
     dest: "{{ zsh_directory }}/plugins/zsh-autosuggestions"
     depth: 0
-##### ZSH:END #####

@@ -12,11 +12,11 @@ KNOWN_HOSTS_PATH = os.path.expanduser('~/.ssh/known_hosts')
 PROD_INVENTORY = [
     { 
         'name': 'ubuntu_thinkpad', 'ip': '192.168.1.10', 'bw_item_id_gitlab_var_key': 'TP_HOST_BW_ID',
-        'username_env_var_name': 'TP_LT_USER', 'password_env_var_name': 'TP_LT_PASSWORD', 'is_controller': True
+        'username_env_var_name': 'TP_USER', 'password_env_var_name': 'TP_PASSWORD', 'is_controller': True
     },
     { 
         'name': 'debian_thinkcenter', 'ip': '192.168.1.20', 'bw_item_id_gitlab_var_key': 'TC_HOST_BW_ID',
-        'username_env_var_name': 'TC_SVR_USER', 'password_env_var_name': 'TC_SVR_PASSWORD', 'is_controller': False
+        'username_env_var_name': 'TC_USER', 'password_env_var_name': 'TC_PASSWORD', 'is_controller': False
     }, 
     { 
         'name': 'raspberry_pi_1', 'ip': '192.168.1.30', 'bw_item_id_gitlab_var_key': 'RPI_BW_ID',

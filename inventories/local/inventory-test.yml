@@ -16,14 +16,12 @@ all:
       ansible_become_password: "test"
 
   children:
-    debian:
-      children:
-        debian_workstations:
-          hosts:
-            ubuntu_thinkpad:
-        debian_servers:
-          hosts:
-            debian_thinkcenter:
-        raspberries:
-          hosts:
-            raspberry_pi_1:
+    workstations:
+      hosts:
+        ubuntu_thinkpad:
+    servers:
+      hosts:
+        debian_thinkcenter:
+    raspberries:
+      hosts:
+        raspberry_pi_1:

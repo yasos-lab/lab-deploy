@@ -1,43 +1,43 @@
 ---
 
-- name: Deploy server
-  hosts: servers
+- name: Deploy workstation
+  hosts: workstations
   become: yes
   vars:
-    directories: "{{ common_directories + server_directories }}"
-    directories_to_remove: "{{ common_directories_to_remove + server_directories_to_remove }}"
-    packages: "{{ common_packages + server_packages }}"
-    packages_to_purge: "{{ server_packages }}"
-    repositories: "{{ common_repositories + server_repositories }}"
-    systemd_services: "{{ common_systemd_services + server_systemd_services }}"
+    directories: "{{ common_directories + workstation_directories }}"
+    directories_to_remove: "{{ common_directories_to_remove + workstation_directories_to_remove }}"
+    packages: "{{ common_packages + workstation_packages }}"
+    packages_to_purge: "{{ workstation_packages }}"
+    repositories: "{{ common_repositories + workstation_repositories }}"
+    systemd_services: "{{ common_systemd_services + workstation_systemd_services }}"
   tasks:
     - name: Purge
       ansible.builtin.import_tasks: tasks/purge.yml
       when: purge_all
-      tags: server::purge
+      tags: workstation::purge
 
     - name: Deploy
       block:
         - name: Import directories tasks
           ansible.builtin.import_tasks: tasks/directories.yml
-          tags: server::directories
+          tags: workstation::directories
         
         - name: Import repositories tasks
           ansible.builtin.import_tasks: tasks/repositories.yml
-          tags: server::repositories
+          tags: workstation::repositories
         
         - name: Import packages tasks
           ansible.builtin.import_tasks: tasks/packages.yml
-          tags: server::packages
+          tags: workstation::packages
         
         - name: Import shell tasks
           ansible.builtin.import_tasks: tasks/shell.yml
-          tags: server::shell
+          tags: workstation::shell
         
         - name: Import docker tasks
           ansible.builtin.import_tasks: tasks/docker.yml
-          tags: server::docker
+          tags: workstation::docker
         
         - name: Import systemd services tasks
           ansible.builtin.import_tasks: tasks/services.yml
-          tags: server::services
+          tags: workstation::services

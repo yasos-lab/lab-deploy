@@ -1,0 +1,9 @@
+---
+
+- name: Deploy raspberry
+  hosts: raspberries
+  become: yes
+  tasks:
+    - name: Deploy
+      ansible.builtin.debug:
+        msg: "Deploying"

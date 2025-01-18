@@ -1,19 +1,25 @@
 ---
 
-extra_packages: 
+workstation_directories: []
+
+workstation_directories_to_remove: []
+
+workstation_packages: 
   - brave-browser
   - code
   - openjdk-17-jdk
+  - syncthing
   - virtualbox-7.1
 
-extra_repositories:
+workstation_repositories:
   - name: "docker"
-    repo_url: "https://download.docker.com/linux/debian"
-    gpg_url: "https://download.docker.com/linux/debian/gpg"
+    repo_url: "https://download.docker.com/linux/ubuntu"
+    gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
     gpg_extention: "asc"
     components:
       - "{{ ansible_facts['distribution_release'] }}"
       - "stable"
+
   - name: "brave"
     repo_url: "https://brave-browser-apt-release.s3.brave.com"
     gpg_url: "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg"
@@ -21,6 +27,7 @@ extra_repositories:
     components:
       - "stable"
       - "main"
+
   - name: "vscode"
     repo_url: "https://packages.microsoft.com/repos/code"
     gpg_url: "https://packages.microsoft.com/keys/microsoft.asc"
@@ -28,6 +35,7 @@ extra_repositories:
     components:
       - "stable"
       - "main"
+
   - name: "virtualbox"
     repo_url: "https://download.virtualbox.org/virtualbox/debian"
     gpg_url: "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
@@ -35,3 +43,6 @@ extra_repositories:
     components:
       - "{{ ansible_facts['distribution_release'] }}"
       - "contrib"
+
+workstation_systemd_services: []
+
