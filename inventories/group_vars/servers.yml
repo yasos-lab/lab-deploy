@@ -1,5 +1,7 @@
 ---
 
+server_docker_services: []
+
 server_directories: []
 
 server_directories_to_remove: []
@@ -17,19 +19,3 @@ server_repositories:
       - "stable"
 
 server_systemd_services: []
-
-# docker_containers:
-#   - name: portainer
-#     image: portainer/portainer-ce:latest
-#     restart_policy: unless-stopped
-#     volumes:
-#       - "{{ docker_volumes.portainer_data }}"
-#     env: []
-
-# docker_volumes:
-#   nextcloud_db_data: nextcloud-db-data
-#   nextcloud_db: nextcloud-data
-#   portainer_data: portainer-data
-
-# docker_networks:
-#   nextcloud_network: nextcloud-net

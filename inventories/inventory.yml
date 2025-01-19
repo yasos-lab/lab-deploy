@@ -3,7 +3,7 @@
 all:
   hosts:
     ubuntu_thinkpad:
-      ansible_host: 192.168.1.10
+      ansible_host: localhost
       ansible_user: "{{ lookup('env', 'TP_USER') }}"
       ansible_become_password: "{{ lookup('env', 'TP_PASSWORD') }}"
     debian_thinkcenter:

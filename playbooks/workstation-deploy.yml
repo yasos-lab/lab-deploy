@@ -10,6 +10,7 @@
     packages_to_purge: "{{ workstation_packages }}"
     repositories: "{{ common_repositories + workstation_repositories }}"
     systemd_services: "{{ common_systemd_services + workstation_systemd_services }}"
+    docker_services: "{{ common_docker_services + workstation_docker_services }}"
   tasks:
     - name: Purge
       ansible.builtin.import_tasks: tasks/purge.yml
@@ -35,9 +36,13 @@
           tags: workstation::shell
         
         - name: Import docker tasks
-          ansible.builtin.import_tasks: tasks/containers/docker.yml
+          ansible.builtin.import_tasks: tasks/docker/docker.yml
           tags: workstation::docker
         
+        - name: Import docker services tasks
+          ansible.builtin.import_tasks: tasks/docker/services.yml
+          tags: workstation::docker::services
+
         - name: Import systemd services tasks
           ansible.builtin.import_tasks: tasks/system/services.yml
           tags: workstation::services

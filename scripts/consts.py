@@ -11,7 +11,7 @@ KNOWN_HOSTS_PATH = os.path.expanduser('~/.ssh/known_hosts')
 
 PROD_INVENTORY = [
     { 
-        'name': 'ubuntu_thinkpad', 'ip': '192.168.1.10', 'bw_item_id_gitlab_var_key': 'TP_HOST_BW_ID',
+        'name': 'ubuntu_thinkpad', 'ip': 'localhost', 'bw_item_id_gitlab_var_key': 'TP_HOST_BW_ID',
         'username_env_var_name': 'TP_USER', 'password_env_var_name': 'TP_PASSWORD', 'is_controller': True
     },
     { 

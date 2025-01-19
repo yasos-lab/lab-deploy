@@ -2,19 +2,24 @@
 
 backup_directory: "{{ user_home }}/Backups"
 
-config_files:
-  - file: .vimrc
-    dest_path: "{{ user_home }}"
-    mode: '0644'
-  - file: .secrets
-    dest_path: "{{ user_home }}"
-    mode: '0600'
-  - file: .zshrc
-    dest_path: "{{ user_home }}"
-    mode: '0644'
-  - file: .p10k.zsh
-    dest_path: "{{ zsh_directory }}"
-    mode: '0644'
+common_docker_services:
+  - name: "postgres"
+    services:
+      - name: "postgres_db"
+        image: "postgres:latest"
+        environment:
+          - "POSTGRES_USER={{ lookup('community.general.bitwarden', 'postgres_service', field='username') | first }}" # to optimize
+          - "POSTGRES_PASSWORD={{ lookup('community.general.bitwarden', 'postgres_service', field='password') | first }}"
+          - "POSTGRES_DB={{ lookup('community.general.bitwarden', 'postgres_service', field='database') | first }}"
+        volumes:
+          - "{{ docker_services_directory }}/postgres/data:/var/lib/postgresql/data"
+        ports:
+          - "5432:5432"
+        networks:
+          - "database"
+    networks:
+      - name: "database"
+        driver: "bridge"
 
 common_directories:
   - "{{ user_home }}/OS"
@@ -35,6 +40,7 @@ common_directories:
   - "{{ backup_directory }}/Apps"
   - "{{ backup_directory }}/Apps/Whatsapp"
   - "{{ zsh_directory }}"
+  - "{{ docker_services_directory }}"
 
 common_directories_to_remove: []
 
@@ -71,6 +77,22 @@ common_systemd_services:
     restart_delay: 5
     after: "network-online.target"
     user: "{{ ansible_user }}"
+
+config_files:
+  - file: .vimrc
+    dest_path: "{{ user_home }}"
+    mode: '0644'
+  - file: .secrets
+    dest_path: "{{ user_home }}"
+    mode: '0600'
+  - file: .zshrc
+    dest_path: "{{ user_home }}"
+    mode: '0644'
+  - file: .p10k.zsh
+    dest_path: "{{ zsh_directory }}"
+    mode: '0644'
+
+docker_services_directory: /opt/docker_services
 
 docker_packages:
   - docker-ce 

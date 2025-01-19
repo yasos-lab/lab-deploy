@@ -1,8 +1,8 @@
 ---
 
 - name: Debug var
-  hosts: all
+  hosts: workstations
   tasks:
     - name: Display the var to debug     
       ansible.builtin.debug:
-        msg: "Variable to debug: {{ var_to_debug }}"
+        msg: "Variable to debug: {{ lookup('community.general.bitwarden', 'postgres_service', field='database') | first }} | first }}"

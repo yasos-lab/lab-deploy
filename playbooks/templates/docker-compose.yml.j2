@@ -1,0 +1,69 @@
+version: '3.8'
+
+{% if stack.services is defined %}
+services:
+{% for service in stack.services %}
+  {{ service.name }}:
+    image: {{ service.image }}
+    container_name: {{ service.name }}
+{% if service.environment is defined %}
+    environment:
+{% for var in service.environment %}
+      - {{ var }}
+{% endfor %}
+{% endif %}
+{% if service.ports is defined %}
+    ports:
+{% for port in service.ports %}
+      - {{ port }}
+{% endfor %}
+{% endif %}
+{% if service.volumes is defined %}
+    volumes:
+{% for vol in service.volumes %}
+      - {{ vol }}
+{% endfor %}
+{% endif %}
+{% if service.networks is defined %}
+    networks:
+{% for net in service.networks %}
+      - {{ net }}
+{% endfor %}
+{% endif %}
+{% if service.dependencies is defined %}
+    depends_on:
+{% for depend in service.dependencies %}
+      - {{ depend }}
+{% endfor %}
+{% endif %}
+{% if service.healthcheck is defined %}
+    healthcheck:
+      test: {{ service.healthcheck.test }}
+      interval: {{ service.healthcheck.interval }}
+      start_interval: {{ service.healthcheck.start_interval }}
+      start_period: {{ service.healthcheck.start_period }}
+{% endif %}
+{% if service.restart_policy is defined %}
+    restart: {{ service.restart_policy }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if stack.networks is defined %}
+networks:
+{% for network in stack.networks %}
+  {{ network.name }}:
+{% if network.driver is defined %}
+    driver: {{ network.driver }}
+{% endif %}
+{% if network.driver_opts is defined %}
+    driver_opts:
+{% for opt in network.driver_opts %}
+      - {{ opt }}
+{% endfor %}
+{% endif %}
+{% if network.attachable is defined %}
+    attachable: {{ network.attachable }}
+{% endif %}
+{% endfor %}
+{% endif %}

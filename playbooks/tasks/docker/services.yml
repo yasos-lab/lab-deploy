@@ -1,0 +1,23 @@
+---
+
+- name: Create service directory
+  ansible.builtin.file:
+    name: "{{ docker_services_directory }}/{{ item.name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    state: directory
+  loop: "{{ docker_services }}"
+
+- name: Template docker-compose file for the service
+  ansible.builtin.template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ docker_services_directory }}/{{ stack.name }}/docker-compose.yml"
+  loop: "{{ docker_services }}"
+  loop_control:
+    loop_var: stack
+
+- name: Run docker compose service
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_services_directory }}/{{ item.name }}"
+    state: present
+  loop: "{{ docker_services }}"
