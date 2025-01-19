@@ -21,7 +21,7 @@
 
 - name: Ensure configuration files are copied
   ansible.builtin.copy:
-    src: "config/{{ item.file }}"
+    src: "files/shell/config/{{ item.file }}"
     dest: "{{ item.dest_path }}/{{ item.file }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
