@@ -55,10 +55,13 @@ common_packages:
   - jq
   - lsb-release
   - openssl
+  - python3-pip
   - software-properties-common
   - unzip
   - vim
   - wget
+
+common_python_packages: []
 
 common_repositories:
   - name: "syncthing"

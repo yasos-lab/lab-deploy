@@ -9,6 +9,8 @@ server_directories_to_remove: []
 server_packages: 
   - syncthing
 
+server_python_packages: []
+
 server_repositories:
   - name: "docker"
     repo_url: "https://download.docker.com/linux/debian"

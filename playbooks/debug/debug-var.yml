@@ -5,4 +5,4 @@
   tasks:
     - name: Display the var to debug     
       ansible.builtin.debug:
-        msg: "Variable to debug: {{ lookup('community.general.bitwarden', 'postgres_service', field='database') | first }} | first }}"
+        msg: "Variable to debug: {{ ansible_facts.lo.ipv4.address }}"
