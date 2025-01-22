@@ -1,12 +1,21 @@
 ---
 
+server_databases:
+  - name: "{{ nextclouddb }}"
+    user: "{{ nextclouddb_user }}"
+    password: "{{ nextclouddb_password }}"
+  - name: "{{ immichdb }}"
+    user: "{{ immichdb_user }}"
+    password: "{{ immichdb_password }}"
+
 server_docker_services: []
 
 server_directories: []
 
 server_directories_to_remove: []
 
-server_packages: 
+server_packages:
+  - python3-psycopg2
   - syncthing
 
 server_python_packages: []

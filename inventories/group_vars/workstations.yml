@@ -1,5 +1,13 @@
 ---
 
+workstation_databases: 
+  - name: "{{ nextclouddb }}"
+    user: "{{ nextclouddb_user }}"
+    password: "{{ nextclouddb_password }}"
+  - name: "{{ immichdb }}"
+    user: "{{ immichdb_user }}"
+    password: "{{ immichdb_password }}"
+
 workstation_docker_services: []
 
 workstation_directories: []
@@ -10,6 +18,7 @@ workstation_packages:
   - brave-browser
   - code
   - openjdk-17-jdk
+  - python3-psycopg2
   - syncthing
   - virtualbox-7.1
 

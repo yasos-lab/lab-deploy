@@ -42,6 +42,17 @@
         
         - name: Import docker services tasks
           ansible.builtin.import_tasks: tasks/docker/services.yml
+          vars:
+            postgresdb: "{{ lookup('community.general.bitwarden', 'postgres_service', field='database') | first }}"
+            postgresdb_user: "{{ lookup('community.general.bitwarden', 'postgres_service', field='dbuser') | first }}"
+            postgresdb_password: "{{ lookup('community.general.bitwarden', 'postgres_service', field='dbpassword') | first }}"
+            nextclouddb: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='database') | first }}"
+            nextclouddb_user: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbuser') | first }}"
+            nextclouddb_password: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbpassword') | first }}"
+            immichdb: "{{ lookup('community.general.bitwarden', 'immich_service', field='database') | first }}"
+            immichdb_user: "{{ lookup('community.general.bitwarden', 'immich_service', field='dbuser') | first }}"
+            immichdb_password: "{{ lookup('community.general.bitwarden', 'immich_service', field='dbpassword') | first }}"
+            databases: "{{ workstation_databases }}"
           tags: workstation::docker::services
 
         - name: Import systemd services tasks

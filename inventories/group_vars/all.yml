@@ -8,9 +8,9 @@ common_docker_services:
       - name: "postgres_db"
         image: "postgres:latest"
         environment:
-          - "POSTGRES_USER={{ lookup('community.general.bitwarden', 'postgres_service', field='username') | first }}" # to optimize
-          - "POSTGRES_PASSWORD={{ lookup('community.general.bitwarden', 'postgres_service', field='password') | first }}"
-          - "POSTGRES_DB={{ lookup('community.general.bitwarden', 'postgres_service', field='database') | first }}"
+          - "POSTGRES_DB={{ postgresdb }}"
+          - "POSTGRES_USER={{ postgresdb_user }}"
+          - "POSTGRES_PASSWORD={{ postgresdb_password }}"
         volumes:
           - "{{ docker_services_directory }}/postgres/data:/var/lib/postgresql/data"
         ports:
@@ -106,6 +106,8 @@ docker_packages:
   - docker-compose-plugin
 
 documents_directory: "{{ user_home }}/Documents"
+
+postgres_host: "{{ ansible_facts.lo.ipv4.address }}"
 
 purge_all: no
 
