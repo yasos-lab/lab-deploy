@@ -34,6 +34,15 @@ def install_packages():
         print(f"Error installing packages: {e}")
         exit(1)
 
+def install_ansible_requirements():
+    try:
+        #subprocess.run(['ansible-galaxy', 'collection', 'install', '-r', 'requirements.yml'], check=True)
+        subprocess.run(['ansible-galaxy', 'install', '-r', 'requirements.yml'], check=True)
+        print("Successfully installed ansible requirements.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error installing ansible requirements: {e}")
+        exit(1)
+
 def export_var(name, value, persist=True, secret=True):
     if persist:
         vars_file = consts.SECRET_FILE if secret else consts.ENV_FILE
@@ -116,6 +125,7 @@ def setup_controllers():
     for host in consts.PROD_INVENTORY:
         if host['is_controller']:
             install_packages()
+            install_ansible_requirements()
             generate_ssh_key()
 
             username = input(f"Enter username for {host['name']}: ")
