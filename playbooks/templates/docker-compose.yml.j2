@@ -1,8 +1,5 @@
 ---
 
-name: {{ stack.name }}
-
-{% if stack.services is defined %}
 services:
 {% for service in stack.services %}
   {{ service.name }}:
@@ -45,11 +42,10 @@ services:
       start_interval: {{ service.healthcheck.start_interval }}
       start_period: {{ service.healthcheck.start_period }}
 {% endif %}
-{% if service.restart_policy is defined %}
-    restart: {{ service.restart_policy }}
+{% if service.restart is defined %}
+    restart: {{ service.restart }}
 {% endif %}
 {% endfor %}
-{% endif %}
 
 {% if stack.networks is defined %}
 networks:
@@ -66,6 +62,23 @@ networks:
 {% endif %}
 {% if network.attachable is defined %}
     attachable: {{ network.attachable }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if stack.volumes is defined %}
+volumes:
+{% for volume in stack.volumes %}
+  {{ volume.name }}:
+    name: {{ volume.name }}
+{% if volume.driver is defined %}
+    driver: {{ volume.driver }}
+{% endif %}
+{% if volume.driver_opts is defined %}
+    driver_opts:
+      type: {{ volume.driver_opts.type }}
+      device: {{ volume.driver_opts.device }}
+      o: {{ volume.driver_opts.o }}
 {% endif %}
 {% endfor %}
 {% endif %}
