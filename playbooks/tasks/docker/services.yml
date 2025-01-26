@@ -1,6 +1,6 @@
 ---
 
-- name: Create service directory
+- name: Create services directories
   ansible.builtin.file:
     name: "{{ docker_services_directory }}/{{ item.name }}"
     owner: "{{ ansible_user }}"
@@ -8,7 +8,7 @@
     state: directory
   loop: "{{ docker_services }}"
 
-- name: Template docker-compose file for the service
+- name: Template docker-compose file for the services
   ansible.builtin.template:
     src: "docker-compose.yml.j2"
     dest: "{{ docker_services_directory }}/{{ stack.name }}/docker-compose.yml"
@@ -16,7 +16,7 @@
   loop_control:
     loop_var: stack
 
-- name: Run postgres database docker compose service
+- name: Run postgres database docker-compose service
   community.docker.docker_compose_v2:
     project_src: "{{ docker_services_directory }}/postgres"
     state: present
@@ -52,7 +52,7 @@
     login_password: "{{ postgresdb_password }}"
   loop: "{{ databases }}"
 
-- name: Run docker compose service
+- name: Run docker-compose services
   community.docker.docker_compose_v2:
     project_src: "{{ docker_services_directory }}/{{ item.name }}"
     state: present
