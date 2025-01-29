@@ -23,15 +23,18 @@ services:
       - {{ vol }}
 {% endfor %}
 {% endif %}
+{% if service.command is defined %}
+    command: {{ service.command }}
+{% endif %}
 {% if service.networks is defined %}
     networks:
 {% for net in service.networks %}
       - {{ net }}
 {% endfor %}
 {% endif %}
-{% if service.dependencies is defined %}
+{% if service.depends_on is defined %}
     depends_on:
-{% for depend in service.dependencies %}
+{% for depend in service.depends_on %}
       - {{ depend }}
 {% endfor %}
 {% endif %}
@@ -44,6 +47,12 @@ services:
 {% endif %}
 {% if service.restart is defined %}
     restart: {{ service.restart }}
+{% endif %}
+{% if service.labels is defined %}
+    labels:
+{% for label in service.labels %}
+      - {{ label }}
+{% endfor %}
 {% endif %}
 {% endfor %}
 
