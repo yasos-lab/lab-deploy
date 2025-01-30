@@ -1,14 +1,114 @@
 ---
 
-workstation_databases: 
-  - name: "{{ nextclouddb }}"
-    user: "{{ nextclouddb_user }}"
-    password: "{{ nextclouddb_password }}"
-  - name: "{{ immichdb }}"
-    user: "{{ immichdb_user }}"
-    password: "{{ immichdb_password }}"
+# common_docker_networks: []
 
-workstation_docker_services: []
+workstation_docker_networks:
+  - frontend
+  - backend
+
+# workstation_docker_services: []
+
+workstation_docker_services:
+  # - name: "homepage"
+
+  # - name: "immich"  
+  - name: "nextcloud"
+    services:
+      - name: "nextcloud-app"
+        image: "nextcloud:30"
+        volumes:
+          - "./data/app:/var/www/html"
+        # ports:
+        #   - "8081:80"
+        depends_on:
+          - "nextcloud-db"
+        environment:
+          - "MYSQL_HOST=nextcloud-db"
+          - "MYSQL_PASSWORD={{ nextcloud_db_password }}"
+          - "MYSQL_DATABASE={{ nextcloud_db }}"
+          - "MYSQL_USER={{ nextcloud_db_user }}"
+        restart: "unless-stopped"
+        networks:
+          - "frontend"
+          - "backend"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.nextcloud.tls=true"
+          - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.{{ domain_name }}`)"
+      - name: "nextcloud-db"
+        image: "mariadb:10"
+        volumes:
+          - "./data/db:/var/lib/mysql"
+        command: "--transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW"
+        environment:
+          - "MYSQL_ROOT_PASSWORD={{ nextcloud_root_db_password }}"
+          - "MYSQL_PASSWORD={{ nextcloud_db_password }}"
+          - "MYSQL_DATABASE={{ nextcloud_db }}"
+          - "MYSQL_USER={{ nextcloud_db_user }}"
+        restart: "unless-stopped"
+        networks:
+          - "backend"
+    networks:
+      - name: "frontend"
+        external: true
+      - name: "backend"
+        external: true
+
+  - name: "portainer"
+    services:
+      - name: "portainer"
+        image: "portainer/portainer-ce:latest"
+        volumes:
+          - "./data:/data"
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        # ports:
+        #   - "9000:9000"
+        #   - "8000:8000"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.portainer.tls=true"
+          - "traefik.http.routers.portainer.rule=Host(`portainer.{{ domain_name }}`)"
+        networks:
+          - frontend
+    networks:
+      - name: "frontend"
+        external: true
+    
+  - name: "traefik"
+    services:
+      - name: "traefik"
+        image: "traefik:v3"
+        volumes:
+          - "./config/ssl:/ssl:rw"
+          - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
+          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        ports:
+          - "80:80"
+          - "443:443"
+          - "8080:8080"
+        restart: "unless-stopped"
+        environment:
+          - "CF_DNS_API_TOKEN={{ traefik_dns_api_token }}"
+        networks:
+          - frontend
+      - name: "whoami"
+        image: "traefik/whoami"
+        restart: "unless-stopped"
+        networks:
+          - frontend
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.whoami.tls=true"
+          - "traefik.http.routers.whoami.rule=Host(`whoami.{{ domain_name }}`)"
+    networks:
+      - name: "frontend"
+        external: true
+    config_files:
+      - src: "templates/traefik/config/traefik.yml.j2"
+        dest: "{{ docker_services_directory }}/traefik/config/traefik.yml"
+  
+  # - name: "wireguard"
 
 workstation_directories: []
 

@@ -16,41 +16,13 @@
   loop_control:
     loop_var: stack
 
-- name: Run postgres database docker-compose service
-  community.docker.docker_compose_v2:
-    project_src: "{{ docker_services_directory }}/postgres"
-    state: present
-
-- name: Create postgres databases
-  community.postgresql.postgresql_db:
-    name: "{{ item.name }}"
-    state: present
-    login_host: "{{ postgres_host }}"
-    login_user: "{{ postgresdb_user }}"
-    login_password: "{{ postgresdb_password }}"
-  loop: "{{ databases }}"
-
-- name: Create postgres users
-  community.postgresql.postgresql_user:
-    user: "{{ item.user }}"
-    password: "{{ item.password }}"
-    state: present
-    login_host: "{{ postgres_host }}"
-    login_db: "{{ postgresdb }}"
-    login_user: "{{ postgresdb_user }}"
-    login_password: "{{ postgresdb_password }}"
-  loop: "{{ databases }}"
-
-- name: Grant privileges to users on their databases
-  community.postgresql.postgresql_privs:
-    database: "{{ item.name }}"
-    roles: "{{ item.user }}"
-    type: database
-    privs: ALL
-    login_host: "{{ postgres_host }}"
-    login_user: "{{ postgresdb_user }}"
-    login_password: "{{ postgresdb_password }}"
-  loop: "{{ databases }}"
+- name: Template config files for the services ## TO FIX
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop: "{{ docker_services.config_files }}"
+  when: docker_services.config_files is defined
+  tags: teeest 
 
 - name: Run docker-compose services
   community.docker.docker_compose_v2:
