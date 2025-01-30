@@ -22,3 +22,8 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
+
+- name: Create required networks
+  community.docker.docker_network:
+    name: "{{ item }}"
+  loop: "{{ docker_networks }}"

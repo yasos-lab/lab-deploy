@@ -2,6 +2,8 @@
 
 backup_directory: "{{ user_home }}/Backups"
 
+common_docker_networks: []
+
 common_docker_services:
   - name: "postgres"
     services:

@@ -11,6 +11,7 @@
     python_packages: "{{ common_python_packages + workstation_python_packages }}"
     repositories: "{{ common_repositories + workstation_repositories }}"
     systemd_services: "{{ common_systemd_services + workstation_systemd_services }}"
+    docker_networks: "{{ common_docker_networks + workstation_docker_networks }}"
     docker_services: "{{ common_docker_services + workstation_docker_services }}"
   tasks:
     - name: Purge
