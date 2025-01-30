@@ -60,6 +60,9 @@ services:
 networks:
 {% for network in stack.networks %}
   {{ network.name }}:
+{% if network.external is defined %}
+    external: {{ network.external }}
+{% endif %}
 {% if network.driver is defined %}
     driver: {{ network.driver }}
 {% endif %}
