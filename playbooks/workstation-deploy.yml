@@ -13,6 +13,7 @@
     systemd_services: "{{ common_systemd_services + workstation_systemd_services }}"
     docker_networks: "{{ common_docker_networks + workstation_docker_networks }}"
     docker_services: "{{ common_docker_services + workstation_docker_services }}"
+    docker_services_configs: "{{ common_docker_services_configs + workstation_docker_services_configs }}"
   tasks:
     - name: Purge
       ansible.builtin.import_tasks: tasks/purge.yml

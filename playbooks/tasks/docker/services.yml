@@ -16,13 +16,11 @@
   loop_control:
     loop_var: stack
 
-- name: Template config files for the services ## TO FIX
+- name: Template config files for the services
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-  loop: "{{ docker_services.config_files }}"
-  when: docker_services.config_files is defined
-  tags: teeest 
+  loop: "{{ docker_services_configs }}"
 
 - name: Run docker-compose services
   community.docker.docker_compose_v2:

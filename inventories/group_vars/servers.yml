@@ -14,8 +14,6 @@ server_docker_services:
         image: "nextcloud:30"
         volumes:
           - "./data/app:/var/www/html"
-        # ports:
-        #   - "8081:80"
         depends_on:
           - "nextcloud-db"
         environment:
@@ -31,6 +29,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.nextcloud.tls=true"
           - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.{{ domain_name }}`)"
+          - "traefik.docker.network=frontend"
       - name: "nextcloud-db"
         image: "mariadb:10"
         volumes:
@@ -57,14 +56,12 @@ server_docker_services:
         volumes:
           - "./data:/data"
           - "/var/run/docker.sock:/var/run/docker.sock"
-        # ports:
-        #   - "9000:9000"
-        #   - "8000:8000"
         restart: "unless-stopped"
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.portainer.tls=true"
           - "traefik.http.routers.portainer.rule=Host(`portainer.{{ domain_name }}`)"
+          - "traefik.http.services.portainer.loadbalancer.server.port=9000"
         networks:
           - frontend
     networks:
@@ -100,11 +97,12 @@ server_docker_services:
     networks:
       - name: "frontend"
         external: true
-    config_files:
-      - src: "templates/traefik/config/traefik.yml.j2"
-        dest: "{{ docker_services_directory }}/traefik/config/traefik.yml"
   
   # - name: "wireguard"
+
+server_docker_services_configs:
+  - src: "templates/traefik/config/traefik.yml.j2"
+    dest: "{{ docker_services_directory }}/traefik/config/traefik.yml"
 
 server_directories: []
 

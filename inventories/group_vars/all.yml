@@ -24,6 +24,8 @@ common_docker_services:
       - name: "backend"
         external: true
 
+common_docker_services_configs: []
+
 common_directories:
   - "{{ user_home }}/OS"
   - "{{ user_home }}/VMs"
