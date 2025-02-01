@@ -26,6 +26,9 @@ services:
 {% if service.command is defined %}
     command: {{ service.command }}
 {% endif %}
+{% if service.entrypoint is defined %}
+    entrypoint: {{ service.entrypoint }}
+{% endif %}
 {% if service.networks is defined %}
     networks:
 {% for net in service.networks %}
