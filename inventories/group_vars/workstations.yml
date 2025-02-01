@@ -10,7 +10,53 @@ workstation_docker_networks:
 
 workstation_docker_services:
   # - name: "homepage"
-
+  - name: "seafile"
+    services:
+      - name: "seafile-app"
+        image: "seafileltd/seafile-mc:12.0-latest"
+        volumes:
+          - "./data/app:/var/www/html"
+        depends_on:
+          - "seafile-db"
+          - "seafile-memcached"
+        environment:
+          - "DB_HOST=seafile-db"
+          - "DB_ROOT_PASSWD={{ seafile_db_root_password }}"
+          - "INIT_SEAFILE_ADMIN_EMAIL={{ seafile_admin_email }}"
+          - "INIT_SEAFILE_ADMIN_PASSWORD={{ seafile_admin_password }}"
+          - "SEAFILE_SERVER_HOSTNAME=seafile.{{ domain_name }}"
+          - "SEAFILE_SERVER_PROTOCOL=https"
+          - "JWT_PRIVATE_KEY={{ seafile_jwt_private_key }}"
+        restart: "unless-stopped"
+        networks:
+          - "frontend"
+          - "backend"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.seafile.tls=true"
+          - "traefik.http.routers.seafile.tls.certresolver=cloudflare"
+          - "traefik.http.routers.seafile.rule=Host(`seafile.{{ domain_name }}`)"
+          - "traefik.docker.network=frontend"
+      - name: "seafile-db"
+        image: "mariadb:10"
+        volumes:
+          - "./data/db:/var/lib/mysql"
+        environment:
+          - "MYSQL_ROOT_PASSWORD={{ seafile_db_root_password }}"
+        restart: "unless-stopped"
+        networks:
+          - "backend"
+      - name: "seafile-memcached"
+        image: "memcached:1"
+        entrypoint: memcached -m 256
+        restart: "unless-stopped"
+        networks:
+          - "backend"
+    networks:
+      - name: "frontend"
+        external: true
+      - name: "backend"
+        external: true
   # - name: "immich"  
   - name: "nextcloud"
     services:
@@ -32,6 +78,7 @@ workstation_docker_services:
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.nextcloud.tls=true"
+          - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
           - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.{{ domain_name }}`)"
           - "traefik.docker.network=frontend"
       - name: "nextcloud-db"
@@ -64,6 +111,7 @@ workstation_docker_services:
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.portainer.tls=true"
+          - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
           - "traefik.http.routers.portainer.rule=Host(`portainer.{{ domain_name }}`)"
           - "traefik.http.services.portainer.loadbalancer.server.port=9000"
         networks:
@@ -97,12 +145,12 @@ workstation_docker_services:
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.whoami.tls=true"
+          - "traefik.http.routers.whoami.tls.certresolver=cloudflare"
           - "traefik.http.routers.whoami.rule=Host(`whoami.{{ domain_name }}`)"
     networks:
       - name: "frontend"
         external: true
   
-  # - name: "wireguard"
 
 # workstation_docker_services_configs: []
 workstation_docker_services_configs:

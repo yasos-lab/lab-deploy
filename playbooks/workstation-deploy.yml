@@ -3,6 +3,24 @@
 - name: Deploy workstation
   hosts: workstations
   become: yes
+  pre_tasks:
+    - name: Get secrets
+      ansible.builtin.set_fact:
+        postgres_db: "{{ lookup('community.general.bitwarden', 'postgres_service', field='database') | first }}"
+        postgres_db_user: "{{ lookup('community.general.bitwarden', 'postgres_service', field='dbuser') | first }}"
+        postgres_db_password: "{{ lookup('community.general.bitwarden', 'postgres_service', field='dbpassword') | first }}"
+        nextcloud_db: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='database') | first }}"
+        nextcloud_db_user: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbuser') | first }}"
+        nextcloud_db_password: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbpassword') | first }}"
+        nextcloud_root_db_password: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='rootdb_password') | first }}"
+        traefik_dns_api_token: "{{ lookup('community.general.bitwarden', 'traefik_service', field='cloudflare_token') | first }}"
+        traefik_acme_email: "{{ lookup('community.general.bitwarden', 'traefik_service', field='acme_email') | first }}"
+        seafile_admin_email: "{{ lookup('community.general.bitwarden', 'seafile_service', field='username') | first }}"
+        seafile_admin_password: "{{ lookup('community.general.bitwarden', 'seafile_service', field='password') | first }}"
+        seafile_db_root_password: "{{ lookup('community.general.bitwarden', 'seafile_service', field='rootdb_password') | first }}"
+        seafile_jwt_private_key: "{{ lookup('community.general.bitwarden', 'seafile_service', field='jwt') | first }}"
+        domain_name: "{{ lookup('community.general.bitwarden', 'traefik_service', field='domain') | first }}"
+      tags: workstation::secrets
   vars:
     directories: "{{ common_directories + workstation_directories }}"
     directories_to_remove: "{{ common_directories_to_remove + workstation_directories_to_remove }}"
@@ -44,17 +62,6 @@
         
         - name: Import docker services tasks
           ansible.builtin.import_tasks: tasks/docker/services.yml
-          vars:
-            postgres_db: "{{ lookup('community.general.bitwarden', 'postgres_service', field='database') | first }}"
-            postgres_db_user: "{{ lookup('community.general.bitwarden', 'postgres_service', field='dbuser') | first }}"
-            postgres_db_password: "{{ lookup('community.general.bitwarden', 'postgres_service', field='dbpassword') | first }}"
-            nextcloud_db: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='database') | first }}"
-            nextcloud_db_user: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbuser') | first }}"
-            nextcloud_db_password: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbpassword') | first }}"
-            nextcloud_root_db_password: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='rootdb_password') | first }}"
-            traefik_dns_api_token: "{{ lookup('community.general.bitwarden', 'traefik_service', field='cloudflare_token') | first }}"
-            traefik_acme_email: "{{ lookup('community.general.bitwarden', 'traefik_service', field='acme_email') | first }}"
-            domain_name: "{{ lookup('community.general.bitwarden', 'traefik_service', field='domain') | first }}"
           tags: workstation::docker::services
 
         - name: Import systemd services tasks
