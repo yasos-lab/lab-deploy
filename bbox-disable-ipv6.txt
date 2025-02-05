@@ -1,0 +1,2 @@
+curl -v -k -XPOST https://mabbox.bytel.fr/api/v1/login --data-urlencode "password=************" -c /tmp/token
+curl  -b /tmp/token -XPUT  https://mabbox.bytel.fr/api/v1/lan/ip6 -d "enable=0"
