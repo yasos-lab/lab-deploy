@@ -43,10 +43,21 @@ services:
 {% endif %}
 {% if service.healthcheck is defined %}
     healthcheck:
+{% if service.healthcheck.disable is defined %}
+      disable: {{ service.healthcheck.disable }}
+{% endif %}
+{% if service.healthcheck.test is defined %}
       test: {{ service.healthcheck.test }}
+{% endif %}
+{% if service.healthcheck.interval is defined %}
       interval: {{ service.healthcheck.interval }}
+{% endif %}
+{% if service.healthcheck.start_interval is defined %}
       start_interval: {{ service.healthcheck.start_interval }}
+{% endif %}
+{% if service.healthcheck.start_period is defined %}
       start_period: {{ service.healthcheck.start_period }}
+{% endif %}
 {% endif %}
 {% if service.restart is defined %}
     restart: {{ service.restart }}
