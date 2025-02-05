@@ -19,7 +19,7 @@
         seafile_admin_password: "{{ lookup('community.general.bitwarden', 'seafile_service', field='password') | first }}"
         seafile_db_root_password: "{{ lookup('community.general.bitwarden', 'seafile_service', field='rootdb_password') | first }}"
         seafile_jwt_private_key: "{{ lookup('community.general.bitwarden', 'seafile_service', field='jwt') | first }}"
-        domain_name: "{{ lookup('community.general.bitwarden', 'traefik_service', field='domain') | first }}"
+        traefik_domain_name: "{{ lookup('community.general.bitwarden', 'traefik_service', field='domain') | first }}"
       tags: workstation::secrets
   vars:
     directories: "{{ common_directories + workstation_directories }}"

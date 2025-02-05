@@ -20,7 +20,7 @@ server_docker_services:
           - "DB_ROOT_PASSWD={{ seafile_db_root_password }}"
           - "INIT_SEAFILE_ADMIN_EMAIL={{ seafile_admin_email }}"
           - "INIT_SEAFILE_ADMIN_PASSWORD={{ seafile_admin_password }}"
-          - "SEAFILE_SERVER_HOSTNAME=seafile.{{ domain_name }}"
+          - "SEAFILE_SERVER_HOSTNAME=seafile.{{ traefik_domain_name }}"
           - "SEAFILE_SERVER_PROTOCOL=https"
           - "JWT_PRIVATE_KEY={{ seafile_jwt_private_key }}"
         restart: "unless-stopped"
@@ -31,7 +31,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.seafile.tls=true"
           - "traefik.http.routers.seafile.tls.certresolver=cloudflare"
-          - "traefik.http.routers.seafile.rule=Host(`seafile.{{ domain_name }}`)"
+          - "traefik.http.routers.seafile.rule=Host(`seafile.{{ traefik_domain_name }}`)"
           - "traefik.docker.network=frontend"
       - name: "seafile-db"
         image: "mariadb:10"
@@ -75,7 +75,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.nextcloud.tls=true"
           - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
-          - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.{{ domain_name }}`)"
+          - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.{{ traefik_domain_name }}`)"
           - "traefik.docker.network=frontend"
       - name: "nextcloud-db"
         image: "mariadb:10"
@@ -108,7 +108,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.portainer.tls=true"
           - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
-          - "traefik.http.routers.portainer.rule=Host(`portainer.{{ domain_name }}`)"
+          - "traefik.http.routers.portainer.rule=Host(`portainer.{{ traefik_domain_name }}`)"
           - "traefik.http.services.portainer.loadbalancer.server.port=9000"
         networks:
           - frontend
@@ -142,7 +142,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.whoami.tls=true"
           - "traefik.http.routers.whoami.tls.certresolver=cloudflare"
-          - "traefik.http.routers.whoami.rule=Host(`whoami.{{ domain_name }}`)"
+          - "traefik.http.routers.whoami.rule=Host(`whoami.{{ traefik_domain_name }}`)"
     networks:
       - name: "frontend"
         external: true
