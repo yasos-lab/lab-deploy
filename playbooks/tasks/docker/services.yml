@@ -1,12 +1,30 @@
 ---
 
 - name: Create services directories
-  ansible.builtin.file:
-    name: "{{ docker_services_directory }}/{{ item.name }}"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    state: directory
-  loop: "{{ docker_services }}"
+  block:
+    - name: Create main directory
+      ansible.builtin.file:
+        name: "{{ docker_services_directory }}/{{ item.name }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        state: directory
+      loop: "{{ docker_services }}"
+
+    - name: Create data directory
+      ansible.builtin.file:
+        name: "{{ docker_services_directory }}/{{ item.name }}/data"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        state: directory
+      loop: "{{ docker_services }}"
+    
+    - name: Create config directory
+      ansible.builtin.file:
+        name: "{{ docker_services_directory }}/{{ item.name }}/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        state: directory
+      loop: "{{ docker_services }}"
 
 - name: Template docker-compose file for the services
   ansible.builtin.template:
