@@ -140,12 +140,17 @@ server_docker_services:
         volumes:
           - "./data/app:/var/www/html"
         depends_on:
+          - "nextcloud-redis"
           - "nextcloud-db"
         environment:
           - "MYSQL_HOST=nextcloud-db"
           - "MYSQL_PASSWORD={{ nextcloud_db_password }}"
           - "MYSQL_DATABASE={{ nextcloud_db }}"
           - "MYSQL_USER={{ nextcloud_db_user }}"
+          - "REDIS_HOST=nextcloud-redis"
+          - "TRUSTED_PROXIES=192.168.1.20"
+          - "OVERWRITECLIURL=https://nextcloud.{{ traefik_domain_name }}"
+          - "OVERWRITEWEBROOT=https"
         restart: "unless-stopped"
         networks:
           - "frontend"
@@ -156,6 +161,13 @@ server_docker_services:
           - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
           - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.{{ traefik_domain_name }}`)"
           - "traefik.docker.network=frontend"
+      - name: "nextcloud-redis"
+        image: "redis:6"
+        restart: "unless-stopped"
+        healthcheck:
+          test: redis-cli ping || exit 1
+        networks:
+          - "backend"
       - name: "nextcloud-db"
         image: "mariadb:10"
         volumes:
