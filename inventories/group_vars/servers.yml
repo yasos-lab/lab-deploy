@@ -140,6 +140,26 @@ server_docker_services:
       - name: "backend"
         external: true
 
+  - name: "onlyoffice"
+    services:
+      - name: "onlyoffice-documentserver"
+        image: "onlyoffice/documentserver:latest"
+        environment:
+          - "JWT_SECRET={{ onlyoffice_jwt_secret }}"
+        restart: "unless-stopped"
+        networks:
+          - "frontend"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.onlyoffice.tls=true"
+          - "traefik.http.routers.onlyoffice.tls.certresolver=cloudflare"
+          - "traefik.http.routers.onlyoffice.rule=Host(`onlyoffice.{{ traefik_domain_name }}`)"
+          - "traefik.http.middlewares.x_forwarded_proto.headers.customrequestheaders.X-Forwarded-Proto=https"
+          - "traefik.http.routers.onlyoffice.middlewares=x_forwarded_proto"
+    networks:
+      - name: "frontend"
+        external: true
+
   - name: "portainer"
     services:
       - name: "portainer"
@@ -217,7 +237,7 @@ server_docker_services:
           - "backend"
       - name: "seafile-memcached"
         image: "memcached:1"
-        entrypoint: memcached -m 256
+        entrypoint: "memcached -m 256"
         restart: "unless-stopped"
         networks:
           - "backend"
