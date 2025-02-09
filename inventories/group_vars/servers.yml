@@ -6,53 +6,6 @@ server_docker_networks:
 
 server_docker_services:
   # - name: "homepage"
-  - name: "seafile"
-    services:
-      - name: "seafile-app"
-        image: "seafileltd/seafile-mc:12.0-latest"
-        volumes:
-          - "./data/app:/var/www/html"
-        depends_on:
-          - "seafile-db"
-          - "seafile-memcached"
-        environment:
-          - "DB_HOST=seafile-db"
-          - "DB_ROOT_PASSWD={{ seafile_db_root_password }}"
-          - "INIT_SEAFILE_ADMIN_EMAIL={{ seafile_admin_email }}"
-          - "INIT_SEAFILE_ADMIN_PASSWORD={{ seafile_admin_password }}"
-          - "SEAFILE_SERVER_HOSTNAME=seafile.{{ traefik_domain_name }}"
-          - "SEAFILE_SERVER_PROTOCOL=https"
-          - "JWT_PRIVATE_KEY={{ seafile_jwt_private_key }}"
-        restart: "unless-stopped"
-        networks:
-          - "frontend"
-          - "backend"
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.seafile.tls=true"
-          - "traefik.http.routers.seafile.tls.certresolver=cloudflare"
-          - "traefik.http.routers.seafile.rule=Host(`seafile.{{ traefik_domain_name }}`)"
-          - "traefik.docker.network=frontend"
-      - name: "seafile-db"
-        image: "mariadb:10"
-        volumes:
-          - "./data/db:/var/lib/mysql"
-        environment:
-          - "MYSQL_ROOT_PASSWORD={{ seafile_db_root_password }}"
-        restart: "unless-stopped"
-        networks:
-          - "backend"
-      - name: "seafile-memcached"
-        image: "memcached:1"
-        entrypoint: memcached -m 256
-        restart: "unless-stopped"
-        networks:
-          - "backend"
-    networks:
-      - name: "frontend"
-        external: true
-      - name: "backend"
-        external: true
   
   - name: "immich"
     services:
@@ -132,7 +85,7 @@ server_docker_services:
         external: true
       - name: "backend"
         external: true
-  
+
   - name: "nextcloud"
     services:
       - name: "nextcloud-app"
@@ -206,7 +159,74 @@ server_docker_services:
     networks:
       - name: "frontend"
         external: true
-    
+
+  - name: "postgres"
+    services:
+      - name: "postgres_db"
+        image: "postgres:latest"
+        environment:
+          - "POSTGRES_DB={{ postgres_db }}"
+          - "POSTGRES_USER={{ postgres_db_user }}"
+          - "POSTGRES_PASSWORD={{ postgres_db_password }}"
+        volumes:
+          - "./data:/var/lib/postgresql/data"
+        ports:
+          - "5432:5432"
+        networks:
+          - "backend"
+        restart: "unless-stopped"
+    networks:
+      - name: "backend"
+        external: true
+
+  - name: "seafile"
+    services:
+      - name: "seafile-app"
+        image: "seafileltd/seafile-mc:12.0-latest"
+        volumes:
+          - "./data/app:/var/www/html"
+        depends_on:
+          - "seafile-db"
+          - "seafile-memcached"
+        environment:
+          - "DB_HOST=seafile-db"
+          - "DB_ROOT_PASSWD={{ seafile_db_root_password }}"
+          - "INIT_SEAFILE_ADMIN_EMAIL={{ seafile_admin_email }}"
+          - "INIT_SEAFILE_ADMIN_PASSWORD={{ seafile_admin_password }}"
+          - "SEAFILE_SERVER_HOSTNAME=seafile.{{ traefik_domain_name }}"
+          - "SEAFILE_SERVER_PROTOCOL=https"
+          - "JWT_PRIVATE_KEY={{ seafile_jwt_private_key }}"
+        restart: "unless-stopped"
+        networks:
+          - "frontend"
+          - "backend"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.seafile.tls=true"
+          - "traefik.http.routers.seafile.tls.certresolver=cloudflare"
+          - "traefik.http.routers.seafile.rule=Host(`seafile.{{ traefik_domain_name }}`)"
+          - "traefik.docker.network=frontend"
+      - name: "seafile-db"
+        image: "mariadb:10"
+        volumes:
+          - "./data/db:/var/lib/mysql"
+        environment:
+          - "MYSQL_ROOT_PASSWORD={{ seafile_db_root_password }}"
+        restart: "unless-stopped"
+        networks:
+          - "backend"
+      - name: "seafile-memcached"
+        image: "memcached:1"
+        entrypoint: memcached -m 256
+        restart: "unless-stopped"
+        networks:
+          - "backend"
+    networks:
+      - name: "frontend"
+        external: true
+      - name: "backend"
+        external: true
+  
   - name: "traefik"
     services:
       - name: "traefik"
@@ -238,24 +258,7 @@ server_docker_services:
       - name: "frontend"
         external: true
 
-  - name: "postgres"
-    services:
-      - name: "postgres_db"
-        image: "postgres:latest"
-        environment:
-          - "POSTGRES_DB={{ postgres_db }}"
-          - "POSTGRES_USER={{ postgres_db_user }}"
-          - "POSTGRES_PASSWORD={{ postgres_db_password }}"
-        volumes:
-          - "./data:/var/lib/postgresql/data"
-        ports:
-          - "5432:5432"
-        networks:
-          - "backend"
-        restart: "unless-stopped"
-    networks:
-      - name: "backend"
-        external: true
+
         
 server_docker_services_configs:
   - src: "templates/traefik/config/traefik.yml.j2"
