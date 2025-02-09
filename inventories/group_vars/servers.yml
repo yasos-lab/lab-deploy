@@ -56,7 +56,7 @@ server_docker_services:
   
   - name: "immich"
     services:
-      - name: "immich_server"
+      - name: "immich-server"
         image: "ghcr.io/immich-app/immich-server:v1.125.7"
         volumes:
           - "./data/upload:/usr/src/app/upload"
@@ -81,7 +81,7 @@ server_docker_services:
           - "traefik.http.routers.immich.rule=Host(`immich.{{ traefik_domain_name }}`)"
           - "traefik.http.services.immich.loadbalancer.server.port=2283"
           - "traefik.docker.network=frontend"
-      - name: "immich_machine_learning"
+      - name: "immich-machine-learning"
         image: "ghcr.io/immich-app/immich-machine-learning:v1.125.7"
         volumes:
           - "./data/model-cache:/cache"
