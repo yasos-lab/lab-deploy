@@ -103,7 +103,7 @@ server_docker_services:
           - "REDIS_HOST=nextcloud-redis"
           - "TRUSTED_PROXIES=192.168.1.20"
           - "OVERWRITECLIURL=https://nextcloud.{{ traefik_domain_name }}"
-          - "OVERWRITEWEBROOT=https"
+          - "OVERWRITEPROTOCOL=https"
         restart: "unless-stopped"
         networks:
           - "frontend"
