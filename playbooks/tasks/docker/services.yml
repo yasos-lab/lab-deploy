@@ -44,4 +44,5 @@
   community.docker.docker_compose_v2:
     project_src: "{{ docker_services_directory }}/{{ item.name }}"
     state: present
+    remove_orphans: yes
   loop: "{{ docker_services }}"
