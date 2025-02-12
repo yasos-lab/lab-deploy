@@ -92,6 +92,7 @@ server_docker_services:
         image: "nextcloud:30"
         volumes:
           - "./data/app:/var/www/html"
+          - "./config/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini"
         depends_on:
           - "nextcloud-redis"
           - "nextcloud-db"
@@ -287,6 +288,8 @@ server_docker_services:
 server_docker_services_configs:
   - src: "templates/traefik/config/traefik.yml.j2"
     dest: "{{ docker_services_directory }}/traefik/config/traefik.yml"
+  - src: "templates/nextcloud/config/nextcloud.ini.j2"
+    dest: "{{ docker_services_directory }}/nextcloud/config/nextcloud.ini"
 
 server_directories: []
 
