@@ -29,6 +29,12 @@ services:
 {% if service.entrypoint is defined %}
     entrypoint: {{ service.entrypoint }}
 {% endif %}
+{% if service.post_start is defined %}
+    post_start:
+{% for cmd in service.post_start.commands %}
+      - command: {{ cmd }}
+{% endfor %}
+{% endif %}
 {% if service.networks is defined %}
     networks:
 {% for net in service.networks %}
