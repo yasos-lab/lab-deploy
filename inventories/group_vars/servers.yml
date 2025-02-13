@@ -119,6 +119,10 @@ server_docker_services:
           - "traefik.http.middlewares.secure_headers.headers.stsPreload=true"
           - "traefik.http.routers.nextcloud.middlewares=secure_headers"
           - "traefik.docker.network=frontend"
+        post_start:
+          commands:
+            - "apt update"
+            - "apt install -y sudo nano ffmpeg"
       - name: "nextcloud-redis"
         image: "redis:6"
         restart: "unless-stopped"
