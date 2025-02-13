@@ -36,6 +36,7 @@
     docker_networks: "{{ common_docker_networks + server_docker_networks }}"
     docker_services: "{{ common_docker_services + server_docker_services }}"
     docker_services_configs: "{{ common_docker_services_configs + server_docker_services_configs }}"
+    docker_services_crons: "{{ common_docker_services_crons +  server_docker_services_crons }}"
   tasks:
     - name: Purge
       ansible.builtin.import_tasks: tasks/purge.yml

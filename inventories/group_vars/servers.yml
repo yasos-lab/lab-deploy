@@ -286,14 +286,19 @@ server_docker_services:
     networks:
       - name: "frontend"
         external: true
-
-
-        
+  
 server_docker_services_configs:
   - src: "templates/traefik/config/traefik.yml.j2"
     dest: "{{ docker_services_directory }}/traefik/config/traefik.yml"
   - src: "templates/nextcloud/config/nextcloud.ini.j2"
     dest: "{{ docker_services_directory }}/nextcloud/config/nextcloud.ini"
+
+server_docker_services_crons:
+  - name: "Nextcloud cron job"
+    service: "nextcloud-app"
+    service_user: "www-data"
+    job: "php /var/www/html/cron.php"
+    minute: "*/5"
 
 server_directories: []
 

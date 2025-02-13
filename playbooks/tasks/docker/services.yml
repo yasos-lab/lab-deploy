@@ -46,3 +46,15 @@
     state: present
     remove_orphans: yes
   loop: "{{ docker_services }}"
+
+- name: Add services cron jobs
+  ansible.builtin.cron:
+    name: "{{ item.name }}"
+    job: "docker exec -u {{ item.service_user }} {{ item.service }} {{ item.job }}"
+    month: "{{ item.month | default('*')}}"
+    weekday: "{{ item.weekday | default('*') }}"
+    day: "{{ item.day | default('*') }}"
+    hour: "{{ item.hour | default('*') }}"
+    minute: "{{ item.minute | default('*') }}"
+    user: "{{ ansible_user }}"
+  loop: "{{ docker_services_crons }}"

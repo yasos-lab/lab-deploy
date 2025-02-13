@@ -8,6 +8,8 @@ common_docker_services: []
 
 common_docker_services_configs: []
 
+common_docker_services_crons: []
+
 common_directories:
   - "{{ user_home }}/OS"
   - "{{ user_home }}/VMs"
