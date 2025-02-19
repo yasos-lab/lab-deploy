@@ -5,6 +5,8 @@ services:
     image: ubuntu:latest
     container_name: ubuntu_thinkpad
     tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       ansible:
         ipv4_address: 172.10.1.10
