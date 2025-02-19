@@ -20,6 +20,8 @@ services:
     image: debian:latest
     container_name: debian_thinkcenter
     tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       ansible:
         ipv4_address: 172.10.1.20
