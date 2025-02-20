@@ -15,7 +15,6 @@ workstation_packages:
   - code
   - openjdk-17-jdk
   - python3-psycopg2
-  - syncthing
   - virtualbox-7.1
 
 workstation_python_packages: []

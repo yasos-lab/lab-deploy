@@ -52,23 +52,9 @@ common_packages:
 
 common_python_packages: []
 
-common_repositories:
-  - name: "syncthing"
-    repo_url: "https://apt.syncthing.net"
-    gpg_url: "https://syncthing.net/release-key.gpg"
-    gpg_extention: "gpg"
-    components:
-      - "syncthing"
-      - "stable"
+common_repositories: []
 
-common_systemd_services:
-  - name: "syncthing"
-    description: "SyncThing - Open Source Continuous File Synchronization"
-    exec_start: "/usr/bin/syncthing -no-browser -home=/home/{{ ansible_user }}/.config/syncthing"
-    restart_policy: "on-failure"
-    restart_delay: 5
-    after: "network-online.target"
-    user: "{{ ansible_user }}"
+common_systemd_services: []
 
 config_files:
   - file: .vimrc

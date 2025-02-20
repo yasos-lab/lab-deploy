@@ -307,7 +307,6 @@ server_directories_to_remove: []
 
 server_packages:
   - python3-psycopg2
-  - syncthing
 
 server_python_packages: []
 
