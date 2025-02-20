@@ -143,15 +143,7 @@ server_docker_services:
         restart: "unless-stopped"
         networks:
           - "backend"
-    networks:
-      - name: "frontend"
-        external: true
-      - name: "backend"
-        external: true
-
-  - name: "onlyoffice"
-    services:
-      - name: "onlyoffice-documentserver"
+      - name: "nextcloud-onlyoffice"
         image: "onlyoffice/documentserver:latest"
         environment:
           - "JWT_SECRET={{ onlyoffice_jwt_secret }}"
@@ -160,13 +152,15 @@ server_docker_services:
           - "frontend"
         labels:
           - "traefik.enable=true"
-          - "traefik.http.routers.onlyoffice.tls=true"
-          - "traefik.http.routers.onlyoffice.tls.certresolver=cloudflare"
-          - "traefik.http.routers.onlyoffice.rule=Host(`onlyoffice.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.office.tls=true"
+          - "traefik.http.routers.office.tls.certresolver=cloudflare"
+          - "traefik.http.routers.office.rule=Host(`office.nextcloud.{{ traefik_domain_name }}`)"
           - "traefik.http.middlewares.x_forwarded_proto.headers.customrequestheaders.X-Forwarded-Proto=https"
-          - "traefik.http.routers.onlyoffice.middlewares=x_forwarded_proto"
+          - "traefik.http.routers.office.middlewares=x_forwarded_proto"
     networks:
       - name: "frontend"
+        external: true
+      - name: "backend"
         external: true
 
   - name: "portainer"
