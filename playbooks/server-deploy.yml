@@ -24,6 +24,7 @@
         immich_db_user: "{{ lookup('community.general.bitwarden', 'immich_service', field='dbuser') | first }}"
         immich_db_password: "{{ lookup('community.general.bitwarden', 'immich_service', field='dbpassword') | first }}"
         onlyoffice_jwt_secret: "{{ lookup('community.general.bitwarden', 'onlyoffice_service', field='jwt') | first }}"
+        homarr_sec: "{{ lookup('community.general.bitwarden', 'homarr_service', field='sec') | first }}"
       tags: server::secrets
   vars:
     directories: "{{ common_directories + server_directories }}"

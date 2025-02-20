@@ -5,8 +5,29 @@ server_docker_networks:
   - backend
 
 server_docker_services:
-  # - name: "homepage"
-  
+  - name: "homarr"
+    isEnabled: true
+    services:
+      - name: "homarr"
+        image: "ghcr.io/homarr-labs/homarr:v1.6.0"
+        volumes:
+          - "./data:/appdata"
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        environment:
+          - "SECRET_ENCRYPTION_KEY={{ homarr_sec }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.homarr.tls=true"
+          - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
+          - "traefik.http.routers.homarr.rule=Host(`homarr.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.homarr.loadbalancer.server.port=7575"
+        networks:
+          - frontend
+    networks:
+      - name: "frontend"
+        external: true
+
   - name: "immich"
     isEnabled: false
     services:
