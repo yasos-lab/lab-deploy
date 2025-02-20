@@ -8,6 +8,7 @@ server_docker_services:
   # - name: "homepage"
   
   - name: "immich"
+    isEnabled: false
     services:
       - name: "immich-server"
         image: "ghcr.io/immich-app/immich-server:v1.125.7"
@@ -87,6 +88,7 @@ server_docker_services:
         external: true
 
   - name: "nextcloud"
+    isEnabled: true
     services:
       - name: "nextcloud-app"
         image: "nextcloud:30"
@@ -96,6 +98,7 @@ server_docker_services:
         depends_on:
           - "nextcloud-redis"
           - "nextcloud-db"
+          - "nextcloud-onlyoffice"
         environment:
           - "MYSQL_HOST=nextcloud-db"
           - "MYSQL_PASSWORD={{ nextcloud_db_password }}"
@@ -164,6 +167,7 @@ server_docker_services:
         external: true
 
   - name: "portainer"
+    isEnabled: true
     services:
       - name: "portainer"
         image: "portainer/portainer-ce:latest"
@@ -184,6 +188,7 @@ server_docker_services:
         external: true
 
   - name: "postgres"
+    isEnabled: false
     services:
       - name: "postgres_db"
         image: "postgres:latest"
@@ -203,6 +208,7 @@ server_docker_services:
         external: true
 
   - name: "seafile"
+    isEnabled: false
     services:
       - name: "seafile-app"
         image: "seafileltd/seafile-mc:12.0-latest"
@@ -251,6 +257,7 @@ server_docker_services:
         external: true
   
   - name: "traefik"
+    isEnabled: true
     services:
       - name: "traefik"
         image: "traefik:v3"

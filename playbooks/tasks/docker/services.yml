@@ -45,6 +45,7 @@
     project_src: "{{ docker_services_directory }}/{{ item.name }}"
     state: present
     remove_orphans: yes
+  when: item.isEnabled
   loop: "{{ docker_services }}"
 
 - name: Add services cron jobs
