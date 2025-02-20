@@ -13,17 +13,10 @@
         nextcloud_db_user: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbuser') | first }}"
         nextcloud_db_password: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbpassword') | first }}"
         nextcloud_root_db_password: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='rootdb_password') | first }}"
+        nextcloud_onlyoffice_jwt: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='onlyoffice_jwt') | first }}"
         traefik_dns_api_token: "{{ lookup('community.general.bitwarden', 'traefik_service', field='cloudflare_token') | first }}"
         traefik_acme_email: "{{ lookup('community.general.bitwarden', 'traefik_service', field='acme_email') | first }}"
         traefik_domain_name: "{{ lookup('community.general.bitwarden', 'traefik_service', field='domain') | first }}"
-        seafile_admin_email: "{{ lookup('community.general.bitwarden', 'seafile_service', field='username') | first }}"
-        seafile_admin_password: "{{ lookup('community.general.bitwarden', 'seafile_service', field='password') | first }}"
-        seafile_db_root_password: "{{ lookup('community.general.bitwarden', 'seafile_service', field='rootdb_password') | first }}"
-        seafile_jwt_private_key: "{{ lookup('community.general.bitwarden', 'seafile_service', field='jwt') | first }}"
-        immich_db: "{{ lookup('community.general.bitwarden', 'immich_service', field='database') | first }}"
-        immich_db_user: "{{ lookup('community.general.bitwarden', 'immich_service', field='dbuser') | first }}"
-        immich_db_password: "{{ lookup('community.general.bitwarden', 'immich_service', field='dbpassword') | first }}"
-        onlyoffice_jwt_secret: "{{ lookup('community.general.bitwarden', 'onlyoffice_service', field='jwt') | first }}"
         homarr_sec: "{{ lookup('community.general.bitwarden', 'homarr_service', field='sec') | first }}"
       tags: server::secrets
   vars:

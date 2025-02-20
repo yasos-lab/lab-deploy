@@ -6,7 +6,6 @@ server_docker_networks:
 
 server_docker_services:
   - name: "homarr"
-    isEnabled: true
     services:
       - name: "homarr"
         image: "ghcr.io/homarr-labs/homarr:v1.6.0"
@@ -28,88 +27,7 @@ server_docker_services:
       - name: "frontend"
         external: true
 
-  - name: "immich"
-    isEnabled: false
-    services:
-      - name: "immich-server"
-        image: "ghcr.io/immich-app/immich-server:v1.125.7"
-        volumes:
-          - "./data/upload:/usr/src/app/upload"
-          - "/etc/localtime:/etc/localtime:ro"
-        environment:
-          - "DB_PASSWORD={{ immich_db_password }}"
-          - "DB_USERNAME={{ immich_db_user }}"
-          - "DB_DATABASE_NAME={{ immich_db }}"
-        depends_on:
-          - "redis"
-          - "database"
-        restart: "unless-stopped"
-        healthcheck:
-          disable: false
-        networks:
-          - "frontend"
-          - "backend"
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.immich.tls=true"
-          - "traefik.http.routers.immich.tls.certresolver=cloudflare"
-          - "traefik.http.routers.immich.rule=Host(`immich.{{ traefik_domain_name }}`)"
-          - "traefik.http.services.immich.loadbalancer.server.port=2283"
-          - "traefik.docker.network=frontend"
-      - name: "immich-machine-learning"
-        image: "ghcr.io/immich-app/immich-machine-learning:v1.125.7"
-        volumes:
-          - "./data/model-cache:/cache"
-        restart: "unless-stopped"
-        healthcheck:
-          disable: false
-        networks:
-          - "backend"
-      - name: "redis"
-        image: "redis:6"
-        restart: "unless-stopped"
-        healthcheck:
-          test: redis-cli ping || exit 1
-        networks:
-          - "backend"
-      - name: "database"
-        image: "tensorchord/pgvecto-rs:pg14-v0.2.1"
-        volumes:
-          - "./data/db:/var/lib/postgresql/data"
-        restart: "unless-stopped"
-        environment:
-          - "POSTGRES_PASSWORD={{ immich_db_password }}"
-          - "POSTGRES_USER={{ immich_db_user }}"
-          - "POSTGRES_DB={{ immich_db }}"
-          - "POSTGRES_INITDB_ARGS=--data-checksums"
-        command: >-
-          postgres
-          -c shared_preload_libraries=vectors.so
-          -c 'search_path="$$user", public, vectors'
-          -c logging_collector=on
-          -c max_wal_size=2GB
-          -c shared_buffers=512MB
-          -c wal_compression=on
-        healthcheck:
-          test: >-
-            pg_isready --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" || exit 1;
-            Chksum="$$(psql --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" --tuples-only --no-align
-            --command='SELECT COALESCE(SUM(checksum_failures), 0) FROM pg_stat_database')";
-            echo "checksum failure count is $$Chksum";
-            [ "$$Chksum" = '0' ] || exit 1
-          interval: "5m"
-          start_interval: "30s"
-          start_period: "5m"
-        networks:
-          - "backend"
-    networks:
-      - name: "frontend"
-        external: true
-      - name: "backend"
-        external: true
-
   - name: "nextcloud"
-    isEnabled: true
     services:
       - name: "nextcloud-app"
         image: "nextcloud:30"
@@ -170,7 +88,7 @@ server_docker_services:
       - name: "nextcloud-onlyoffice"
         image: "onlyoffice/documentserver:latest"
         environment:
-          - "JWT_SECRET={{ onlyoffice_jwt_secret }}"
+          - "JWT_SECRET={{ nextcloud_onlyoffice_jwt }}"
         restart: "unless-stopped"
         networks:
           - "frontend"
@@ -188,7 +106,6 @@ server_docker_services:
         external: true
 
   - name: "portainer"
-    isEnabled: true
     services:
       - name: "portainer"
         image: "portainer/portainer-ce:latest"
@@ -209,7 +126,6 @@ server_docker_services:
         external: true
 
   - name: "postgres"
-    isEnabled: false
     services:
       - name: "postgres_db"
         image: "postgres:latest"
@@ -228,57 +144,7 @@ server_docker_services:
       - name: "backend"
         external: true
 
-  - name: "seafile"
-    isEnabled: false
-    services:
-      - name: "seafile-app"
-        image: "seafileltd/seafile-mc:12.0-latest"
-        volumes:
-          - "./data/app:/var/www/html"
-        depends_on:
-          - "seafile-db"
-          - "seafile-memcached"
-        environment:
-          - "DB_HOST=seafile-db"
-          - "DB_ROOT_PASSWD={{ seafile_db_root_password }}"
-          - "INIT_SEAFILE_ADMIN_EMAIL={{ seafile_admin_email }}"
-          - "INIT_SEAFILE_ADMIN_PASSWORD={{ seafile_admin_password }}"
-          - "SEAFILE_SERVER_HOSTNAME=seafile.{{ traefik_domain_name }}"
-          - "SEAFILE_SERVER_PROTOCOL=https"
-          - "JWT_PRIVATE_KEY={{ seafile_jwt_private_key }}"
-        restart: "unless-stopped"
-        networks:
-          - "frontend"
-          - "backend"
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.seafile.tls=true"
-          - "traefik.http.routers.seafile.tls.certresolver=cloudflare"
-          - "traefik.http.routers.seafile.rule=Host(`seafile.{{ traefik_domain_name }}`)"
-          - "traefik.docker.network=frontend"
-      - name: "seafile-db"
-        image: "mariadb:10"
-        volumes:
-          - "./data/db:/var/lib/mysql"
-        environment:
-          - "MYSQL_ROOT_PASSWORD={{ seafile_db_root_password }}"
-        restart: "unless-stopped"
-        networks:
-          - "backend"
-      - name: "seafile-memcached"
-        image: "memcached:1"
-        entrypoint: "memcached -m 256"
-        restart: "unless-stopped"
-        networks:
-          - "backend"
-    networks:
-      - name: "frontend"
-        external: true
-      - name: "backend"
-        external: true
-  
   - name: "traefik"
-    isEnabled: true
     services:
       - name: "traefik"
         image: "traefik:v3"
