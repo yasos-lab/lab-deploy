@@ -156,10 +156,17 @@ server_docker_services:
         ports:
           - "80:80"
           - "443:443"
-          - "8080:8080"
         restart: "unless-stopped"
         environment:
           - "CF_DNS_API_TOKEN={{ traefik_dns_api_token }}"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.traefik.tls=true"
+          - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
+          - "traefik.http.routers.traefik.rule=Host(`proxy.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.traefik.service=api@internal"
+          - "traefik.http.middlewares.traefik-auth.basicauth.users={{ traefik_user }}:{{ traefik_hash_password | regex_replace('\\$', '$$') }}" # To escape $ in the password hash
+          - "traefik.http.routers.traefik.middlewares=traefik-auth"
         networks:
           - frontend
       - name: "whoami"

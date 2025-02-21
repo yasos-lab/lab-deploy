@@ -17,6 +17,8 @@
         traefik_dns_api_token: "{{ lookup('community.general.bitwarden', 'traefik_service', field='cloudflare_token') | first }}"
         traefik_acme_email: "{{ lookup('community.general.bitwarden', 'traefik_service', field='acme_email') | first }}"
         traefik_domain_name: "{{ lookup('community.general.bitwarden', 'traefik_service', field='domain') | first }}"
+        traefik_user: "{{ lookup('community.general.bitwarden', 'traefik_service', field='username') | first }}"
+        traefik_hash_password: "{{ lookup('community.general.bitwarden', 'traefik_service', field='hash_password') | first }}"
         homarr_sec: "{{ lookup('community.general.bitwarden', 'homarr_service', field='sec') | first }}"
       tags: server::secrets
   vars:
