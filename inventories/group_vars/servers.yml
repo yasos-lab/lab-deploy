@@ -19,7 +19,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.homarr.tls=true"
           - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.homarr.rule=Host(`homarr.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.homarr.rule=Host(`dash.{{ traefik_domain_name }}`)"
           - "traefik.http.services.homarr.loadbalancer.server.port=7575"
         networks:
           - frontend
@@ -45,7 +45,8 @@ server_docker_services:
           - "MYSQL_USER={{ nextcloud_db_user }}"
           - "REDIS_HOST=nextcloud-redis"
           - "TRUSTED_PROXIES=192.168.1.20"
-          - "OVERWRITECLIURL=https://nextcloud.{{ traefik_domain_name }}"
+          - "NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ traefik_domain_name }}"
+          - "OVERWRITECLIURL=https://cloud.{{ traefik_domain_name }}"
           - "OVERWRITEPROTOCOL=https"
         restart: "unless-stopped"
         networks:
@@ -55,7 +56,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.nextcloud.tls=true"
           - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
-          - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.nextcloud.rule=Host(`cloud.{{ traefik_domain_name }}`)"
           - "traefik.http.middlewares.secure_headers.headers.stsSeconds=15552000"
           - "traefik.http.middlewares.secure_headers.headers.stsIncludeSubdomains=true"
           - "traefik.http.middlewares.secure_headers.headers.stsPreload=true"
@@ -96,7 +97,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.office.tls=true"
           - "traefik.http.routers.office.tls.certresolver=cloudflare"
-          - "traefik.http.routers.office.rule=Host(`office.nextcloud.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.office.rule=Host(`office.cloud.{{ traefik_domain_name }}`)"
           - "traefik.http.middlewares.x_forwarded_proto.headers.customrequestheaders.X-Forwarded-Proto=https"
           - "traefik.http.routers.office.middlewares=x_forwarded_proto"
     networks:
