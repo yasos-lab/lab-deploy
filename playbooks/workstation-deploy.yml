@@ -21,7 +21,6 @@
           ansible.builtin.import_tasks: tasks/system/packages.yml
           vars:
             packages: "{{ common_packages + workstation_packages }}"
-            packages_to_purge: "{{ workstation_packages }}"
             python_packages: "{{ workstation_python_packages }}"
           tags: workstation::packages
         
@@ -32,7 +31,7 @@
             disk_partitions: []
             disk_vgs: []
             disk_lvs: []
-          tags: server::filesystem
+          tags: workstation::filesystem
 
         - name: Import shell tasks
           ansible.builtin.import_tasks: tasks/system/shell.yml

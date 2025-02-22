@@ -39,7 +39,6 @@
           ansible.builtin.import_tasks: tasks/system/packages.yml
           vars:
             packages: "{{ common_packages + server_packages }}"
-            packages_to_purge: "{{ server_packages }}"
             python_packages: "{{ server_python_packages }}"
           tags: server::packages
 
