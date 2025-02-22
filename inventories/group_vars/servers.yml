@@ -1,5 +1,28 @@
 ---
 
+server_disk_lvs:
+  - lv: "docker_backup_lv"
+    vg: "backup_vg"
+    mount_point: "/mnt/docker_backup"
+    size: "256g"
+    fstype: "xfs"
+
+server_disk_partitions:
+  - partition_number: 1
+    device: "/dev/sda"
+    flags: [lvm]
+    part_start: "0GiB"
+    part_end: "256GiB"
+  - partition_number: 2
+    device: "/dev/sda"
+    flags: [lvm]
+    part_start: "256GiB"
+    part_end: "512GiB"
+
+server_disk_vgs:
+  - vg: "backup_vg"
+    pvs: [/dev/sda1, /dev/sda2]
+
 server_docker_networks:
   - frontend
   - backend
@@ -198,9 +221,9 @@ server_docker_services_crons:
 
 server_directories: []
 
-server_directories_to_remove: []
-
 server_packages:
+  - lvm2
+  - parted
   - python3-psycopg2
 
 server_python_packages: []

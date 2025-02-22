@@ -2,19 +2,9 @@
 
 backup_directory: "{{ user_home }}/Backups"
 
-common_docker_networks: []
-
-common_docker_services: []
-
-common_docker_services_configs: []
-
-common_docker_services_crons: []
-
 common_directories:
   - "{{ zsh_directory }}"
   - "{{ docker_services_directory }}"
-
-common_directories_to_remove: []
 
 common_packages:
   - apt-transport-https
@@ -32,12 +22,6 @@ common_packages:
   - unzip
   - vim
   - wget
-
-common_python_packages: []
-
-common_repositories: []
-
-common_systemd_services: []
 
 config_files:
   - file: .secrets

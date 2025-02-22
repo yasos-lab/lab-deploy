@@ -6,4 +6,4 @@
   tasks:
     - name: Deploy
       ansible.builtin.debug:
-        msg: "Deploying"
+        msg: "Coming soon"

@@ -6,9 +6,9 @@ workstation_docker_services: []
 
 workstation_docker_services_configs: []
 
-workstation_directories: []
+workstation_docker_services_crons: []
 
-workstation_directories_to_remove: []
+workstation_directories: []
 
 workstation_packages: 
   - brave-browser
