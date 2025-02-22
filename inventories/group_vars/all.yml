@@ -40,9 +40,6 @@ common_repositories: []
 common_systemd_services: []
 
 config_files:
-  - file: .vimrc
-    dest_path: "{{ user_home }}"
-    mode: '0644'
   - file: .secrets
     dest_path: "{{ user_home }}"
     mode: '0600'
