@@ -1,2 +1,8 @@
 ---
 
+raspberry_packages:
+  - ca-certificates
+  - curl
+  - git
+  - unzip
+  - wget

@@ -4,6 +4,17 @@
   hosts: raspberries
   become: yes
   tasks:
-    - name: Deploy
-      ansible.builtin.debug:
-        msg: "Coming soon"
+    - name: Import packages tasks
+      ansible.builtin.import_tasks: tasks/system/packages.yml
+      vars:
+        packages: "{{ raspberry_packages }}"
+        python_packages: []
+      tags: raspberry::packages
+
+    - name: Configure and deploy PiHole
+      block:
+      tags: raspberry::pihole
+
+    - name: Configure and deploy PiVPN
+      block:
+      tags: raspberry::pivpn
