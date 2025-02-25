@@ -3,6 +3,8 @@
 - name: Deploy server
   hosts: servers
   become: yes
+  handlers:
+    - import_tasks: handlers/main.yml
   pre_tasks:
     - name: Get secrets
       ansible.builtin.set_fact:
@@ -40,6 +42,7 @@
           ansible.builtin.import_tasks: tasks/system/packages.yml
           vars:
             packages: "{{ common_packages + server_packages }}"
+            deb_packages: "{{ common_deb_packages + server_deb_packages }}"
             python_packages: "{{ server_python_packages }}"
           tags: server::packages
 
@@ -56,6 +59,10 @@
           ansible.builtin.import_tasks: tasks/system/shell.yml
           tags: server::shell
         
+        - name: Import rclone tasks
+          ansible.builtin.import_tasks: tasks/system/rclone.yml
+          tags: server::rclone
+
         - name: Import docker tasks
           ansible.builtin.import_tasks: tasks/docker/docker.yml
           vars:

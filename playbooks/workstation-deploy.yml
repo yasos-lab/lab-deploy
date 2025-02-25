@@ -3,6 +3,14 @@
 - name: Deploy workstation
   hosts: workstations
   become: yes
+  handlers:
+    - import_tasks: handlers/main.yml
+  pre_tasks:
+    - name: Get secrets
+      ansible.builtin.set_fact:
+        mega_username: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_username') | first }}"
+        mega_encpassword: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_encpassword') | first }}"
+      tags: workstation::secrets
   tasks:
     - name: Purge
       ansible.builtin.import_tasks: tasks/purge.yml
@@ -21,6 +29,7 @@
           ansible.builtin.import_tasks: tasks/system/packages.yml
           vars:
             packages: "{{ common_packages + workstation_packages }}"
+            deb_packages: "{{ common_deb_packages + workstation_deb_packages }}"
             python_packages: "{{ workstation_python_packages }}"
           tags: workstation::packages
         
@@ -36,6 +45,13 @@
         - name: Import shell tasks
           ansible.builtin.import_tasks: tasks/system/shell.yml
           tags: workstation::shell
+        
+        - name: Import rclone tasks
+          ansible.builtin.import_tasks: tasks/system/rclone.yml
+          vars:
+            rclone_configs: "{{ common_rclone_configs + workstation_rclone_configs }}"
+            rclone_mounts: "{{ common_rclone_mounts + workstation_rclone_mounts }}"
+          tags: workstation::rclone
         
         - name: Import docker tasks
           ansible.builtin.import_tasks: tasks/docker/docker.yml

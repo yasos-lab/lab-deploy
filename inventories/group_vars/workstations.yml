@@ -1,5 +1,7 @@
 ---
 
+workstation_deb_packages: []
+
 workstation_docker_networks: []
 
 workstation_docker_services: []
@@ -18,6 +20,10 @@ workstation_packages:
   - virtualbox-7.1
 
 workstation_python_packages: []
+
+workstation_rclone_configs: []
+
+workstation_rclone_mounts: []
 
 workstation_repositories:
   - name: "docker"

@@ -1,0 +1,10 @@
+---
+
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: yes

@@ -1,5 +1,8 @@
 ---
 
+common_deb_packages:
+  - "{{ rclone_package }}"
+
 common_directories:
   - "{{ zsh_directory }}"
   - "{{ docker_services_directory }}"
@@ -22,6 +25,24 @@ common_packages:
   - unzip
   - vim
   - wget
+
+common_rclone_configs: 
+  - name: mega
+    properties:
+      type: mega
+      user: "{{ mega_username }}"
+      pass: "{{ mega_encpassword }}"
+
+common_rclone_mounts:
+ - name: mega
+   remote_name: "mega" 
+   remote_path: "/"
+   local_path: "/mnt/mega"
+   local_path_mode: '0755'
+   local_path_owner: "{{ rclone_user }}"
+   local_path_group: "{{ rclone_user }}"
+   auto_mount: true
+   extra_args: "--allow-other"
 
 config_files:
   - file: .secrets
@@ -56,11 +77,6 @@ purge_vars:
   repositories: no
   shell: no
   services: no
-
-restic_scripts_directory: "{{ scripts_directory }}/restic"
-restic_logs_directory: "/var/log/restic"
-
-scripts_directory: "/opt/scripts"
 
 timezone: "Europe/Paris"
 
