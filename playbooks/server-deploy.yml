@@ -20,6 +20,7 @@
         traefik_user: "{{ lookup('community.general.bitwarden', 'traefik_service', field='username') | first }}"
         traefik_hash_password: "{{ lookup('community.general.bitwarden', 'traefik_service', field='hash_password') | first }}"
         homarr_sec: "{{ lookup('community.general.bitwarden', 'homarr_service', field='sec') | first }}"
+        restic_password: "{{ lookup('community.general.bitwarden', 'restic_backup', field='password') | first }}"
       tags: server::secrets
   tasks:
     - name: Purge
@@ -69,6 +70,12 @@
             docker_services_crons: "{{ server_docker_services_crons }}"
           tags: server::docker::services
         
+        - name: Import backup tasks
+          ansible.builtin.import_tasks: tasks/system/backup.yml
+          vars:
+            restic_backup_configs: "{{ server_restic_backup_configs }}"
+          tags: server::backup
+
         - name: Import systemd services tasks
           ansible.builtin.import_tasks: tasks/system/services.yml
           vars:

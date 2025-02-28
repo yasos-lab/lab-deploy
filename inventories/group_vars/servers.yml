@@ -237,4 +237,13 @@ server_repositories:
       - "{{ ansible_facts['distribution_release'] }}"
       - "stable"
 
+server_restic_backup_configs:
+  - name: "docker-services"
+    dir_to_backup: "/opt/docker_services"
+    local_backup_repo: "/mnt/docker_backup"
+    remote_backup_repo: ""
+    cron:
+      hour: "4"
+      minute: "0"
+
 server_systemd_services: []

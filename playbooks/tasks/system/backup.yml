@@ -1,0 +1,64 @@
+---
+
+- name: Ensure restic is installed
+  ansible.builtin.package:
+    name: restic
+    state: present
+
+- name: Ensure backup directories exists
+  ansible.builtin.file:
+    path: "{{ item.local_backup_repo }}"
+    state: directory
+    mode: '0755'
+  loop: "{{ restic_backup_configs }}"
+
+- name: Initialize Restic local Repository
+  environment:
+    RESTIC_PASSWORD: "{{ restic_password }}"
+  ansible.builtin.command: 
+    cmd: restic init --repo {{ item.local_backup_repo }}
+    creates: "{{ item.local_backup_repo }}/config"
+  loop: "{{ restic_backup_configs }}"
+
+# - name: Restic remote Repository
+#   block:
+#     - name: Ensure remote directory is mounted
+
+#     - name: Initialize Restic remote Repository
+#       ansible.builtin.command: restic init --repo {{ item.remote_backup_repo }}
+#       environment:
+#         RESTIC_PASSWORD: "{{ restic_password }}"
+#       args:
+#         creates: "{{ item }}/config"
+#       loop: "{{ restic_backup_configs }}"
+
+- name: Ensure restic directories are created
+  ansible.builtin.file:
+    name: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ restic_scripts_directory }}"
+    - "{{ restic_logs_directory }}"
+
+- name: Template restic backup scripts
+  ansible.builtin.template:
+    src: restic/backup.sh.j2
+    dest: "{{ restic_scripts_directory }}/{{ restic_backup_config.name }}-backup.sh"
+    owner: root
+    group: root
+    mode: '0700'
+  loop: "{{ restic_backup_configs }}"
+  loop_control:
+    loop_var: restic_backup_config
+
+- name: Ensure a cron job for Restic backup
+  ansible.builtin.cron:
+    name: "Restic backup for {{ item.name }}"
+    job: "{{ restic_scripts_directory }}/{{ item.name }}-backup.sh"
+    month: "{{ item.cron.month | default('*')}}"
+    weekday: "{{ item.cron.weekday | default('*') }}"
+    day: "{{ item.cron.day | default('*') }}"
+    hour: "{{ item.cron.hour | default('*') }}"
+    minute: "{{ item.cron.minute | default('*') }}"
+    user: root
+  loop: "{{ restic_backup_configs }}"
