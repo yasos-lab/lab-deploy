@@ -60,7 +60,7 @@
           tags: server::shell
         
         - name: Import rclone tasks
-          ansible.builtin.import_tasks: tasks/system/rclone.yml
+          ansible.builtin.import_tasks: tasks/system/rclone-clouds.yml
           tags: server::rclone
 
         - name: Import docker tasks
@@ -78,7 +78,7 @@
           tags: server::docker::services
         
         - name: Import backup tasks
-          ansible.builtin.import_tasks: tasks/system/backup.yml
+          ansible.builtin.import_tasks: tasks/system/restic-backups.yml
           vars:
             restic_backup_configs: "{{ server_restic_backup_configs }}"
           tags: server::backup

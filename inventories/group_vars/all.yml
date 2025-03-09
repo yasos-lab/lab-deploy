@@ -39,10 +39,10 @@ common_rclone_mounts:
    remote_path: "/"
    local_path: "/mnt/mega"
    local_path_mode: '0755'
-   local_path_owner: "{{ rclone_user }}"
-   local_path_group: "{{ rclone_user }}"
+   local_path_owner: "{{ rclone_config_owner.OWNER }}"
+   local_path_group: "{{ rclone_config_owner.GROUP }}"
    auto_mount: true
-   extra_args: "--allow-other"
+   extra_args: ""
 
 config_files:
   - file: .secrets
@@ -77,6 +77,23 @@ purge_vars:
   repositories: no
   shell: no
   services: no
+
+rclone_config_location: "{{ user_home }}/.config/rclone/rclone.conf"
+
+rclone_config_owner:
+  OWNER: "{{ rclone_user }}"
+  GROUP: "{{ rclone_user }}"
+
+rclone_package: "https://downloads.rclone.org/v{{ rclone_version }}/rclone-v{{ rclone_version }}-linux-amd64.deb"
+
+rclone_user: "{{ ansible_user }}"
+
+rclone_version: 1.69.1
+
+restic_scripts_directory: "{{ scripts_directory }}/restic"
+restic_logs_directory: "/var/log/restic"
+
+scripts_directory: "/opt/scripts"
 
 timezone: "Europe/Paris"
 

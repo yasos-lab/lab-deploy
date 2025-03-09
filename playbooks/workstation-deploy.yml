@@ -47,7 +47,7 @@
           tags: workstation::shell
         
         - name: Import rclone tasks
-          ansible.builtin.import_tasks: tasks/system/rclone.yml
+          ansible.builtin.import_tasks: tasks/system/rclone-clouds.yml
           vars:
             rclone_configs: "{{ common_rclone_configs + workstation_rclone_configs }}"
             rclone_mounts: "{{ common_rclone_mounts + workstation_rclone_mounts }}"

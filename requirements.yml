@@ -1,9 +1,4 @@
 ---
 
-roles:
-  - name: rclone
-    src: stefangweichinger.ansible_rclone
-
 collections:
   - name: community.docker
-  - name: community.postgresql

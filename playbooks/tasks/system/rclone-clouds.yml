@@ -33,13 +33,20 @@
   changed_when: rclone_mkdir_output.rc == 0
 
 - name: Ensure local path exists
-  ansible.builtin.file:
-    path: "{{ item.local_path }}"
-    mode: "{{ item.local_path_mode }}"
-    owner: "{{ item.local_path_owner }}"
-    group: "{{ item.local_path_group }}"
-    state: directory
-  loop: "{{ rclone_mounts }}"
+  block:
+    - name: Unmount directory if already mounted
+      ansible.builtin.command: "umount {{ item.local_path }}"
+      loop: "{{ rclone_mounts }}"
+      ignore_errors: yes # Prevent failure if it's not mounted
+    
+    - name: Ensure directory exists
+      ansible.builtin.file:
+        path: "{{ item.local_path }}"
+        mode: "{{ item.local_path_mode }}"
+        owner: "{{ item.local_path_owner }}"
+        group: "{{ item.local_path_group }}"
+        state: directory
+      loop: "{{ rclone_mounts }}"
 
 - name: Uncomment "user_allow_other" or add it if missing
   ansible.builtin.lineinfile:
@@ -57,22 +64,11 @@
     group: root
     mode: '0644'
   loop: "{{ rclone_mounts }}"
-  notify: "Systemd daemon-reload"
 
-- name: Find and manage rclone-mount services
-  block:
-    - name: Find rclone-mount services
-      ansible.builtin.find:
-        paths: /etc/systemd/system
-        patterns: 'rclone-mount@*.service'
-      register: found_services
-
-    - name: Enable and restart rclone-mount services
-      ansible.builtin.systemd:
-        name: "{{ item.path | basename }}"
-        enabled: yes
-        state: restarted
-      loop: "{{ found_services.files }}"
-      loop_control:
-        label: "{{ item.path | basename }}"
-      notify: "Systemd daemon-reload"
+- name: Enable and restart rclone-mount services
+  ansible.builtin.systemd:
+    name: "rclone-mount@{{ item.name | replace(' ', '_') }}.service"
+    enabled: yes
+    daemon_reload: yes
+    state: restarted
+  loop: "{{ rclone_mounts }}"
