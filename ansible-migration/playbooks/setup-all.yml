@@ -1,8 +1,0 @@
----
-
-- name: test
-  hosts: all
-  tasks:
-    - name: Display the OS distribution and version      
-      ansible.builtin.debug:
-        msg: "OS Distribution: {{ ansible_distribution }} {{ ansible_distribution_version }}"
