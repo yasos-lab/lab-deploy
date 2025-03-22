@@ -207,7 +207,32 @@ server_docker_services:
     networks:
       - name: "frontend"
         external: true
-  
+
+  - name: "vaultwarden"
+    services:
+      - name: "vaultwarden"
+        image: "vaultwarden/server:1.33.2"
+        volumes:
+          - "./data:/data"
+          - "/etc/localtime:/etc/localtime"
+        environment:
+          # - "WEBSOCKET_ENABLED=true"
+          - "SIGNUPS_ALLOWED=false"
+          - "TZ=Europe/Paris"
+          - "ADMIN_TOKEN={{ vaultwarden_admin_token | replace('$', '$$') }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.vaultwarden.tls=true"
+          - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
+          - "traefik.http.routers.vaultwarden.rule=Host(`vault.{{ traefik_domain_name }}`)"
+          #- "traefik.http.services.vaultwarden.loadbalancer.server.port=7575"
+        networks:
+          - frontend
+    networks:
+      - name: "frontend"
+        external: true
+
 server_docker_services_configs:
   - src: "templates/traefik/config/traefik.yml.j2"
     dest: "{{ docker_services_directory }}/traefik/config/traefik.yml"

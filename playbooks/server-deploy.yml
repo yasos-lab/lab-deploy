@@ -23,6 +23,7 @@
         traefik_hash_password: "{{ lookup('community.general.bitwarden', 'traefik_service', field='hash_password') | first }}"
         homarr_sec: "{{ lookup('community.general.bitwarden', 'homarr_service', field='sec') | first }}"
         restic_password: "{{ lookup('community.general.bitwarden', 'restic_backup', field='password') | first }}"
+        vaultwarden_admin_token: "{{ lookup('community.general.bitwarden', 'vaultwarden_service', field='admin_token') | first }}"
       tags: server::secrets
   tasks:
     - name: Purge
