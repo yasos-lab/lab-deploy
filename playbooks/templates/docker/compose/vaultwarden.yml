@@ -1,0 +1,25 @@
+---
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:1.33.2
+    container_name: vaultwarden
+    environment:
+      - SIGNUPS_ALLOWED=false
+      - TZ=Europe/Paris
+      - ADMIN_TOKEN=$$argon2id$$v=19$$m=65540,t=3,p=4$$aVuMi8ephdYPbG9a8eXMLgSyPlmOBnmqWImFt88plR0$$WpoD0DMsDblAF9fE3RRwXVgJyJixX+hE2Hjtqb25nuQ
+    volumes:
+      - ./data:/data
+      - /etc/localtime:/etc/localtime
+    networks:
+      - frontend
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.vaultwarden.tls=true
+      - traefik.http.routers.vaultwarden.tls.certresolver=cloudflare
+      - traefik.http.routers.vaultwarden.rule=Host(`vault.yasos.org`)
+
+networks:
+  frontend:
+    external: True

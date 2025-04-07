@@ -1,0 +1,21 @@
+---
+
+services:
+  postgres_db:
+    image: postgres:latest
+    container_name: postgres_db
+    environment:
+      - POSTGRES_DB=main
+      - POSTGRES_USER=mainuser
+      - POSTGRES_PASSWORD=main@Password123
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - backend
+    restart: unless-stopped
+
+networks:
+  backend:
+    external: True

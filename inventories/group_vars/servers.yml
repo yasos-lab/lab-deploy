@@ -233,6 +233,14 @@ server_docker_services:
       - name: "frontend"
         external: true
 
+server_docker_services_2:
+  - name: "nextcloud"
+    compose: "templates/docker/compose/nextcloud.yml.j2"
+    env: ""
+    configs:
+      - src: "templates/nextcloud/config/nextcloud.ini.j2"
+        dest: "{{ docker_services_directory }}/nextcloud/config/nextcloud.ini"
+
 server_docker_services_configs:
   - src: "templates/traefik/config/traefik.yml.j2"
     dest: "{{ docker_services_directory }}/traefik/config/traefik.yml"

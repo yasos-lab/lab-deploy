@@ -1,0 +1,83 @@
+---
+
+services:
+  nextcloud-app:
+    image: nextcloud:30
+    container_name: nextcloud-app
+    environment:
+      - MYSQL_HOST=nextcloud-db
+      - MYSQL_PASSWORD=nc@Password123
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nc_user
+      - REDIS_HOST=nextcloud-redis
+      - TRUSTED_PROXIES=192.168.1.20
+      - NEXTCLOUD_TRUSTED_DOMAINS=cloud.yasos.org
+      - OVERWRITECLIURL=https://cloud.yasos.org
+      - OVERWRITEPROTOCOL=https
+    volumes:
+      - ./data/app:/var/www/html
+      - ./config/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini
+    post_start:
+      - command: apt update
+      - command: apt install -y sudo nano ffmpeg
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - nextcloud-redis
+      - nextcloud-db
+      - nextcloud-onlyoffice
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nextcloud.tls=true
+      - traefik.http.routers.nextcloud.tls.certresolver=cloudflare
+      - traefik.http.routers.nextcloud.rule=Host(`cloud.yasos.org`)
+      - traefik.http.middlewares.secure_headers.headers.stsSeconds=15552000
+      - traefik.http.middlewares.secure_headers.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.secure_headers.headers.stsPreload=true
+      - traefik.http.routers.nextcloud.middlewares=secure_headers
+      - traefik.docker.network=frontend
+  nextcloud-redis:
+    image: redis:6
+    container_name: nextcloud-redis
+    networks:
+      - backend
+    healthcheck:
+      test: redis-cli ping || exit 1
+    restart: unless-stopped
+  nextcloud-db:
+    image: mariadb:10
+    container_name: nextcloud-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root@Password123
+      - MYSQL_PASSWORD=nc@Password123
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nc_user
+    volumes:
+      - ./data/db:/var/lib/mysql
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    networks:
+      - backend
+    restart: unless-stopped
+  nextcloud-onlyoffice:
+    image: onlyoffice/documentserver:latest
+    container_name: nextcloud-onlyoffice
+    environment:
+      - JWT_SECRET=j3i23ide3jfI10s2e9b3KO3ne9Je8Zi
+    networks:
+      - frontend
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.office.tls=true
+      - traefik.http.routers.office.tls.certresolver=cloudflare
+      - traefik.http.routers.office.rule=Host(`office.cloud.yasos.org`)
+      - traefik.http.middlewares.x_forwarded_proto.headers.customrequestheaders.X-Forwarded-Proto=https
+      - traefik.http.routers.office.middlewares=x_forwarded_proto
+
+networks:
+  frontend:
+    external: True
+  backend:
+    external: True

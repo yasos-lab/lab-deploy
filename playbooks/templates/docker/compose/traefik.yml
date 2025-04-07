@@ -1,0 +1,41 @@
+---
+
+services:
+  traefik:
+    image: traefik:v3
+    container_name: traefik
+    environment:
+      - CF_DNS_API_TOKEN=osJYh6FaTxG7UvBxCiGqWowB8_fAsGhZsIj3CLrP
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./config/ssl:/ssl:rw
+      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - frontend
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=cloudflare
+      - traefik.http.routers.traefik.rule=Host(`proxy.yasos.org`)
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.middlewares.traefik-auth.basicauth.users=yacin:$$2y$$05$$OHSo9qQGzIfupFYAfrYxw.s3N2grDLc.0l2/BRBwBhl0YxVxgWzti
+      - traefik.http.routers.traefik.middlewares=traefik-auth
+  whoami:
+    image: traefik/whoami
+    container_name: whoami
+    networks:
+      - frontend
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.tls=true
+      - traefik.http.routers.whoami.tls.certresolver=cloudflare
+      - traefik.http.routers.whoami.rule=Host(`whoami.yasos.org`)
+
+networks:
+  frontend:
+    external: True

@@ -1,0 +1,24 @@
+---
+
+services:
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:v1.6.0
+    container_name: homarr
+    environment:
+      - SECRET_ENCRYPTION_KEY=9857ad75e7d7faf64f721b923d36b3eccdb2cc81777712909cefec7a9a2bb28d
+    volumes:
+      - ./data:/appdata
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - frontend
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homarr.tls=true
+      - traefik.http.routers.homarr.tls.certresolver=cloudflare
+      - traefik.http.routers.homarr.rule=Host(`dash.yasos.org`)
+      - traefik.http.services.homarr.loadbalancer.server.port=7575
+
+networks:
+  frontend:
+    external: True

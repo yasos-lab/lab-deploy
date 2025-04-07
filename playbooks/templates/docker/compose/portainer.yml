@@ -1,0 +1,22 @@
+---
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    volumes:
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - frontend
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portainer.tls=true
+      - traefik.http.routers.portainer.tls.certresolver=cloudflare
+      - traefik.http.routers.portainer.rule=Host(`portainer.yasos.org`)
+      - traefik.http.services.portainer.loadbalancer.server.port=9000
+
+networks:
+  frontend:
+    external: True
