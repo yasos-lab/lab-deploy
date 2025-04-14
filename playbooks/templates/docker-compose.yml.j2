@@ -26,6 +26,15 @@ services:
 {% if service.command is defined %}
     command: {{ service.command }}
 {% endif %}
+{% if service.user is defined %}
+    user: "{{ service.user }}"
+{% endif %}
+{% if service.pid is defined %}
+    pid: {{ service.pid }}
+{% endif %}
+{% if service.network_mode is defined %}
+    network_mode: {{ service.network_mode }}
+{% endif %}
 {% if service.entrypoint is defined %}
     entrypoint: {{ service.entrypoint }}
 {% endif %}

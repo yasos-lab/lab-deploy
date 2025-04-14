@@ -52,6 +52,67 @@ server_docker_services:
       - name: "frontend"
         external: true
 
+  - name: "monitoring"
+    services:
+      - name: "grafana"
+        image: "grafana/grafana:latest"
+        volumes:
+          - "./data/grafana/:/var/lib/grafana"
+        restart: "unless-stopped"
+        user: "1000"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.grafana.tls=true"
+          - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
+          - "traefik.http.routers.grafana.rule=Host(`grafana.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+        networks:
+          - frontend
+          - backend
+      - name: "cadvisor"
+        image: "gcr.io/cadvisor/cadvisor:latest"
+        volumes:
+          - "/:/rootfs:ro"
+          - "/var/run:/var/run:rw"
+          - "/sys:/sys:ro"
+          - "/var/lib/docker/:/var/lib/docker:ro"
+        restart: "unless-stopped"
+        networks:
+          - backend
+      - name: "node_exporter"
+        image: "quay.io/prometheus/node-exporter:latest"
+        volumes:
+          - "/:/host:ro,rslave"
+        restart: "unless-stopped"
+        command: "--path.rootfs=/host"
+        # network_mode: host
+        pid: host
+        networks:
+          - backend
+      - name: "loki"
+        image: "grafana/loki:latest"
+        volumes:
+          - "./config/loki/loki-config.yml:/etc/loki/loki-config.yml"
+        command: "-config.file=/etc/loki/loki-config.yml"
+        restart: "unless-stopped"
+        networks:
+          - backend
+      - name: "prometheus"
+        image: "prom/prometheus:latest"
+        volumes:
+          - "./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+          - "./data/prometheus:/prometheus"
+        command: "--config.file=/etc/prometheus/prometheus.yml"
+        restart: "unless-stopped"
+        user: "1000"
+        networks:
+          - backend
+    networks:
+      - name: "frontend"
+        external: true
+      - name: "backend"
+        external: true
+
   - name: "nextcloud"
     services:
       - name: "nextcloud-app"
@@ -216,7 +277,6 @@ server_docker_services:
           - "./data:/data"
           - "/etc/localtime:/etc/localtime"
         environment:
-          # - "WEBSOCKET_ENABLED=true"
           - "SIGNUPS_ALLOWED=false"
           - "TZ=Europe/Paris"
           - "ADMIN_TOKEN={{ vaultwarden_admin_token | replace('$', '$$') }}"
@@ -238,6 +298,10 @@ server_docker_services_configs:
     dest: "{{ docker_services_directory }}/traefik/config/traefik.yml"
   - src: "templates/nextcloud/config/nextcloud.ini.j2"
     dest: "{{ docker_services_directory }}/nextcloud/config/nextcloud.ini"
+  - src: "templates/monitoring/config/prometheus.yml.j2"
+    dest: "{{ docker_services_directory }}/monitoring/config/prometheus/prometheus.yml"
+  - src: "templates/monitoring/config/loki-config.yml.j2"
+    dest: "{{ docker_services_directory }}/monitoring/config/loki/loki-config.yml"
 
 server_docker_services_crons:
   - name: "Nextcloud cron job"
