@@ -68,6 +68,7 @@
           ansible.builtin.import_tasks: tasks/docker/docker.yml
           vars:
             docker_networks: "{{ server_docker_networks }}"
+            docker_plugins: "{{ server_docker_plugins }}"
           tags: server::docker
         
         - name: Import docker services tasks

@@ -23,7 +23,23 @@
     groups: docker
     append: yes
 
-- name: Create required networks
+- name: Create docker networks
   community.docker.docker_network:
     name: "{{ item }}"
   loop: "{{ docker_networks }}"
+
+- name: Install docker plugins
+  community.docker.docker_plugin:
+    plugin_name: "{{ item.name }}"
+    alias: "{{ item.alias }}"
+    state: enable
+  loop: "{{ docker_plugins }}"
+
+- name: Template docker daemon.json file
+  ansible.builtin.template:
+    src: "docker/daemon.json.j2"
+    dest: "/etc/docker/daemon.json"
+  notify: "Restart docker daemon"
+
+- name: Run the handler
+  meta: flush_handlers

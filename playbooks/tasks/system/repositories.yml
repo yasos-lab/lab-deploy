@@ -13,3 +13,6 @@
     state: present
   loop: "{{ repositories }}"
   notify: "Update APT cache"
+
+- name: Run the handler
+  meta: flush_handlers

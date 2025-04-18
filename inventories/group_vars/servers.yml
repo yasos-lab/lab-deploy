@@ -29,6 +29,10 @@ server_docker_networks:
   - frontend
   - backend
 
+server_docker_plugins:
+  - name: "grafana/loki-docker-driver:3.4.3-amd64"
+    alias: "loki"
+
 server_docker_services:
   - name: "homarr"
     services:
