@@ -60,16 +60,51 @@ server_docker_services:
     services:
       - name: "grafana"
         image: "grafana/grafana:latest"
+        user: "1000"
         volumes:
           - "./data/grafana/:/var/lib/grafana"
         restart: "unless-stopped"
-        user: "1000"
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.grafana.tls=true"
           - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
           - "traefik.http.routers.grafana.rule=Host(`grafana.{{ traefik_domain_name }}`)"
           - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+          - "traefik.docker.network=frontend"
+        networks:
+          - frontend
+          - backend
+      - name: "prometheus"
+        image: "prom/prometheus:latest"
+        user: "1000"
+        volumes:
+          - "./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+          - "./data/prometheus:/prometheus"
+        command: "--config.file=/etc/prometheus/prometheus.yml"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.prometheus.tls=true"
+          - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
+          - "traefik.http.routers.prometheus.rule=Host(`prometheus.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+          - "traefik.docker.network=frontend"
+        networks:
+          - frontend
+          - backend
+      - name: "loki"
+        image: "grafana/loki:latest"
+        volumes:
+          - "./config/loki/loki-config.yml:/etc/loki/loki-config.yml"
+        command: "-config.file=/etc/loki/loki-config.yml"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.loki.tls=true"
+          - "traefik.http.routers.loki.tls.certresolver=cloudflare"
+          - "traefik.http.routers.loki.rule=Host(`loki.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.loki.loadbalancer.server.port=3100"
+          - "traefik.docker.network=frontend"
         networks:
           - frontend
           - backend
@@ -93,22 +128,13 @@ server_docker_services:
         pid: host
         networks:
           - backend
-      - name: "loki"
-        image: "grafana/loki:latest"
+      - name: promtail
+        image: "grafana/promtail:latest"
         volumes:
-          - "./config/loki/loki-config.yml:/etc/loki/loki-config.yml"
-        command: "-config.file=/etc/loki/loki-config.yml"
+          - "/var/log:/var/log"
+          - "./config/promtail/promtail-config.yml:/etc/promtail/promtail-config.yml"
         restart: "unless-stopped"
-        networks:
-          - backend
-      - name: "prometheus"
-        image: "prom/prometheus:latest"
-        volumes:
-          - "./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
-          - "./data/prometheus:/prometheus"
-        command: "--config.file=/etc/prometheus/prometheus.yml"
-        restart: "unless-stopped"
-        user: "1000"
+        command: "-config.file=/etc/promtail/promtail-config.yml"
         networks:
           - backend
     networks:
@@ -306,6 +332,8 @@ server_docker_services_configs:
     dest: "{{ docker_services_directory }}/monitoring/config/prometheus/prometheus.yml"
   - src: "templates/monitoring/config/loki-config.yml.j2"
     dest: "{{ docker_services_directory }}/monitoring/config/loki/loki-config.yml"
+  - src: "templates/monitoring/config/promtail-config.yml.j2"
+    dest: "{{ docker_services_directory }}/monitoring/config/promtail/promtail-config.yml"
 
 server_docker_services_crons:
   - name: "Nextcloud cron job"
