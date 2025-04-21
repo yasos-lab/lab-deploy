@@ -24,6 +24,12 @@
         homarr_sec: "{{ lookup('community.general.bitwarden', 'homarr_service', field='sec') | first }}"
         restic_password: "{{ lookup('community.general.bitwarden', 'restic_backup', field='password') | first }}"
         vaultwarden_admin_token: "{{ lookup('community.general.bitwarden', 'vaultwarden_service', field='admin_token') | first }}"
+        proton_username: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='proton_username') | first }}"
+        proton_encpassword: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='proton_encpassword') | first }}"
+        mega_username: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_username') | first }}"
+        mega_encpassword: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_encpassword') | first }}"
+        b2_account: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='b2_key_id') | first }}"
+        b2_appkey: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='b2_app_key') | first }}"
       tags: server::secrets
   tasks:
     - name: Purge
@@ -62,6 +68,9 @@
         
         - name: Import rclone tasks
           ansible.builtin.import_tasks: tasks/system/rclone-clouds.yml
+          vars:
+            rclone_configs: "{{ common_rclone_configs + server_rclone_configs }}"
+            rclone_mounts: "{{ common_rclone_mounts + server_rclone_mounts }}"
           tags: server::rclone
 
         - name: Import docker tasks

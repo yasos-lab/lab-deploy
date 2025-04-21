@@ -27,22 +27,36 @@ common_packages:
   - wget
 
 common_rclone_configs: 
-  - name: mega
+  - name: "mega"
     properties:
-      type: mega
+      type: "mega"
       user: "{{ mega_username }}"
       pass: "{{ mega_encpassword }}"
+  - name: "protondrive"
+    properties:
+      type: "protondrive"
+      username: "{{ proton_username }}"
+      password: "{{ proton_encpassword }}" 
 
 common_rclone_mounts:
- - name: mega
-   remote_name: "mega" 
-   remote_path: "/"
-   local_path: "/mnt/mega"
-   local_path_mode: '0755'
-   local_path_owner: "{{ rclone_config_owner.OWNER }}"
-   local_path_group: "{{ rclone_config_owner.GROUP }}"
-   auto_mount: true
-   extra_args: ""
+  - name: "mega"
+    remote_name: "mega" 
+    remote_path: "/"
+    local_path: "/mnt/mega"
+    local_path_mode: '0755'
+    local_path_owner: "{{ rclone_config_owner.OWNER }}"
+    local_path_group: "{{ rclone_config_owner.GROUP }}"
+    auto_mount: true
+    extra_args: ""
+  - name: "protondrive"
+    remote_name: "protondrive" 
+    remote_path: "/"
+    local_path: "/mnt/protondrive"
+    local_path_mode: '0755'
+    local_path_owner: "{{ rclone_config_owner.OWNER }}"
+    local_path_group: "{{ rclone_config_owner.GROUP }}"
+    auto_mount: true
+    extra_args: ""
 
 config_files:
   - file: .secrets
