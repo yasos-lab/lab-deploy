@@ -26,6 +26,7 @@
         vaultwarden_admin_token: "{{ lookup('community.general.bitwarden', 'vaultwarden_service', field='admin_token') | first }}"
         proton_username: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='proton_username') | first }}"
         proton_encpassword: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='proton_encpassword') | first }}"
+        proton_2fa: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='proton_2fa') | first }}"
         mega_username: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_username') | first }}"
         mega_encpassword: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_encpassword') | first }}"
         b2_account: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='b2_key_id') | first }}"

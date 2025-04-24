@@ -36,7 +36,9 @@ common_rclone_configs:
     properties:
       type: "protondrive"
       username: "{{ proton_username }}"
-      password: "{{ proton_encpassword }}" 
+      password: "{{ proton_encpassword }}"
+      2fa: "{{ proton_2fa }}"
+
 
 common_rclone_mounts:
   - name: "mega"
