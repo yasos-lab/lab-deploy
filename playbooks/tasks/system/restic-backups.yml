@@ -5,7 +5,7 @@
     name: restic
     state: present
 
-- name: Ensure backup directories exists
+- name: Ensure local backup directories exists
   ansible.builtin.file:
     path: "{{ item.local_backup_repo }}"
     state: directory
@@ -13,24 +13,43 @@
   loop: "{{ restic_backup_configs }}"
 
 - name: Initialize Restic local Repository
-  environment:
-    RESTIC_PASSWORD: "{{ restic_password }}"
+  environment: "{{ restic_env_vars }}"
   ansible.builtin.command: 
     cmd: restic init --repo {{ item.local_backup_repo }}
     creates: "{{ item.local_backup_repo }}/config"
   loop: "{{ restic_backup_configs }}"
 
-# - name: Restic remote Repository
-#   block:
-#     - name: Ensure remote directory is mounted
+- name: Restic remote Repository
+  block:
+    - name: Verify restic remote
+      ansible.builtin.command: "{{ restic_remote_verify_command }}"
+      register: verify_result
+      ignore_errors: yes
 
-#     - name: Initialize Restic remote Repository
-#       ansible.builtin.command: restic init --repo {{ item.remote_backup_repo }}
-#       environment:
-#         RESTIC_PASSWORD: "{{ restic_password }}"
-#       args:
-#         creates: "{{ item }}/config"
-#       loop: "{{ restic_backup_configs }}"
+    - name: Assert that restic remote is accessible
+      ansible.builtin.assert:
+        that:
+          - verify_result.rc == 0
+        fail_msg: "Restic remote verification failed for {{ restic_remote }}"
+        success_msg: "Restic remote for {{ restic_remote }} is accessible"
+
+    - name: Check if restic remote repo is initialized
+      ansible.builtin.command: "restic snapshots --repo {{ item.remote_backup_repo }}"
+      environment: "{{ restic_env_vars }}"
+      register: restic_check
+      ignore_errors: yes
+      loop: "{{ restic_backup_configs }}"
+      loop_control:
+        label: "{{ item.name }}"
+    
+    - name: Initialize restic remote repo if it is not initialized
+      ansible.builtin.command: "restic init --repo {{ item.remote_backup_repo }}"
+      environment: "{{ restic_env_vars }}"
+      when: restic_check.results[idx].rc != 0
+      loop: "{{ restic_backup_configs }}"
+      loop_control:
+        index_var: idx
+        label: "{{ item.name }}"
 
 - name: Ensure restic directories are created
   ansible.builtin.file:

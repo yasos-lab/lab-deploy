@@ -382,7 +382,7 @@ server_restic_backup_configs:
   - name: "docker-services"
     dir_to_backup: "/opt/docker_services"
     local_backup_repo: "/mnt/docker_backup"
-    remote_backup_repo: ""
+    remote_backup_repo: "{{ restic_remote }}:docker_backup"
     cron:
       hour: "4"
       minute: "0"

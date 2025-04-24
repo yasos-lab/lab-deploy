@@ -106,8 +106,13 @@ rclone_user: "{{ ansible_user }}"
 
 rclone_version: 1.69.1
 
-restic_scripts_directory: "{{ scripts_directory }}/restic"
+restic_env_vars:
+  RESTIC_PASSWORD: "{{ restic_password }}"
+  RCLONE_CONFIG: "{{ rclone_config_location }}"
 restic_logs_directory: "/var/log/restic"
+restic_remote: "rclone:protondrive"
+restic_remote_verify_command: "rclone --config {{ restic_env_vars.RCLONE_CONFIG }} lsf protondrive:"
+restic_scripts_directory: "{{ scripts_directory }}/restic"
 
 scripts_directory: "/opt/scripts"
 

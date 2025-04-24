@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Set environment variable for restic password
-export RESTIC_PASSWORD='{{ restic_password }}'
+# Set environment variable for restic
+{% for key, value in restic_env_vars.items() %}
+export {{ key }}='{{ value }}'
+{% endfor %}
    
 LOG_FILE="{{ restic_logs_directory }}/{{ restic_backup_config.name }}-backup.log"
 
