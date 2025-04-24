@@ -15,6 +15,18 @@
       block:
       tags: raspberry::pihole
 
+    - name: Configure and deploy Unbound
+      block:
+      tags: raspberry::unbound
+
     - name: Configure and deploy PiVPN
       block:
       tags: raspberry::pivpn
+    
+    - name: Configure and deploy node explorer for prometheus
+      block:
+      tags: raspberry::monitoring
+    
+    - name: Configure and deploy promtail for loki
+      block:
+      tags: raspberry::monitoring
