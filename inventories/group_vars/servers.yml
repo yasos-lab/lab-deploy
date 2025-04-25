@@ -1,12 +1,27 @@
 ---
 
+media_mount: "/mnt/media"
+
 server_deb_packages: []
+
+server_directories:
+  - "{{ media_mount }}/films"
+  - "{{ media_mount }}/series"
+  - "{{ media_mount }}/music"
+  - "{{ media_mount }}/books"
+  - "{{ media_mount }}/ebooks"
+  - "{{ media_mount }}/courses"
 
 server_disk_lvs:
   - lv: "docker_backup_lv"
     vg: "backup_vg"
     mount_point: "/mnt/docker_backup"
     size: "256g"
+    fstype: "xfs"
+  - lv: "media_lv"
+    vg: "media_vg"
+    mount_point: "{{ media_mount }}"
+    size: "400g"
     fstype: "xfs"
 
 server_disk_partitions:
@@ -20,10 +35,22 @@ server_disk_partitions:
     flags: [lvm]
     part_start: "256GiB"
     part_end: "512GiB"
+  - partition_number: 3
+    device: "/dev/sda"
+    flags: [lvm]
+    part_start: "512GiB"
+    part_end: "768GiB"
+  - partition_number: 4
+    device: "/dev/sda"
+    flags: [lvm]
+    part_start: "768GiB"
+    part_end: "100%"
 
 server_disk_vgs:
   - vg: "backup_vg"
     pvs: [/dev/sda1, /dev/sda2]
+  - vg: "media_vg"
+    pvs: [/dev/sda3, /dev/sda4]
 
 server_docker_networks:
   - frontend
@@ -341,8 +368,6 @@ server_docker_services_crons:
     service_user: "www-data"
     job: "php /var/www/html/cron.php"
     minute: "*/5"
-
-server_directories: []
 
 server_packages:
   - lvm2
