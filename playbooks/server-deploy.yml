@@ -31,6 +31,9 @@
         mega_encpassword: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_encpassword') | first }}"
         b2_account: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='b2_key_id') | first }}"
         b2_appkey: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='b2_app_key') | first }}"
+        vpn_provider: "{{ lookup('community.general.bitwarden', 'media_service', field='vpn_provider') | first }}"
+        vpn_private_key: "{{ lookup('community.general.bitwarden', 'media_service', field='vpn_private_key') | first }}"
+        vpn_countries: "{{ lookup('community.general.bitwarden', 'media_service', field='vpn_countries') | first }}"
       tags: server::secrets
   tasks:
     - name: Purge
