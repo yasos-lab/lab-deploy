@@ -108,10 +108,11 @@ rclone_version: 1.69.1
 
 restic_env_vars:
   RESTIC_PASSWORD: "{{ restic_password }}"
-  RCLONE_CONFIG: "{{ rclone_config_location }}"
+  B2_ACCOUNT_ID: "{{ b2_account }}"
+  B2_ACCOUNT_KEY: "{{ b2_appkey }}"
 restic_logs_directory: "/var/log/restic"
-restic_remote: "rclone:protondrive"
-restic_remote_verify_command: "rclone --config {{ restic_env_vars.RCLONE_CONFIG }} lsf protondrive:"
+restic_remote: "b2:{{ b2_bucket }}"
+restic_remote_verify_command: "curl https://api.backblazeb2.com/b2api/v2/b2_authorize_account --user {{ restic_env_vars.B2_ACCOUNT_ID }}:{{ restic_env_vars.B2_ACCOUNT_KEY }}"
 restic_scripts_directory: "{{ scripts_directory }}/restic"
 
 scripts_directory: "/opt/scripts"
