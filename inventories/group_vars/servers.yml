@@ -61,6 +61,49 @@ server_docker_plugins:
     alias: "loki"
 
 server_docker_services:
+  - name: "downloader"
+    services:
+      - name: "gluetun"
+        image: "qmcgaw/gluetun:latest"
+        cap_add:
+          - "NET_ADMIN"
+        devices:
+          - "/dev/net/tun:/dev/net/tun"
+        environment:
+          - "VPN_SERVICE_PROVIDER={{ vpn_provider }}"
+          - "VPN_TYPE=wireguard"
+          - "WIREGUARD_PRIVATE_KEY={{ vpn_private_key }}"
+          - "SERVER_COUNTRIES={{ vpn_countries }}"
+          - "PORT_FORWARD_ONLY=on"
+        restart: "unless-stopped"
+        expose:
+          - "8080" # qbittorrent ui
+          - "6881/tcp" # qbittorrent torrent tcp
+          - "6881/udp" # qbittorrent torrent udp
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.qbittorrent.tls=true"
+          - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
+          - "traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.qbittorrent.service=qbittorrent-service"
+          - "traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080"
+        networks:
+          - frontend
+      - name: "qbittorrent"
+        image: "lscr.io/linuxserver/qbittorrent:latest"
+        network_mode: "service:gluetun"
+        volumes:
+          - "./config/qbittorrent:/config"
+          - "{{ media_mount }}/downloads:/downloads"
+        environment:
+          - "PUID=1000"
+          - "PGID=1000"
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+    networks:
+      - name: "frontend"
+        external: true
+
   - name: "homarr"
     services:
       - name: "homarr"
@@ -77,6 +120,169 @@ server_docker_services:
           - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
           - "traefik.http.routers.homarr.rule=Host(`dash.{{ traefik_domain_name }}`)"
           - "traefik.http.services.homarr.loadbalancer.server.port=7575"
+        networks:
+          - frontend
+    networks:
+      - name: "frontend"
+        external: true
+
+  - name: "media"
+    services:
+      - name: "jellyfin"
+        image: "lscr.io/linuxserver/jellyfin:latest"
+        volumes:
+          - "./config/jellyfin:/config"
+          - "{{ media_mount }}/series:/tv"
+          - "{{ media_mount }}/movies:/movies"
+        environment:
+          - "PUID=1000"
+          - "PGID=1000"
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+        devices:
+          - "/dev/dri/renderD128:/dev/dri/renderD128"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.jellyfin.tls=true"
+          - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
+          - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+        networks:
+          - frontend
+      - name: "jellyserr"
+        image: "ghcr.io/fallenbagel/jellyseerr:latest"
+        volumes:
+          - "./config/jellyserr:/app/config"
+        environment:
+          - "PUID=1000"
+          - "PGID=1000"
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.jellyseerr.tls=true"
+          - "traefik.http.routers.jellyseerr.tls.certresolver=cloudflare"
+          - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
+        networks:
+          - frontend
+      - name: "prowlarr"
+        image: "lscr.io/linuxserver/prowlarr:latest"
+        volumes:
+          - "./config/prowlarr:/config"
+        environment:
+          - "PUID=1000"
+          - "PGID=1000"
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.prowlarr.tls=true"
+          - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
+          - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+        networks:
+          - frontend
+      - name: "flaresolverr"
+        image: "ghcr.io/flaresolverr/flaresolverr:latest"
+        environment:
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+        networks:
+          - frontend
+      - name: "radarr"
+        image: "lscr.io/linuxserver/radarr:latest"
+        volumes:
+          - "./config/radarr:/config"
+          - "{{ media_mount }}/movies:/movies"
+          - "{{ media_mount }}/downloads:/downloads"
+        environment:
+          - "PUID=1000"
+          - "PGID=1000"
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.radarr.tls=true"
+          - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
+          - "traefik.http.routers.radarr.rule=Host(`radarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+        networks:
+          - frontend
+      - name: "sonarr"
+        image: "lscr.io/linuxserver/sonarr:latest"
+        volumes:
+          - "./config/sonarr:/config"
+          - "{{ media_mount }}/series:/tv"
+          - "{{ media_mount }}/downloads:/downloads"
+        environment:
+          - "PUID=1000"
+          - "PGID=1000"
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.sonarr.tls=true"
+          - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
+          - "traefik.http.routers.sonarr.rule=Host(`sonarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+        networks:
+          - frontend
+      - name: "bazarr"
+        image: "lscr.io/linuxserver/bazarr:latest"
+        volumes:
+          - "./config/bazarr:/config"
+          - "{{ media_mount }}/movies:/movies"
+          - "{{ media_mount }}/series:/tv"
+        environment:
+          - "PUID=1000"
+          - "PGID=1000"
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.bazarr.tls=true"
+          - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
+          - "traefik.http.routers.bazarr.rule=Host(`bazarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+        networks:
+          - frontend
+      - name: "lidarr"
+        image: "lscr.io/linuxserver/lidarr:latest"
+        volumes:
+          - "./config/lidarr:/config"
+          - "{{ media_mount }}/music:/music"
+          - "{{ media_mount }}/downloads:/downloads"
+        environment:
+          - "PUID=1000"
+          - "PGID=1000"
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.lidarr.tls=true"
+          - "traefik.http.routers.lidarr.tls.certresolver=cloudflare"
+          - "traefik.http.routers.lidarr.rule=Host(`lidarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
+        networks:
+          - frontend
+      - name: "readarr"
+        image: lscr.io/linuxserver/readarr:develop
+        volumes:
+          - "./config/readarr:/config"
+          - "{{ media_mount }}/books:/books"
+          - "{{ media_mount }}/downloads:/downloads"
+        environment:
+          - "PUID=1000"
+          - "PGID=1000"
+          - "TZ={{ timezone }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.readarr.tls=true"
+          - "traefik.http.routers.readarr.tls.certresolver=cloudflare"
+          - "traefik.http.routers.readarr.rule=Host(`readarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.services.readarr.loadbalancer.server.port=8787"
         networks:
           - frontend
     networks:
@@ -154,7 +360,7 @@ server_docker_services:
         pid: host
         networks:
           - backend
-      - name: promtail
+      - name: "promtail"
         image: "grafana/promtail:latest"
         volumes:
           - "/var/log:/var/log"
@@ -168,192 +374,7 @@ server_docker_services:
         external: true
       - name: "backend"
         external: true
-
-  - name: "media"
-    services:
-      - name: "jellyfin"
-        image: "lscr.io/linuxserver/jellyfin:latest"
-        volumes:
-          - "./config/jellyfin:/config"
-          - "{{ media_mount }}/series:/tv"
-          - "{{ media_mount }}/movies:/movies"
-        environment:
-          - "PUID=1000"
-          - "PGID=1000"
-          - "TZ={{ timezone }}"
-        restart: "unless-stopped"
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.jellyfin.tls=true"
-          - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
-          - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.{{ traefik_domain_name }}`)"
-          - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
-        networks:
-          - frontend
-      - name: "jellyserr"
-        image: "ghcr.io/fallenbagel/jellyseerr:latest"
-        volumes:
-          - "./config/jellyserr:/app/config"
-        environment:
-          - "PUID=1000"
-          - "PGID=1000"
-          - "TZ={{ timezone }}"
-        restart: "unless-stopped"
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.jellyseerr.tls=true"
-          - "traefik.http.routers.jellyseerr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.media.{{ traefik_domain_name }}`)"
-          - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
-        networks:
-          - frontend
-      - name: "sonarr"
-        image: "lscr.io/linuxserver/sonarr:latest"
-        network_mode: "service:gluetun"
-        volumes:
-          - "./config/sonarr:/config"
-          - "{{ media_mount }}/series:/tv"
-          - "{{ media_mount }}/downloads:/downloads"
-        environment:
-          - "PUID=1000"
-          - "PGID=1000"
-          - "TZ={{ timezone }}"
-        restart: "unless-stopped"
-      - name: "radarr"
-        image: "lscr.io/linuxserver/radarr:latest"
-        network_mode: "service:gluetun"
-        volumes:
-          - "./config/radarr:/config"
-          - "{{ media_mount }}/movies:/movies"
-          - "{{ media_mount }}/downloads:/downloads"
-        environment:
-          - "PUID=1000"
-          - "PGID=1000"
-          - "TZ={{ timezone }}"
-        restart: "unless-stopped"
-      - name: "bazarr"
-        image: "lscr.io/linuxserver/bazarr:latest"
-        network_mode: "service:gluetun"
-        volumes:
-          - "./config/bazarr:/config"
-          - "{{ media_mount }}/movies:/movies"
-          - "{{ media_mount }}/series:/tv"
-        environment:
-          - "PUID=1000"
-          - "PGID=1000"
-          - "TZ={{ timezone }}"
-        restart: "unless-stopped"
-      - name: "readarr"
-        image: lscr.io/linuxserver/readarr:develop
-        network_mode: "service:gluetun"
-        volumes:
-          - "./config/readarr:/config"
-          - "{{ media_mount }}/books:/books"
-          - "{{ media_mount }}/downloads:/downloads"
-        environment:
-          - "PUID=1000"
-          - "PGID=1000"
-          - "TZ={{ timezone }}"
-        restart: "unless-stopped"
-      - name: "lidarr"
-        image: "lscr.io/linuxserver/lidarr:latest"
-        network_mode: "service:gluetun"
-        volumes:
-          - "./config/lidarr:/config"
-          - "{{ media_mount }}/music:/music"
-          - "{{ media_mount }}/downloads:/downloads"
-        environment:
-          - "PUID=1000"
-          - "PGID=1000"
-          - "TZ={{ timezone }}"
-        restart: "unless-stopped"
-      - name: "gluetun"
-        image: "qmcgaw/gluetun:latest"
-        cap_add:
-          - "NET_ADMIN"
-        devices:
-          - "/dev/net/tun:/dev/net/tun"
-        environment:
-          - "VPN_SERVICE_PROVIDER={{ vpn_provider }}"
-          - "VPN_TYPE=wireguard"
-          - "WIREGUARD_PRIVATE_KEY={{ vpn_private_key }}"
-          - "SERVER_COUNTRIES={{ vpn_countries }}"
-          - "PORT_FORWARD_ONLY=on"
-        restart: "unless-stopped"
-        expose:
-          - "8989" # sonarr
-          - "7878" # radarr
-          - "6767" # bazarr
-          - "8787" # readarr
-          - "8686" # lidarr
-          - "9696" # prowlarr
-          - "8080" # qbittorrent ui
-          - "6881/tcp" # qbittorrent torrent tcp
-          - "6881/udp" # qbittorrent torrent udp
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.radarr.tls=true"
-          - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.radarr.rule=Host(`radarr.media.yasos.org`)"
-          - "traefik.http.routers.radarr.service=radarr-service"
-          - "traefik.http.services.radarr-service.loadbalancer.server.port=7878"
-          - "traefik.http.routers.sonarr.tls=true"
-          - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.sonarr.rule=Host(`sonarr.media.yasos.org`)"
-          - "traefik.http.routers.sonarr.service=sonarr-service"
-          - "traefik.http.services.sonarr-service.loadbalancer.server.port=8989"
-          - "traefik.http.routers.lidarr.tls=true"
-          - "traefik.http.routers.lidarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.lidarr.rule=Host(`lidarr.media.yasos.org`)"
-          - "traefik.http.routers.lidarr.service=lidarr-service"
-          - "traefik.http.services.lidarr-service.loadbalancer.server.port=8686"
-          - "traefik.http.routers.readarr.tls=true"
-          - "traefik.http.routers.readarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.readarr.rule=Host(`readarr.media.yasos.org`)"
-          - "traefik.http.routers.readarr.service=readarr-service"
-          - "traefik.http.services.readarr-service.loadbalancer.server.port=8787"
-          - "traefik.http.routers.bazarr.tls=true"
-          - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.bazarr.rule=Host(`bazarr.media.yasos.org`)"
-          - "traefik.http.routers.bazarr.service=bazarr-service"
-          - "traefik.http.services.bazarr-service.loadbalancer.server.port=6767"
-          - "traefik.http.routers.qbittorrent.tls=true"
-          - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
-          - "traefik.http.routers.qbittorrent.rule=Host(`torrent.media.{{ traefik_domain_name }}`)"
-          - "traefik.http.routers.qbittorrent.service=qbittorrent-service"
-          - "traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080"
-          - "traefik.http.routers.prowlarr.tls=true"
-          - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.media.{{ traefik_domain_name }}`)"
-          - "traefik.http.routers.prowlarr.service=prowlarr-service"
-          - "traefik.http.services.prowlarr-service.loadbalancer.server.port=9696"
-        networks:
-          - frontend
-      - name: "prowlarr"
-        image: "lscr.io/linuxserver/prowlarr:latest"
-        network_mode: "service:gluetun"
-        volumes:
-          - "./config/prowlarr:/config"
-        environment:
-          - "PUID=1000"
-          - "PGID=1000"
-          - "TZ={{ timezone }}"
-        restart: "unless-stopped"
-      - name: "qbittorrent"
-        image: "lscr.io/linuxserver/qbittorrent:latest"
-        network_mode: "service:gluetun"
-        volumes:
-          - "./config/qbittorrent:/config"
-          - "{{ media_mount }}/downloads:/downloads"
-        environment:
-          - "PUID=1000"
-          - "PGID=1000"
-          - "TZ={{ timezone }}"
-        restart: "unless-stopped"
-    networks:
-      - name: "frontend"
-        external: true
-
+  
   - name: "nextcloud"
     services:
       - name: "nextcloud-app"
