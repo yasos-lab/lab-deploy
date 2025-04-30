@@ -61,9 +61,84 @@ server_docker_plugins:
     alias: "loki"
 
 server_docker_services:
-  - name: "downloader"
+  - name: "toolbox"
     services:
-      - name: "gluetun"
+      - name: "homarr"
+        image: "ghcr.io/homarr-labs/homarr:v1.6.0"
+        volumes:
+          - "./data/homarr:/appdata"
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        environment:
+          - "SECRET_ENCRYPTION_KEY={{ homarr_sec }}"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.homarr.tls=true"
+          - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
+          - "traefik.http.routers.homarr.rule=Host(`dash.{{ domain_name }}`)"
+          - "traefik.http.services.homarr.loadbalancer.server.port=7575"
+        networks:
+          - frontend
+      - name: "traefik"
+        image: "traefik:v3"
+        volumes:
+          - "./config/traefik/ssl:/ssl:rw"
+          - "./config/traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        ports:
+          - "80:80"
+          - "443:443"
+        restart: "unless-stopped"
+        environment:
+          - "CF_DNS_API_TOKEN={{ cloudflare_api_token }}"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.traefik.tls=true"
+          - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
+          - "traefik.http.routers.traefik.rule=Host(`proxy.{{ domain_name }}`)"
+          - "traefik.http.routers.traefik.service=api@internal"
+          - "traefik.http.middlewares.traefik-auth.basicauth.users={{ traefik_user }}:{{ traefik_hash_password | regex_replace('\\$', '$$') }}" # To escape $ in the password hash
+          - "traefik.http.routers.traefik.middlewares=traefik-auth"
+        networks:
+          - frontend
+      - name: "whoami"
+        image: "traefik/whoami"
+        restart: "unless-stopped"
+        networks:
+          - frontend
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.whoami.tls=true"
+          - "traefik.http.routers.whoami.tls.certresolver=cloudflare"
+          - "traefik.http.routers.whoami.rule=Host(`whoami.{{ domain_name }}`)"
+      - name: "portainer"
+        image: "portainer/portainer-ce:latest"
+        volumes:
+          - "./data/portainer:/data"
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.portainer.tls=true"
+          - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
+          - "traefik.http.routers.portainer.rule=Host(`portainer.{{ domain_name }}`)"
+          - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+        networks:
+          - frontend
+      - name: "postgres"
+        image: "postgres:latest"
+        environment:
+          - "POSTGRES_DB={{ postgres_db }}"
+          - "POSTGRES_USER={{ postgres_db_user }}"
+          - "POSTGRES_PASSWORD={{ postgres_db_password }}"
+        volumes:
+          - "./data/postgres:/var/lib/postgresql/data"
+        ports:
+          - "5432:5432"
+        networks:
+          - "backend"
+        restart: "unless-stopped"
+      - name: "gluetunvpn"
         image: "qmcgaw/gluetun:latest"
         cap_add:
           - "NET_ADMIN"
@@ -84,14 +159,14 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.qbittorrent.tls=true"
           - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
-          - "traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ domain_name }}`)"
           - "traefik.http.routers.qbittorrent.service=qbittorrent-service"
           - "traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080"
         networks:
           - frontend
       - name: "qbittorrent"
         image: "lscr.io/linuxserver/qbittorrent:latest"
-        network_mode: "service:gluetun"
+        network_mode: "service:gluetunvpn"
         volumes:
           - "./config/qbittorrent:/config"
           - "{{ media_mount }}/downloads:/downloads"
@@ -100,30 +175,28 @@ server_docker_services:
           - "PGID=1000"
           - "TZ={{ timezone }}"
         restart: "unless-stopped"
-    networks:
-      - name: "frontend"
-        external: true
-
-  - name: "homarr"
-    services:
-      - name: "homarr"
-        image: "ghcr.io/homarr-labs/homarr:v1.6.0"
+      - name: "vaultwarden"
+        image: "vaultwarden/server:1.33.2"
         volumes:
-          - "./data:/appdata"
-          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "./data/vaultwarden:/data"
+          - "/etc/localtime:/etc/localtime"
         environment:
-          - "SECRET_ENCRYPTION_KEY={{ homarr_sec }}"
+          - "SIGNUPS_ALLOWED=false"
+          - "TZ=Europe/Paris"
+          - "ADMIN_TOKEN={{ vaultwarden_admin_token | replace('$', '$$') }}"
         restart: "unless-stopped"
         labels:
           - "traefik.enable=true"
-          - "traefik.http.routers.homarr.tls=true"
-          - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.homarr.rule=Host(`dash.{{ traefik_domain_name }}`)"
-          - "traefik.http.services.homarr.loadbalancer.server.port=7575"
+          - "traefik.http.routers.vaultwarden.tls=true"
+          - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
+          - "traefik.http.routers.vaultwarden.rule=Host(`vault.{{ domain_name }}`)"
+          #- "traefik.http.services.vaultwarden.loadbalancer.server.port=7575"
         networks:
           - frontend
     networks:
       - name: "frontend"
+        external: true
+      - name: "backend"
         external: true
 
   - name: "media"
@@ -145,7 +218,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.jellyfin.tls=true"
           - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
-          - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.{{ domain_name }}`)"
           - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
         networks:
           - frontend
@@ -162,7 +235,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.jellyseerr.tls=true"
           - "traefik.http.routers.jellyseerr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.media.{{ domain_name }}`)"
           - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
         networks:
           - frontend
@@ -179,7 +252,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.prowlarr.tls=true"
           - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.media.{{ domain_name }}`)"
           - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
         networks:
           - frontend
@@ -205,7 +278,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.radarr.tls=true"
           - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.radarr.rule=Host(`radarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.radarr.rule=Host(`radarr.media.{{ domain_name }}`)"
           - "traefik.http.services.radarr.loadbalancer.server.port=7878"
         networks:
           - frontend
@@ -224,7 +297,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.sonarr.tls=true"
           - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.sonarr.rule=Host(`sonarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.sonarr.rule=Host(`sonarr.media.{{ domain_name }}`)"
           - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
         networks:
           - frontend
@@ -243,7 +316,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.bazarr.tls=true"
           - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.bazarr.rule=Host(`bazarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.bazarr.rule=Host(`bazarr.media.{{ domain_name }}`)"
           - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
         networks:
           - frontend
@@ -262,7 +335,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.lidarr.tls=true"
           - "traefik.http.routers.lidarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.lidarr.rule=Host(`lidarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.lidarr.rule=Host(`lidarr.media.{{ domain_name }}`)"
           - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
         networks:
           - frontend
@@ -281,7 +354,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.readarr.tls=true"
           - "traefik.http.routers.readarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.readarr.rule=Host(`readarr.media.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.readarr.rule=Host(`readarr.media.{{ domain_name }}`)"
           - "traefik.http.services.readarr.loadbalancer.server.port=8787"
         networks:
           - frontend
@@ -301,7 +374,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.grafana.tls=true"
           - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
-          - "traefik.http.routers.grafana.rule=Host(`grafana.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.grafana.rule=Host(`grafana.{{ domain_name }}`)"
           - "traefik.http.services.grafana.loadbalancer.server.port=3000"
           - "traefik.docker.network=frontend"
         networks:
@@ -319,7 +392,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.prometheus.tls=true"
           - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
-          - "traefik.http.routers.prometheus.rule=Host(`prometheus.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.prometheus.rule=Host(`prometheus.{{ domain_name }}`)"
           - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
           - "traefik.docker.network=frontend"
         networks:
@@ -335,7 +408,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.loki.tls=true"
           - "traefik.http.routers.loki.tls.certresolver=cloudflare"
-          - "traefik.http.routers.loki.rule=Host(`loki.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.loki.rule=Host(`loki.{{ domain_name }}`)"
           - "traefik.http.services.loki.loadbalancer.server.port=3100"
           - "traefik.docker.network=frontend"
         networks:
@@ -393,8 +466,8 @@ server_docker_services:
           - "MYSQL_USER={{ nextcloud_db_user }}"
           - "REDIS_HOST=nextcloud-redis"
           - "TRUSTED_PROXIES=192.168.1.20"
-          - "NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ traefik_domain_name }}"
-          - "OVERWRITECLIURL=https://cloud.{{ traefik_domain_name }}"
+          - "NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ domain_name }}"
+          - "OVERWRITECLIURL=https://cloud.{{ domain_name }}"
           - "OVERWRITEPROTOCOL=https"
         restart: "unless-stopped"
         networks:
@@ -404,7 +477,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.nextcloud.tls=true"
           - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
-          - "traefik.http.routers.nextcloud.rule=Host(`cloud.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.nextcloud.rule=Host(`cloud.{{ domain_name }}`)"
           - "traefik.http.middlewares.secure_headers.headers.stsSeconds=15552000"
           - "traefik.http.middlewares.secure_headers.headers.stsIncludeSubdomains=true"
           - "traefik.http.middlewares.secure_headers.headers.stsPreload=true"
@@ -445,7 +518,7 @@ server_docker_services:
           - "traefik.enable=true"
           - "traefik.http.routers.office.tls=true"
           - "traefik.http.routers.office.tls.certresolver=cloudflare"
-          - "traefik.http.routers.office.rule=Host(`office.cloud.{{ traefik_domain_name }}`)"
+          - "traefik.http.routers.office.rule=Host(`office.cloud.{{ domain_name }}`)"
           - "traefik.http.middlewares.x_forwarded_proto.headers.customrequestheaders.X-Forwarded-Proto=https"
           - "traefik.http.routers.office.middlewares=x_forwarded_proto"
     networks:
@@ -454,110 +527,9 @@ server_docker_services:
       - name: "backend"
         external: true
 
-  - name: "portainer"
-    services:
-      - name: "portainer"
-        image: "portainer/portainer-ce:latest"
-        volumes:
-          - "./data:/data"
-          - "/var/run/docker.sock:/var/run/docker.sock"
-        restart: "unless-stopped"
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.portainer.tls=true"
-          - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
-          - "traefik.http.routers.portainer.rule=Host(`portainer.{{ traefik_domain_name }}`)"
-          - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-        networks:
-          - frontend
-    networks:
-      - name: "frontend"
-        external: true
-
-  - name: "postgres"
-    services:
-      - name: "postgres_db"
-        image: "postgres:latest"
-        environment:
-          - "POSTGRES_DB={{ postgres_db }}"
-          - "POSTGRES_USER={{ postgres_db_user }}"
-          - "POSTGRES_PASSWORD={{ postgres_db_password }}"
-        volumes:
-          - "./data:/var/lib/postgresql/data"
-        ports:
-          - "5432:5432"
-        networks:
-          - "backend"
-        restart: "unless-stopped"
-    networks:
-      - name: "backend"
-        external: true
-
-  - name: "traefik"
-    services:
-      - name: "traefik"
-        image: "traefik:v3"
-        volumes:
-          - "./config/ssl:/ssl:rw"
-          - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
-          - "/var/run/docker.sock:/var/run/docker.sock:ro"
-        ports:
-          - "80:80"
-          - "443:443"
-        restart: "unless-stopped"
-        environment:
-          - "CF_DNS_API_TOKEN={{ traefik_dns_api_token }}"
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.traefik.tls=true"
-          - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
-          - "traefik.http.routers.traefik.rule=Host(`proxy.{{ traefik_domain_name }}`)"
-          - "traefik.http.routers.traefik.service=api@internal"
-          - "traefik.http.middlewares.traefik-auth.basicauth.users={{ traefik_user }}:{{ traefik_hash_password | regex_replace('\\$', '$$') }}" # To escape $ in the password hash
-          - "traefik.http.routers.traefik.middlewares=traefik-auth"
-        networks:
-          - frontend
-      - name: "whoami"
-        image: "traefik/whoami"
-        restart: "unless-stopped"
-        networks:
-          - frontend
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.whoami.tls=true"
-          - "traefik.http.routers.whoami.tls.certresolver=cloudflare"
-          - "traefik.http.routers.whoami.rule=Host(`whoami.{{ traefik_domain_name }}`)"
-    networks:
-      - name: "frontend"
-        external: true
-
-  - name: "vaultwarden"
-    services:
-      - name: "vaultwarden"
-        image: "vaultwarden/server:1.33.2"
-        volumes:
-          - "./data:/data"
-          - "/etc/localtime:/etc/localtime"
-        environment:
-          - "SIGNUPS_ALLOWED=false"
-          - "TZ=Europe/Paris"
-          - "ADMIN_TOKEN={{ vaultwarden_admin_token | replace('$', '$$') }}"
-        restart: "unless-stopped"
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.vaultwarden.tls=true"
-          - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
-          - "traefik.http.routers.vaultwarden.rule=Host(`vault.{{ traefik_domain_name }}`)"
-          #- "traefik.http.services.vaultwarden.loadbalancer.server.port=7575"
-        networks:
-          - frontend
-    networks:
-      - name: "frontend"
-        external: true
-
 server_docker_services_configs:
   - src: "templates/traefik/config/traefik.yml.j2"
-    dest: "{{ docker_services_directory }}/traefik/config/traefik.yml"
+    dest: "{{ docker_services_directory }}/toolbox/config/traefik/traefik.yml"
   - src: "templates/nextcloud/config/nextcloud.ini.j2"
     dest: "{{ docker_services_directory }}/nextcloud/config/nextcloud.ini"
   - src: "templates/monitoring/config/prometheus.yml.j2"
