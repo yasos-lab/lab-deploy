@@ -5,12 +5,13 @@ media_mount: "/mnt/media"
 server_deb_packages: []
 
 server_directories:
-  - "{{ media_mount }}/downloads"
-  - "{{ media_mount }}/movies"
-  - "{{ media_mount }}/series"
-  - "{{ media_mount }}/music"
-  - "{{ media_mount }}/books"
-  - "{{ media_mount }}/courses"
+  - "{{ media_mount }}/media/books"
+  - "{{ media_mount }}/media/courses"
+  - "{{ media_mount }}/media/movies"
+  - "{{ media_mount }}/media/music"
+  - "{{ media_mount }}/media/others"
+  - "{{ media_mount }}/media/tv"
+  - "{{ media_mount }}/torrents"
 
 server_disk_lvs:
   - lv: "docker_backup_lv"
@@ -178,7 +179,7 @@ server_docker_services:
         network_mode: "service:gluetunvpn"
         volumes:
           - "./config/qbittorrent:/config"
-          - "{{ media_mount }}/downloads:/downloads"
+          - "{{ media_mount }}/torrents:/media/torrents"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -214,8 +215,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/jellyfin:latest"
         volumes:
           - "./config/jellyfin:/config"
-          - "{{ media_mount }}/series:/tv"
-          - "{{ media_mount }}/movies:/movies"
+          - "{{ media_mount }}/media:/media"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -276,8 +276,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/radarr:latest"
         volumes:
           - "./config/radarr:/config"
-          - "{{ media_mount }}/movies:/movies"
-          - "{{ media_mount }}/downloads:/downloads"
+          - "{{ media_mount }}:/media"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -295,8 +294,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/sonarr:latest"
         volumes:
           - "./config/sonarr:/config"
-          - "{{ media_mount }}/series:/tv"
-          - "{{ media_mount }}/downloads:/downloads"
+          - "{{ media_mount }}:/media"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -314,8 +312,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/bazarr:latest"
         volumes:
           - "./config/bazarr:/config"
-          - "{{ media_mount }}/movies:/movies"
-          - "{{ media_mount }}/series:/tv"
+          - "{{ media_mount }}:/media"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -333,8 +330,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/lidarr:latest"
         volumes:
           - "./config/lidarr:/config"
-          - "{{ media_mount }}/music:/music"
-          - "{{ media_mount }}/downloads:/downloads"
+          - "{{ media_mount }}:/media"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -352,8 +348,7 @@ server_docker_services:
         image: lscr.io/linuxserver/readarr:develop
         volumes:
           - "./config/readarr:/config"
-          - "{{ media_mount }}/books:/books"
-          - "{{ media_mount }}/downloads:/downloads"
+          - "{{ media_mount }}:/media"
         environment:
           - "PUID=1000"
           - "PGID=1000"
