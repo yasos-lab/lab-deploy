@@ -457,8 +457,8 @@ server_docker_services:
       - name: "nextcloud-app"
         image: "nextcloud:30"
         volumes:
-          - "./data/app:/var/www/html"
-          - "./config/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini"
+          - "./data/nextcloud-app:/var/www/html"
+          - "./config/nextcloud-app/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini"
         depends_on:
           - "nextcloud-redis"
           - "nextcloud-db"
@@ -501,7 +501,7 @@ server_docker_services:
       - name: "nextcloud-db"
         image: "mariadb:10"
         volumes:
-          - "./data/db:/var/lib/mysql"
+          - "./data/nextcloud-db:/var/lib/mysql"
         command: "--transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW"
         environment:
           - "MYSQL_ROOT_PASSWORD={{ nextcloud_root_db_password }}"
@@ -535,7 +535,7 @@ server_docker_services_configs:
   - src: "templates/traefik/config/traefik.yml.j2"
     dest: "{{ docker_services_directory }}/toolbox/config/traefik/traefik.yml"
   - src: "templates/nextcloud/config/nextcloud.ini.j2"
-    dest: "{{ docker_services_directory }}/nextcloud/config/nextcloud.ini"
+    dest: "{{ docker_services_directory }}/nextcloud/config/nextcloud-app/nextcloud.ini"
   - src: "templates/monitoring/config/prometheus.yml.j2"
     dest: "{{ docker_services_directory }}/monitoring/config/prometheus/prometheus.yml"
   - src: "templates/monitoring/config/loki-config.yml.j2"
