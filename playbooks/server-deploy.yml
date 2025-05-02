@@ -5,36 +5,6 @@
   become: yes
   handlers:
     - import_tasks: handlers/main.yml
-  pre_tasks:
-    - name: Get secrets
-      ansible.builtin.set_fact:
-        cloudflare_api_token: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='cloudflare_token') | first }}"
-        traefik_acme_email: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='acme_email') | first }}"
-        domain_name: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='domain_name') | first }}"
-        traefik_user: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='traefik_user') | first }}"
-        traefik_hash_password: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='traefik_hash_password') | first }}"
-        homarr_sec: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='homarr_sec') | first }}"
-        postgres_db: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='postgres_db') | first }}"
-        postgres_db_user: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='postgres_user') | first }}"
-        postgres_db_password: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='postgres_password') | first }}"
-        vaultwarden_admin_token: "{{ lookup('community.general.bitwarden', 'toolbox_services', field='vaultwarden_admin_token') | first }}"
-        nextcloud_db: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='database') | first }}"
-        nextcloud_db_user: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbuser') | first }}"
-        nextcloud_db_password: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='dbpassword') | first }}"
-        nextcloud_root_db_password: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='rootdb_password') | first }}"
-        nextcloud_onlyoffice_jwt: "{{ lookup('community.general.bitwarden', 'nextcloud_service', field='onlyoffice_jwt') | first }}"
-        restic_password: "{{ lookup('community.general.bitwarden', 'restic_backup', field='password') | first }}"
-        proton_username: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='proton_username') | first }}"
-        proton_encpassword: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='proton_encpassword') | first }}"
-        proton_2fa: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='proton_2fa') | first }}"
-        mega_username: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_username') | first }}"
-        mega_encpassword: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_encpassword') | first }}"
-        b2_account: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='b2_key_id') | first }}"
-        b2_appkey: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='b2_app_key') | first }}"
-        vpn_provider: "{{ lookup('community.general.bitwarden', 'media_service', field='vpn_provider') | first }}"
-        vpn_private_key: "{{ lookup('community.general.bitwarden', 'media_service', field='vpn_private_key') | first }}"
-        vpn_countries: "{{ lookup('community.general.bitwarden', 'media_service', field='vpn_countries') | first }}"
-      tags: server::secrets
   tasks:
     - name: Purge
       ansible.builtin.import_tasks: tasks/purge.yml

@@ -4,4 +4,4 @@ docker/**/*.env
 
 scripts/__pycache__
 
-vagrant-provisioning/.vagrant/
+.vault-pass

@@ -5,12 +5,6 @@
   become: yes
   handlers:
     - import_tasks: handlers/main.yml
-  pre_tasks:
-    - name: Get secrets
-      ansible.builtin.set_fact:
-        mega_username: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_username') | first }}"
-        mega_encpassword: "{{ lookup('community.general.bitwarden', 'rclone_remotes', field='mega_encpassword') | first }}"
-      tags: workstation::secrets
   tasks:
     - name: Purge
       ansible.builtin.import_tasks: tasks/purge.yml

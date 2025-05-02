@@ -1,17 +1,17 @@
 ---
 
-media_mount: "/mnt/media"
+data_mount: "/mnt/data"
 
 server_deb_packages: []
 
 server_directories:
-  - "{{ media_mount }}/media/books"
-  - "{{ media_mount }}/media/courses"
-  - "{{ media_mount }}/media/movies"
-  - "{{ media_mount }}/media/music"
-  - "{{ media_mount }}/media/others"
-  - "{{ media_mount }}/media/tv"
-  - "{{ media_mount }}/torrents"
+  - "{{ data_mount }}/media/books"
+  - "{{ data_mount }}/media/courses"
+  - "{{ data_mount }}/media/movies"
+  - "{{ data_mount }}/media/music"
+  - "{{ data_mount }}/media/others"
+  - "{{ data_mount }}/media/tv"
+  - "{{ data_mount }}/torrents"
 
 server_disk_lvs:
   - lv: "docker_backup_lv"
@@ -19,9 +19,9 @@ server_disk_lvs:
     mount_point: "/mnt/docker_backup"
     size: "256g"
     fstype: "xfs"
-  - lv: "media_lv"
-    vg: "media_vg"
-    mount_point: "{{ media_mount }}"
+  - lv: "data_lv"
+    vg: "data_vg"
+    mount_point: "{{ data_mount }}"
     size: "400g"
     fstype: "xfs"
 
@@ -50,7 +50,7 @@ server_disk_partitions:
 server_disk_vgs:
   - vg: "backup_vg"
     pvs: [/dev/sda1, /dev/sda2]
-  - vg: "media_vg"
+  - vg: "data_vg"
     pvs: [/dev/sda3, /dev/sda4]
 
 server_docker_networks:
@@ -179,7 +179,7 @@ server_docker_services:
         network_mode: "service:gluetunvpn"
         volumes:
           - "./config/qbittorrent:/config"
-          - "{{ media_mount }}/torrents:/media/torrents"
+          - "{{ data_mount }}/torrents:/data/torrents"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -215,7 +215,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/jellyfin:latest"
         volumes:
           - "./config/jellyfin:/config"
-          - "{{ media_mount }}/media:/media"
+          - "{{ data_mount }}/media:/media"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -276,7 +276,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/radarr:latest"
         volumes:
           - "./config/radarr:/config"
-          - "{{ media_mount }}:/media"
+          - "{{ data_mount }}:/data"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -294,7 +294,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/sonarr:latest"
         volumes:
           - "./config/sonarr:/config"
-          - "{{ media_mount }}:/media"
+          - "{{ data_mount }}:/data"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -312,7 +312,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/bazarr:latest"
         volumes:
           - "./config/bazarr:/config"
-          - "{{ media_mount }}:/media"
+          - "{{ data_mount }}:/data"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -330,7 +330,7 @@ server_docker_services:
         image: "lscr.io/linuxserver/lidarr:latest"
         volumes:
           - "./config/lidarr:/config"
-          - "{{ media_mount }}:/media"
+          - "{{ data_mount }}:/data"
         environment:
           - "PUID=1000"
           - "PGID=1000"
@@ -348,7 +348,7 @@ server_docker_services:
         image: lscr.io/linuxserver/readarr:develop
         volumes:
           - "./config/readarr:/config"
-          - "{{ media_mount }}:/media"
+          - "{{ data_mount }}:/data"
         environment:
           - "PUID=1000"
           - "PGID=1000"
