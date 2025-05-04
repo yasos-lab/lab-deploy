@@ -573,7 +573,7 @@ server_rclone_mounts:
     local_path_owner: "{{ rclone_config_owner.OWNER }}"
     local_path_group: "{{ rclone_config_owner.GROUP }}"
     auto_mount: true
-    extra_args: ""
+    extra_args: "--allow-other"
 
 server_repositories:
   - name: "docker"

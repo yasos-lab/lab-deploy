@@ -23,15 +23,11 @@
         mode: 0600
     
     - name: Validate rclone configs
-      environment: 
-        RCLONE_CONFIG: "{{ rclone_config_location }}"
       ansible.builtin.command:
         cmd: "rclone ls '{{ item.name }}':"
       loop: "{{ rclone_configs }}"
 
 - name: Ensure rclone remote directory exists
-  environment: 
-    RCLONE_CONFIG: "{{ rclone_config_location }}"
   ansible.builtin.command:
     cmd: "rclone mkdir '{{ item.remote_name }}':{{ item.remote_path }}"
   loop: "{{ rclone_mounts }}"

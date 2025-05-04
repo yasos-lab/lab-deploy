@@ -49,7 +49,7 @@ common_rclone_mounts:
     local_path_owner: "{{ rclone_config_owner.OWNER }}"
     local_path_group: "{{ rclone_config_owner.GROUP }}"
     auto_mount: true
-    extra_args: ""
+    extra_args: "--allow-other"
   - name: "protondrive"
     remote_name: "protondrive" 
     remote_path: "/"
@@ -58,7 +58,7 @@ common_rclone_mounts:
     local_path_owner: "{{ rclone_config_owner.OWNER }}"
     local_path_group: "{{ rclone_config_owner.GROUP }}"
     auto_mount: true
-    extra_args: ""
+    extra_args: "--allow-other"
 
 config_files:
   - file: .secrets
@@ -94,7 +94,7 @@ purge_vars:
   shell: no
   services: no
 
-rclone_config_location: "{{ user_home }}/.config/rclone/rclone.conf"
+rclone_config_location: "/root/.config/rclone/rclone.conf"
 
 rclone_config_owner:
   OWNER: "{{ rclone_user }}"
@@ -102,16 +102,15 @@ rclone_config_owner:
 
 rclone_package: "https://downloads.rclone.org/v{{ rclone_version }}/rclone-v{{ rclone_version }}-linux-amd64.deb"
 
-rclone_user: "{{ ansible_user }}"
+rclone_user: "root"
 
 rclone_version: 1.69.1
 
 restic_env_vars:
   RESTIC_PASSWORD: "{{ restic_password }}"
-  RCLONE_CONFIG: "{{ rclone_config_location }}"
 restic_logs_directory: "/var/log/restic"
 restic_remote: "rclone:protondrive"
-restic_remote_verify_command: "rclone --config {{ restic_env_vars.RCLONE_CONFIG }} lsf protondrive:"
+restic_remote_verify_command: "rclone lsf protondrive:"
 restic_scripts_directory: "{{ scripts_directory }}/restic"
 
 scripts_directory: "/opt/scripts"
