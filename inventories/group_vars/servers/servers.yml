@@ -64,6 +64,23 @@ server_docker_plugins:
 server_docker_services:
   - name: "toolbox"
     services:
+      - name: "authelia"
+        image: "authelia/authelia:latest"
+        environment:
+          - "TZ={{ timezone }}"
+        volumes:
+          - "./config/authelia:/config"
+        restart: "unless-stopped"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.authelia.tls=true"
+          - "traefik.http.routers.authelia.tls.certresolver=cloudflare"
+          - "traefik.http.routers.authelia.rule=Host(`sso.{{ domain_name }}`)"
+          - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://sso.{{ domain_name }}"
+          - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
+          - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"
+        networks:
+          - "frontend"
       - name: "homarr"
         image: "ghcr.io/homarr-labs/homarr:v1.6.0"
         volumes:
@@ -77,6 +94,7 @@ server_docker_services:
           - "traefik.http.routers.homarr.tls=true"
           - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
           - "traefik.http.routers.homarr.rule=Host(`dash.{{ domain_name }}`)"
+          - "traefik.http.routers.homarr.middlewares=authelia@docker"
           - "traefik.http.services.homarr.loadbalancer.server.port=7575"
         networks:
           - frontend
@@ -98,8 +116,7 @@ server_docker_services:
           - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
           - "traefik.http.routers.traefik.rule=Host(`proxy.{{ domain_name }}`)"
           - "traefik.http.routers.traefik.service=api@internal"
-          - "traefik.http.middlewares.traefik-auth.basicauth.users={{ traefik_user }}:{{ traefik_hash_password | regex_replace('\\$', '$$') }}" # To escape $ in the password hash
-          - "traefik.http.routers.traefik.middlewares=traefik-auth"
+          - "traefik.http.routers.traefik.middlewares=authelia@docker"
         networks:
           - frontend
       - name: "whoami"
@@ -132,6 +149,7 @@ server_docker_services:
           - "traefik.http.routers.portainer.tls=true"
           - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
           - "traefik.http.routers.portainer.rule=Host(`portainer.{{ domain_name }}`)"
+          - "traefik.http.routers.portainer.middlewares=authelia@docker"
           - "traefik.http.services.portainer.loadbalancer.server.port=9000"
         networks:
           - frontend
@@ -171,6 +189,7 @@ server_docker_services:
           - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
           - "traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ domain_name }}`)"
           - "traefik.http.routers.qbittorrent.service=qbittorrent-service"
+          - "traefik.http.routers.qbittorrent.middlewares=authelia@docker"
           - "traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080"
         networks:
           - frontend
@@ -200,7 +219,8 @@ server_docker_services:
           - "traefik.http.routers.vaultwarden.tls=true"
           - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
           - "traefik.http.routers.vaultwarden.rule=Host(`vault.{{ domain_name }}`)"
-          #- "traefik.http.services.vaultwarden.loadbalancer.server.port=7575"
+          - "traefik.http.routers.vaultwarden.middlewares=authelia@docker"
+          - "traefik.http.services.vaultwarden.loadbalancer.server.port=7575"
         networks:
           - frontend
     networks:
@@ -228,6 +248,7 @@ server_docker_services:
           - "traefik.http.routers.jellyfin.tls=true"
           - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
           - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.{{ domain_name }}`)"
+          - "traefik.http.routers.jellyfin.middlewares=authelia@docker"
           - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
         networks:
           - frontend
@@ -245,6 +266,7 @@ server_docker_services:
           - "traefik.http.routers.jellyseerr.tls=true"
           - "traefik.http.routers.jellyseerr.tls.certresolver=cloudflare"
           - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.media.{{ domain_name }}`)"
+          - "traefik.http.routers.jellyseerr.middlewares=authelia@docker"
           - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
         networks:
           - frontend
@@ -262,6 +284,7 @@ server_docker_services:
           - "traefik.http.routers.prowlarr.tls=true"
           - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
           - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.media.{{ domain_name }}`)"
+          - "traefik.http.routers.prowlarr.middlewares=authelia@docker"
           - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
         networks:
           - frontend
@@ -287,6 +310,7 @@ server_docker_services:
           - "traefik.http.routers.radarr.tls=true"
           - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
           - "traefik.http.routers.radarr.rule=Host(`radarr.media.{{ domain_name }}`)"
+          - "traefik.http.routers.radarr.middlewares=authelia@docker"
           - "traefik.http.services.radarr.loadbalancer.server.port=7878"
         networks:
           - frontend
@@ -305,6 +329,7 @@ server_docker_services:
           - "traefik.http.routers.sonarr.tls=true"
           - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
           - "traefik.http.routers.sonarr.rule=Host(`sonarr.media.{{ domain_name }}`)"
+          - "traefik.http.routers.sonarr.middlewares=authelia@docker"
           - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
         networks:
           - frontend
@@ -323,6 +348,7 @@ server_docker_services:
           - "traefik.http.routers.bazarr.tls=true"
           - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
           - "traefik.http.routers.bazarr.rule=Host(`bazarr.media.{{ domain_name }}`)"
+          - "traefik.http.routers.bazarr.middlewares=authelia@docker"
           - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
         networks:
           - frontend
@@ -341,6 +367,7 @@ server_docker_services:
           - "traefik.http.routers.lidarr.tls=true"
           - "traefik.http.routers.lidarr.tls.certresolver=cloudflare"
           - "traefik.http.routers.lidarr.rule=Host(`lidarr.media.{{ domain_name }}`)"
+          - "traefik.http.routers.lidarr.middlewares=authelia@docker"
           - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
         networks:
           - frontend
@@ -359,6 +386,7 @@ server_docker_services:
           - "traefik.http.routers.readarr.tls=true"
           - "traefik.http.routers.readarr.tls.certresolver=cloudflare"
           - "traefik.http.routers.readarr.rule=Host(`readarr.media.{{ domain_name }}`)"
+          - "traefik.http.routers.readarr.middlewares=authelia@docker"
           - "traefik.http.services.readarr.loadbalancer.server.port=8787"
         networks:
           - frontend
@@ -379,6 +407,7 @@ server_docker_services:
           - "traefik.http.routers.grafana.tls=true"
           - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
           - "traefik.http.routers.grafana.rule=Host(`grafana.{{ domain_name }}`)"
+          - "traefik.http.routers.grafana.middlewares=authelia@docker"
           - "traefik.http.services.grafana.loadbalancer.server.port=3000"
           - "traefik.docker.network=frontend"
         networks:
@@ -482,6 +511,7 @@ server_docker_services:
           - "traefik.http.routers.nextcloud.tls=true"
           - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
           - "traefik.http.routers.nextcloud.rule=Host(`cloud.{{ domain_name }}`)"
+          - "traefik.http.routers.nextcloud.middlewares=authelia@docker"
           - "traefik.http.middlewares.secure_headers.headers.stsSeconds=15552000"
           - "traefik.http.middlewares.secure_headers.headers.stsIncludeSubdomains=true"
           - "traefik.http.middlewares.secure_headers.headers.stsPreload=true"
@@ -542,6 +572,10 @@ server_docker_services_configs:
     dest: "{{ docker_services_directory }}/monitoring/config/loki/loki-config.yml"
   - src: "templates/monitoring/config/promtail-config.yml.j2"
     dest: "{{ docker_services_directory }}/monitoring/config/promtail/promtail-config.yml"
+  - src: "templates/authelia/config/users_database.yml.j2"
+    dest: "{{ docker_services_directory }}/toolbox/config/authelia/users_database.yml"
+  - src: "templates/authelia/config/configuration.yml.j2"
+    dest: "{{ docker_services_directory }}/toolbox/config/authelia/configuration.yml"
 
 server_docker_services_crons:
   - name: "Nextcloud cron job"
@@ -569,7 +603,7 @@ server_rclone_mounts:
     remote_name: "backblaze" 
     remote_path: "/"
     local_path: "/mnt/backblaze"
-    local_path_mode: '0755'
+    local_path_mode: "0755"
     local_path_owner: "{{ rclone_config_owner.OWNER }}"
     local_path_group: "{{ rclone_config_owner.GROUP }}"
     auto_mount: true

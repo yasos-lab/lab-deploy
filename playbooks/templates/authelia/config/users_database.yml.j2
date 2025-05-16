@@ -1,0 +1,17 @@
+---
+###############################################################
+#                         Users Database                      #
+###############################################################
+
+users:
+{% for user in authelia_users %}
+  {{ user.username }}:
+    disabled: {{ user.disabled }}
+    displayname: "{{ user.displayname }}"
+    password: "{{ user.password }}"
+    email: "{{ user.email }}"
+    groups:
+{% for grp in user.groups %}
+      - {{ grp }}
+{% endfor %}
+{% endfor %}
