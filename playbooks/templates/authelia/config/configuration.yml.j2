@@ -23,7 +23,7 @@ access_control:
     # Rules applied to everyone
 {% for item in authelia_domains_policy %}
     - domain: "{{ item.domain }}"
-      policy: "{{ item.policy }}"
+      policy: "{{ item.policy | default("bypass") }}"
 {% endfor %}
 
 session:
@@ -57,24 +57,14 @@ identity_providers:
   oidc:
     ## The other portions of the mandatory OpenID Connect 1.0 configuration go here.
     ## See: https://www.authelia.com/c/oidc
-    hmac_secret: {{ authelia_oidc_hmac_secret }}
+    hmac_secret: "{{ authelia_oidc_hmac_secret }}"
     issuer_private_key: |
 {{ authelia_oidc_private_key | indent(6, true) }}
     clients:
 {% for client in authelia_oidc_clients %}
       - id: {{ client.id }}
-        description: {{ client.description }}
-        secret: "{{ client.secret }}"
-        public: {{ client.public }}
-        authorization_policy: {{ client.authorization_policy }}
-        redirect_uris:
-{% for uri in client.redirect_uris %}
-          - {{ uri }}
+{% for key, value in client.properties.items() %}
+        {{ key }}: {{ value }}
 {% endfor %}
-        scopes:
-{% for scope in client.scopes %}
-          - {{ scope }}
-{% endfor %}
-        userinfo_signing_algorithm: {{ client.userinfo_signing_algorithm }}
 {% endfor %}
         

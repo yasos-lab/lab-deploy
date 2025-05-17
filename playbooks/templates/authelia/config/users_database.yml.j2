@@ -6,12 +6,7 @@
 users:
 {% for user in authelia_users %}
   {{ user.username }}:
-    disabled: {{ user.disabled }}
-    displayname: "{{ user.displayname }}"
-    password: "{{ user.password }}"
-    email: "{{ user.email }}"
-    groups:
-{% for grp in user.groups %}
-      - {{ grp }}
+{% for key, value in user.properties.items() %}
+    {{ key }}: {{ value }}
 {% endfor %}
 {% endfor %}
