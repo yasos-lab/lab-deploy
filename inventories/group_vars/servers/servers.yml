@@ -86,15 +86,27 @@ server_docker_services:
         volumes:
           - "./data/homarr:/appdata"
           - "/var/run/docker.sock:/var/run/docker.sock"
-        environment:
+        environment: # Error with OIDC
+          # - "BASE_URL=https://homarr.{{ domain_name }}"
+          # - "NEXTAUTH_URL=https://homarr.{{ domain_name }}"
+          - "AUTH_PROVIDERS=oidc"
+          - "AUTH_OIDC_ISSUER=https://sso.{{ domain_name }}"
+          - "AUTH_OIDC_CLIENT_ID=homarr"
+          - "AUTH_OIDC_CLIENT_SECRET='{{ authelia_oidc_clients_secrets.homarr.secret }}'"
+          - "AUTH_OIDC_CLIENT_NAME=Authelia"
+          # - "AUTH_OIDC_URI=https://homarr.{{ domain_name }}/api/auth/callback/oidc"
+          # - "AUTH_OIDC_ADMIN_GROUP=admin"
+          - "AUTH_OIDC_SCOPE_OVERWRITE=openid email profile groups"
+          - "AUTH_OIDC_GROUPS_ATTRIBUTE=groups"
+          - "AUTH_LOGOUT_REDIRECT_URL=https://sso.{{ domain_name }}/logout"
+          - "AUTH_OIDC_FORCE_USERINFO=true"
           - "SECRET_ENCRYPTION_KEY={{ homarr_sec }}"
         restart: "unless-stopped"
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.homarr.tls=true"
           - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
-          - "traefik.http.routers.homarr.rule=Host(`dash.{{ domain_name }}`)"
-          - "traefik.http.routers.homarr.middlewares=authelia@docker"
+          - "traefik.http.routers.homarr.rule=Host(`homarr.{{ domain_name }}`)"
           - "traefik.http.services.homarr.loadbalancer.server.port=7575"
         networks:
           - frontend
@@ -402,7 +414,7 @@ server_docker_services:
           - "./data/grafana/:/var/lib/grafana"
         restart: "unless-stopped"
         environment:
-          - "GF_SERVER_ROOT_URL=https://grafana.yasos.org"
+          - "GF_SERVER_ROOT_URL=https://grafana.{{ domain_name }}"
           - "GF_AUTH_GENERIC_OAUTH_ENABLED=true"
           - "GF_AUTH_GENERIC_OAUTH_NAME=Authelia"
           - "GF_AUTH_GENERIC_OAUTH_ICON=signin"
@@ -410,9 +422,9 @@ server_docker_services:
           - "GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET={{ authelia_oidc_clients_secrets.grafana.secret }}"
           - "GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email groups"
           - "GF_AUTH_GENERIC_OAUTH_EMPTY_SCOPES=false"
-          - "GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://sso.yasos.org/api/oidc/authorization"
-          - "GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://sso.yasos.org/api/oidc/token"
-          - "GF_AUTH_GENERIC_OAUTH_API_URL=https://sso.yasos.org/api/oidc/userinfo"
+          - "GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://sso.{{ domain_name }}/api/oidc/authorization"
+          - "GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://sso.{{ domain_name }}/api/oidc/token"
+          - "GF_AUTH_GENERIC_OAUTH_API_URL=https://sso.{{ domain_name }}/api/oidc/userinfo"
           - "GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH=preferred_username"
           - "GF_AUTH_GENERIC_OAUTH_GROUPS_ATTRIBUTE_PATH=groups"
           - "GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH=name"

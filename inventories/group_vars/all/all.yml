@@ -4,7 +4,6 @@ authelia_domains_policy:
   - domain: "cloud.{{ domain_name }}"
   - domain: "portainer.{{ domain_name }}"
   - domain: "vault.{{ domain_name }}"
-  - domain: "dash.{{ domain_name }}"
   - domain: "torrent.{{ domain_name }}"
   - domain: "jellyseerr.media.{{ domain_name }}"
   - domain: "*.{{ domain_name }}"
@@ -29,18 +28,19 @@ authelia_oidc_clients:
       token_endpoint_auth_method: "client_secret_basic"
   - id: "homarr"
     properties:
-      description: "Homarr"
+      client_name: "Homarr"
       secret: "{{ authelia_oidc_clients_secrets.homarr.secret_hash }}"
       public: false
       authorization_policy: "two_factor"
       redirect_uris:
-        - "https://dash.{{ domain_name }}"
+        - "https://homarr.{{ domain_name }}/api/auth/callback/oidc"
       scopes:
         - "openid"
         - "profile"
         - "groups"
         - "email"
-      userinfo_signing_algorithm: "none"  
+      userinfo_signing_algorithm: "none"
+      token_endpoint_auth_method: "client_secret_basic"
   - id: "nextcloud"
     properties:
       description: "Nextcloud"
