@@ -248,7 +248,6 @@ server_docker_services:
           - "traefik.http.routers.jellyfin.tls=true"
           - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
           - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.{{ domain_name }}`)"
-          - "traefik.http.routers.jellyfin.middlewares=authelia@docker"
           - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
         networks:
           - frontend
