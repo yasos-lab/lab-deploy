@@ -3,7 +3,7 @@ global:
   sendAnonymousUsage: false
 
 log:
-  level: DEBUG
+  level: INFO
 
 entryPoints:
   web:
@@ -23,6 +23,9 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false  # Only route explicitly labeled containers
+  file:
+    filename: "/etc/traefik/external-services.yml"
+    watch: true
 
 certificatesResolvers:
   cloudflare:

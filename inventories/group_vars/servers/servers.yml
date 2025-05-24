@@ -115,6 +115,7 @@ server_docker_services:
         volumes:
           - "./config/traefik/ssl:/ssl:rw"
           - "./config/traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+          - "./config/traefik/external-services.yml:/etc/traefik/external-services.yml:ro"
           - "/var/run/docker.sock:/var/run/docker.sock:ro"
         ports:
           - "80:80"
@@ -589,6 +590,8 @@ server_docker_services:
         external: true
 
 server_docker_services_configs:
+  - src: "templates/traefik/config/external-services.yml.j2"
+    dest: "{{ docker_services_directory }}/toolbox/config/traefik/external-services.yml"
   - src: "templates/traefik/config/traefik.yml.j2"
     dest: "{{ docker_services_directory }}/toolbox/config/traefik/traefik.yml"
   - src: "templates/nextcloud/config/nextcloud.ini.j2"
