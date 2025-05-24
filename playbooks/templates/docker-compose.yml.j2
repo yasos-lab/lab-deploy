@@ -3,125 +3,19 @@
 services:
 {% for service in stack.services %}
   {{ service.name }}:
-    image: {{ service.image }}
     container_name: {{ service.name }}
-{% if service.environment is defined %}
-    environment:
-{% for var in service.environment %}
-      - {{ var }}
+{% for key, value in service.properties.items() %}
+    {{ key }}: {{ value }}
 {% endfor %}
-{% endif %}
-{% if service.ports is defined %}
-    ports:
-{% for port in service.ports %}
-      - {{ port }}
-{% endfor %}
-{% endif %}
-{% if service.expose is defined %}
-    expose:
-{% for port in service.expose %}
-      - {{ port }}
-{% endfor %}
-{% endif %}
-{% if service.volumes is defined %}
-    volumes:
-{% for vol in service.volumes %}
-      - {{ vol }}
-{% endfor %}
-{% endif %}
-{% if service.cap_add is defined %}
-    cap_add:
-{% for cap_a in service.cap_add %}
-      - {{ cap_a }}
-{% endfor %}
-{% endif %}
-{% if service.devices is defined %}
-    devices:
-{% for dev in service.devices %}
-      - {{ dev }}
-{% endfor %}
-{% endif %}
-{% if service.command is defined %}
-    command: {{ service.command }}
-{% endif %}
-{% if service.user is defined %}
-    user: "{{ service.user }}"
-{% endif %}
-{% if service.pid is defined %}
-    pid: {{ service.pid }}
-{% endif %}
-{% if service.network_mode is defined %}
-    network_mode: {{ service.network_mode }}
-{% endif %}
-{% if service.entrypoint is defined %}
-    entrypoint: {{ service.entrypoint }}
-{% endif %}
-{% if service.post_start is defined %}
-    post_start:
-{% for cmd in service.post_start.commands %}
-      - command: {{ cmd }}
-{% endfor %}
-{% endif %}
-{% if service.networks is defined %}
-    networks:
-{% for net in service.networks %}
-      - {{ net }}
-{% endfor %}
-{% endif %}
-{% if service.depends_on is defined %}
-    depends_on:
-{% for depend in service.depends_on %}
-      - {{ depend }}
-{% endfor %}
-{% endif %}
-{% if service.healthcheck is defined %}
-    healthcheck:
-{% if service.healthcheck.disable is defined %}
-      disable: {{ service.healthcheck.disable }}
-{% endif %}
-{% if service.healthcheck.test is defined %}
-      test: {{ service.healthcheck.test }}
-{% endif %}
-{% if service.healthcheck.interval is defined %}
-      interval: {{ service.healthcheck.interval }}
-{% endif %}
-{% if service.healthcheck.start_interval is defined %}
-      start_interval: {{ service.healthcheck.start_interval }}
-{% endif %}
-{% if service.healthcheck.start_period is defined %}
-      start_period: {{ service.healthcheck.start_period }}
-{% endif %}
-{% endif %}
-{% if service.restart is defined %}
-    restart: {{ service.restart }}
-{% endif %}
-{% if service.labels is defined %}
-    labels:
-{% for label in service.labels %}
-      - {{ label }}
-{% endfor %}
-{% endif %}
 {% endfor %}
 
 {% if stack.networks is defined %}
 networks:
 {% for network in stack.networks %}
   {{ network.name }}:
-{% if network.external is defined %}
-    external: {{ network.external }}
-{% endif %}
-{% if network.driver is defined %}
-    driver: {{ network.driver }}
-{% endif %}
-{% if network.driver_opts is defined %}
-    driver_opts:
-{% for opt in network.driver_opts %}
-      - {{ opt }}
+{% for key, value in network.properties.items() %}
+    {{ key }}: {{ value }}
 {% endfor %}
-{% endif %}
-{% if network.attachable is defined %}
-    attachable: {{ network.attachable }}
-{% endif %}
 {% endfor %}
 {% endif %}
 
@@ -130,14 +24,8 @@ volumes:
 {% for volume in stack.volumes %}
   {{ volume.name }}:
     name: {{ volume.name }}
-{% if volume.driver is defined %}
-    driver: {{ volume.driver }}
-{% endif %}
-{% if volume.driver_opts is defined %}
-    driver_opts:
-      type: {{ volume.driver_opts.type }}
-      device: {{ volume.driver_opts.device }}
-      o: {{ volume.driver_opts.o }}
-{% endif %}
+{% for key, value in volume.properties.items() %}
+    {{ key }}: {{ value }}
+{% endfor %}
 {% endfor %}
 {% endif %}
