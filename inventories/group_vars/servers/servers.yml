@@ -243,7 +243,6 @@ server_docker_services:
             - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
             - "traefik.http.routers.vaultwarden.rule=Host(`vault.{{ domain_name }}`)"
             - "traefik.http.routers.vaultwarden.middlewares=authelia@docker"
-            - "traefik.http.services.vaultwarden.loadbalancer.server.port=7575"
           networks:
             - frontend
     networks:
