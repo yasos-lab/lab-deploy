@@ -1,7 +1,6 @@
 ---
 
 authelia_domains_policy:
-  - domain: "cloud.{{ domain_name }}"
   - domain: "portainer.{{ domain_name }}"
   - domain: "vault.{{ domain_name }}"
   - domain: "torrent.{{ domain_name }}"
@@ -47,14 +46,17 @@ authelia_oidc_clients:
       secret: "{{ authelia_oidc_clients_secrets.nextcloud.secret_hash }}"
       public: false
       authorization_policy: "two_factor"
+      require_pkce: true
+      pkce_challenge_method: "S256"
       redirect_uris:
-        - "https://cloud.{{ domain_name }}"
+        - "https://cloud.{{ domain_name }}/apps/oidc_login/oidc"
       scopes:
         - "openid"
         - "profile"
         - "groups"
         - "email"
       userinfo_signing_algorithm: "none"
+      token_endpoint_auth_method: "client_secret_basic"
   - id: "portainer"
     properties:
       description: "Portainer"

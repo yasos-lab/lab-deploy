@@ -569,7 +569,6 @@ server_docker_services:
             - "traefik.http.routers.nextcloud.tls=true"
             - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
             - "traefik.http.routers.nextcloud.rule=Host(`cloud.{{ domain_name }}`)"
-            - "traefik.http.routers.nextcloud.middlewares=authelia@docker"
             - "traefik.http.middlewares.secure_headers.headers.stsSeconds=15552000"
             - "traefik.http.middlewares.secure_headers.headers.stsIncludeSubdomains=true"
             - "traefik.http.middlewares.secure_headers.headers.stsPreload=true"
