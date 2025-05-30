@@ -1,10 +1,6 @@
 ---
 
 authelia_domains_policy:
-  - domain: "portainer.{{ domain_name }}"
-  - domain: "vault.{{ domain_name }}"
-  - domain: "torrent.{{ domain_name }}"
-  - domain: "jellyseerr.media.{{ domain_name }}"
   - domain: "*.{{ domain_name }}"
     policy: "one_factor"
 authelia_oidc_clients:
@@ -71,20 +67,7 @@ authelia_oidc_clients:
         - "groups"
         - "email"
       userinfo_signing_algorithm: "none"
-  - id: "vaultwarden"
-    properties:
-      description: "Vaultwarden"
-      secret: "{{ authelia_oidc_clients_secrets.vaultwarden.secret_hash }}"
-      public: false
-      authorization_policy: "two_factor"
-      redirect_uris:
-        - "https://vault.{{ domain_name }}"
-      scopes:
-        - "openid"
-        - "profile"
-        - "groups"
-        - "email"
-      userinfo_signing_algorithm: "none"
+      token_endpoint_auth_method: 'client_secret_post'
 
 common_deb_packages:
   - "{{ rclone_package }}"
