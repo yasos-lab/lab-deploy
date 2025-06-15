@@ -2,6 +2,10 @@
 
 data_mount: "/mnt/data"
 
+loki_url: "http://loki:3100"
+
+promtail_instance: "svr"
+
 server_deb_packages: []
 
 server_directories:
@@ -552,7 +556,7 @@ server_docker_services:
             - "MYSQL_DATABASE={{ nextcloud_db }}"
             - "MYSQL_USER={{ nextcloud_db_user }}"
             - "REDIS_HOST=nextcloud-redis"
-            - "TRUSTED_PROXIES=192.168.1.20"
+            - "TRUSTED_PROXIES={{ lan_prefix }}.20"
             - "NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ domain_name }}"
             - "OVERWRITECLIURL=https://cloud.{{ domain_name }}"
             - "OVERWRITEPROTOCOL=https"
@@ -687,3 +691,5 @@ server_restic_backup_configs:
       minute: "0"
 
 server_systemd_services: []
+
+

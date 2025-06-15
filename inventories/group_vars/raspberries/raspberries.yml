@@ -1,8 +1,65 @@
 ---
 
+### COMMON ###
 raspberry_packages:
   - ca-certificates
   - curl
   - git
+  - unbound
   - unzip
   - wget
+  - "{{ promtail_package }}"
+
+### PI-HOLE ###
+pihole_blocklists: 
+  - url: "https://big.oisd.nl"
+    comment: "OISD full list"
+  - url: "https://nsfw.oisd.nl"
+    comment: "OISD NSFW full list"
+
+pihole_config_files:
+  - src: "pihole/setupVars.conf.j2"
+    dest: "/etc/pihole/setupVars.conf"
+
+pihole_installer_url: "https://install.pi-hole.net"
+
+### PI-VPN ###
+pivpn_config_files:
+  - src: "pivpn/setupVars.conf.j2"
+    dest: "/tmp/setupVars.conf"
+
+pivpn_installer_url: "https://install.pivpn.io"
+
+pivpn_wireguard_clients:
+  - name: "{{ ansible_user }}-phone"
+    vip: "{{ pivpn_network_base }}.2"
+  - name: "{{ ansible_user }}-pc"
+    vip: "{{ pivpn_network_base }}.3"
+  - name: "wife-phone"
+    vip: "{{ pivpn_network_base }}.10"
+
+### MONITORING ###
+loki_url: "https://loki.{{ domain_name }}"
+
+node_exporter_archive_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz"
+node_exporter_binary: "/usr/local/bin/node_exporter"
+node_exporter_systemd_service:
+  - name: "node_exporter"
+    unit_properties:
+      Description: "Node Exporter service for Prometheus monitoring"
+      Wants: "network-online.target"
+      After: "network-online.target"
+    service_properties:
+      Type: "simple"
+      ExecStart: "/usr/local/bin/node_exporter"
+      User: "{{ ansible_user }}"
+      Group: "{{ ansible_user }}"
+    install_properties:
+      WantedBy: "default.target"
+
+node_exporter_version: "1.9.1"
+
+promtail_binary: "/usr/local/bin/promtail"
+promtail_instance: "rbpi"
+promtail_package: "https://github.com/grafana/loki/releases/download/v{{ promtail_version }}/promtail_{{ promtail_version }}_arm64.deb"
+promtail_version: "3.4.4"

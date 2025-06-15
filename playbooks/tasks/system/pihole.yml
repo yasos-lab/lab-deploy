@@ -1,0 +1,50 @@
+---
+
+- name: Create Pi-hole config directory
+  ansible.builtin.file:
+    name: "/etc/pihole"
+    state: directory
+
+- name: Template Pi-hole config files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop: "{{ pihole_config_files }}"
+
+- name: Download Pi-hole installer
+  ansible.builtin.get_url:
+    url: "{{ pihole_installer_url }}"
+    dest: /tmp/install_pihole.sh
+    mode: '0755'
+
+- name: Run Pi-hole installer non-interactively
+  ansible.builtin.command: >
+    bash /tmp/install_pihole.sh --unattended
+  args:
+    creates: "/etc/pihole/pihole.toml"
+
+- name: Add custom dnsmasq lines to pihole.toml
+  ansible.builtin.lineinfile:
+    path: /etc/pihole/pihole.toml
+    regexp: '^\s*dnsmasq_lines = \[\]$'
+    line: |
+      dnsmasq_lines = [
+        "address=/.{{ domain_name }}/{{ lan_prefix }}.20",
+        "address=/{{ gateway_web_url }}/{{ lan_prefix }}.254"
+      ]
+
+- name: Ensure Pi-hole FTL is running
+  ansible.builtin.service:
+    name: pihole-FTL
+    state: restarted
+    enabled: yes
+
+- name: Add Pi-hole blocklists
+  ansible.builtin.shell: >
+    pihole-FTL sqlite3 /etc/pihole/gravity.db 
+    "INSERT OR IGNORE INTO adlist (address, comment, enabled) VALUES ('{{ item.url }}', '{{ item.comment }}', 1);"
+  loop: "{{ pihole_blocklists }}"
+
+- name: Reload Pi-hole Gravity database
+  ansible.builtin.command: pihole -g
+

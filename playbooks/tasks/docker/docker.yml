@@ -42,4 +42,4 @@
   notify: "Restart docker daemon"
 
 - name: Run the handler
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

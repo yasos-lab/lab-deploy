@@ -15,4 +15,4 @@
   notify: "Update APT cache"
 
 - name: Run the handler
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

@@ -6,10 +6,10 @@ positions:
   filename: /tmp/positions.yaml
 
 clients:
-  - url: http://loki:3100/loki/api/v1/push
+  - url: {{ loki_url }}/loki/api/v1/push
 
 scrape_configs:
-  - job_name: local
+  - job_name: local-{{ promtail_instance }}
     static_configs:
       - targets:
           - localhost
@@ -22,7 +22,7 @@ scrape_configs:
         labels:
           job: varlogs-app
           __path__: /var/log/*/*.log
-
+{% if promtail_instance == "svr" %}
   - job_name: docker
     pipeline_stages:
       - docker: {}
@@ -30,6 +30,4 @@ scrape_configs:
       - labels:
           job: docker-logs
           __path__: /var/lib/docker/containers/*/*-json.log
-
-    
-
+{% endif %}

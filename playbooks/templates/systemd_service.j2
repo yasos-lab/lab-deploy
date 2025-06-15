@@ -1,31 +1,14 @@
 [Unit]
-Description={{ service.description }}
-After={{ service.after }}
-
-{% if service.extra_unit_configs is defined %}
-{% for config in service.extra_unit_configs %}
-{{ config }}
+{% for key, value in service.unit_properties.items() %}
+{{ key }}={{ value }}
 {% endfor %}
-{% endif %}
 
 [Service]
-User={{ service.user }}
-ExecStart={{ service.exec_start }}
-Restart={{ service.restart_policy }}
-RestartSec={{ service.restart_delay }}
-
-{% if service.extra_service_configs is defined %}
-{% for config in service.extra_service_configs %}
-{{ config }}
+{% for key, value in service.service_properties.items() %}
+{{ key }}={{ value }}
 {% endfor %}
-{% endif %}
-
 
 [Install]
-WantedBy=multi-user.target
-
-{% if service.extra_install_configs is defined %}
-{% for config in service.extra_install_configs %}
-{{ config }}
+{% for key, value in service.install_properties.items() %}
+{{ key }}={{ value }}
 {% endfor %}
-{% endif %}

@@ -7,11 +7,11 @@ all:
       ansible_user: "{{ tp_ws_user }}"
       ansible_become_password: "{{ tp_ws_pass }}"
     debian_thinkcenter:
-      ansible_host: 192.168.1.20
+      ansible_host: "{{ lan_prefix }}.20"
       ansible_user: "{{ tc_svr_user }}"
       ansible_become_password: "{{ tc_svr_pass }}"
     raspberry_pi_1:
-      ansible_host: 192.168.1.30
+      ansible_host: "{{ lan_prefix }}.30"
       ansible_user: "{{ rbp_user }}"
       ansible_become_password: "{{ rbp_pass }}"
 

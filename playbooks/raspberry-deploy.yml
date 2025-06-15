@@ -3,30 +3,34 @@
 - name: Deploy raspberry
   hosts: raspberries
   become: yes
+  handlers:
+    - import_tasks: handlers/main.yml
   tasks:
     - name: Import packages tasks
       ansible.builtin.import_tasks: tasks/system/packages.yml
       vars:
         packages: "{{ raspberry_packages }}"
         python_packages: []
+        deb_packages: []
       tags: raspberry::packages
-
-    - name: Configure and deploy PiHole
-      block:
-      tags: raspberry::pihole
+    
+    - name: Import shell tasks
+      ansible.builtin.import_tasks: tasks/system/shell.yml
+      tags: server::shell
 
     - name: Configure and deploy Unbound
-      block:
+      ansible.builtin.import_tasks: tasks/system/unbound.yml
       tags: raspberry::unbound
 
+    - name: Configure and deploy PiHole
+      ansible.builtin.import_tasks: tasks/system/pihole.yml
+      tags: raspberry::pihole
+
     - name: Configure and deploy PiVPN
-      block:
+      ansible.builtin.import_tasks: tasks/system/pivpn.yml
       tags: raspberry::pivpn
     
-    - name: Configure and deploy node explorer for prometheus
-      block:
+    - name: Configure and deploy monitoring tools (node explorer for prometheus & promtail for loki)
+      ansible.builtin.import_tasks: tasks/system/monitoring.yml
       tags: raspberry::monitoring
     
-    - name: Configure and deploy promtail for loki
-      block:
-      tags: raspberry::monitoring
