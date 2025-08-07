@@ -51,6 +51,7 @@
           ansible.builtin.import_tasks: tasks/docker/docker.yml
           vars:
             docker_networks: "{{ workstation_docker_networks }}"
+            docker_plugins: "{{ workstation_docker_plugins }}"
           tags: workstation::docker
         
         - name: Import docker services tasks

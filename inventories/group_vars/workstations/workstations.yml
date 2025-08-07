@@ -4,6 +4,8 @@ workstation_deb_packages: []
 
 workstation_docker_networks: []
 
+workstation_docker_plugins: []
+
 workstation_docker_services: []
 
 workstation_docker_services_configs: []

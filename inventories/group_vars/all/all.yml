@@ -183,6 +183,8 @@ restic_scripts_directory: "{{ scripts_directory }}/restic"
 
 scripts_directory: "/opt/scripts"
 
+template_docker_daemon: no
+
 timezone: "Europe/Paris"
 
 traefik_external_services:

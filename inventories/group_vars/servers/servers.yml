@@ -692,4 +692,4 @@ server_restic_backup_configs:
 
 server_systemd_services: []
 
-
+template_docker_daemon: yes
