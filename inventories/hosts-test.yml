@@ -1,0 +1,25 @@
+---
+
+all:
+  children:
+    workstations:
+      hosts:
+        ubuntu_thinkpad:
+          ansible_host: 172.10.1.10
+          ansible_user: "test"
+          ansible_ssh_pass: "test"
+          ansible_become_password: "test"
+    servers:
+      hosts:
+        debian_thinkcenter:
+          ansible_host: 172.10.1.20
+          ansible_user: "test"
+          ansible_ssh_pass: "test"
+          ansible_become_password: "test"
+    raspberries:
+      hosts:
+        raspberry_pi_1:
+          ansible_host: 172.10.1.30
+          ansible_user: "test"
+          ansible_ssh_pass: "test"
+          ansible_become_password: "test"

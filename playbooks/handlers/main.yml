@@ -1,0 +1,21 @@
+---
+
+- name: "Update APT cache"
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: "Systemd daemon-reload"
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: "Restart docker daemon"
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+
+- name: "Restart unbound service"
+  ansible.builtin.service:
+    name: unbound
+    state: restarted

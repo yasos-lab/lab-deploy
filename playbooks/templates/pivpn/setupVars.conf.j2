@@ -1,0 +1,8 @@
+VPN=wireguard
+dhcpReserv=1
+useNetworkManager=false
+IPv4dev=eth0
+IPv4addr={{ lan_prefix }}.30/24
+IPv4gw={{ lan_prefix }}.254
+install_user={{ ansible_user }}
+install_home=/home/{{ ansible_user }}

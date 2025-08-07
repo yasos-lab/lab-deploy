@@ -1,0 +1,207 @@
+---
+
+authelia_domains_policy:
+  - domain: "*.{{ domain_name }}"
+    policy: "one_factor"
+authelia_oidc_clients:
+  - id: "grafana"
+    properties:
+      client_name: "Grafana"
+      client_secret: "{{ authelia_oidc_clients_secrets.grafana.secret_hash }}"
+      public: false
+      authorization_policy: "two_factor"
+      require_pkce: true
+      pkce_challenge_method: "S256"
+      redirect_uris:
+        - "https://grafana.{{ domain_name }}/login/generic_oauth"
+      scopes:
+        - "openid"
+        - "profile"
+        - "groups"
+        - "email"
+      userinfo_signing_algorithm: "none"
+      token_endpoint_auth_method: "client_secret_basic"
+  - id: "homarr"
+    properties:
+      client_name: "Homarr"
+      secret: "{{ authelia_oidc_clients_secrets.homarr.secret_hash }}"
+      public: false
+      authorization_policy: "two_factor"
+      redirect_uris:
+        - "https://homarr.{{ domain_name }}/api/auth/callback/oidc"
+      scopes:
+        - "openid"
+        - "profile"
+        - "groups"
+        - "email"
+      userinfo_signing_algorithm: "none"
+      token_endpoint_auth_method: "client_secret_basic"
+  - id: "nextcloud"
+    properties:
+      description: "Nextcloud"
+      secret: "{{ authelia_oidc_clients_secrets.nextcloud.secret_hash }}"
+      public: false
+      authorization_policy: "two_factor"
+      require_pkce: true
+      pkce_challenge_method: "S256"
+      redirect_uris:
+        - "https://cloud.{{ domain_name }}/apps/oidc_login/oidc"
+      scopes:
+        - "openid"
+        - "profile"
+        - "groups"
+        - "email"
+      userinfo_signing_algorithm: "none"
+      token_endpoint_auth_method: "client_secret_basic"
+  - id: "portainer"
+    properties:
+      description: "Portainer"
+      secret: "{{ authelia_oidc_clients_secrets.portainer.secret_hash }}"
+      public: false
+      authorization_policy: "two_factor"
+      redirect_uris:
+        - "https://portainer.{{ domain_name }}"
+      scopes:
+        - "openid"
+        - "profile"
+        - "groups"
+        - "email"
+      userinfo_signing_algorithm: "none"
+      token_endpoint_auth_method: 'client_secret_post'
+
+common_deb_packages:
+  - "{{ rclone_package }}"
+
+common_directories:
+  - "{{ zsh_directory }}"
+  - "{{ docker_services_directory }}"
+  - "{{ scripts_directory }}"
+
+common_packages:
+  - apt-transport-https
+  - build-essential
+  - ca-certificates
+  - coreutils
+  - curl
+  - gnupg2
+  - git
+  - jq
+  - lsb-release
+  - openssl
+  - python3-pip
+  - restic
+  - software-properties-common
+  - unzip
+  - vim
+  - wget
+
+common_rclone_configs: []
+
+common_rclone_mounts: []
+
+config_files:
+  - file: .secrets
+    dest_path: "{{ user_home }}"
+    mode: '0600'
+  - file: .zshrc
+    dest_path: "{{ user_home }}"
+    mode: '0644'
+  - file: .p10k.zsh
+    dest_path: "{{ zsh_directory }}"
+    mode: '0644'
+
+docker_services_directory: /opt/docker_services
+
+docker_packages:
+  - docker-ce 
+  - docker-ce-cli
+  - containerd.io 
+  - docker-compose
+  - docker-buildx-plugin 
+  - docker-compose-plugin
+
+documents_directory: "{{ user_home }}/Documents"
+
+postgres_host: "{{ ansible_facts.lo.ipv4.address }}"
+
+purge_all: no
+
+purge_vars:
+  docker: no
+  packages: no
+  repositories: no
+  shell: no
+  services: no
+
+rclone_config_location: "/root/.config/rclone/rclone.conf"
+
+rclone_config_owner:
+  OWNER: "{{ rclone_user }}"
+  GROUP: "{{ rclone_user }}"
+
+rclone_package: "https://downloads.rclone.org/v{{ rclone_version }}/rclone-v{{ rclone_version }}-linux-amd64.deb"
+
+rclone_user: "root"
+
+rclone_version: 1.69.1
+
+restic_env_vars:
+  RESTIC_PASSWORD: "{{ restic_password }}"
+restic_logs_directory: "/var/log/restic"
+restic_remote: "rclone:protondrive"
+restic_remote_verify_command: "rclone lsf protondrive:"
+restic_scripts_directory: "{{ scripts_directory }}/restic"
+
+scripts_directory: "/opt/scripts"
+
+template_docker_daemon: no
+
+timezone: "Europe/Paris"
+
+traefik_external_services:
+  - name: "gateway"
+    routers_properties:
+      rule: "Host(`gateway.{{ domain_name }}`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "cloudflare"
+      service: "gateway"
+      middlewares:
+        - "authelia@docker"
+    services_properties:
+      loadBalancer:
+        servers:
+          - url: "{{ gateway_web_url }}"
+  - name: "pihole"
+    routers_properties:
+      rule: "Host(`pihole.{{ domain_name }}`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "cloudflare"
+      service: "pihole"
+      middlewares:
+        - "authelia@docker"
+    services_properties:
+      loadBalancer:
+        servers:
+          - url: "http://{{ lan_prefix }}.30:80"
+
+user_home: "/home/{{ ansible_user }}"
+
+zsh_directory: "{{ user_home }}/.zsh"
+
+zsh_packages:
+  - zsh
+
+zsh_repositories:
+  - repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "{{ zsh_directory }}/powerlevel10k"
+    depth: 1
+  - repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: "{{ zsh_directory }}/plugins/zsh-syntax-highlighting"
+    depth: 0
+  - repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: "{{ zsh_directory }}/plugins/zsh-autosuggestions"
+    depth: 0

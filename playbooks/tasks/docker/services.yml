@@ -1,0 +1,69 @@
+---
+
+- name: Create services directories
+  block:
+    - name: Create data directory for each service
+      ansible.builtin.file:
+        path: "{{ docker_services_directory }}/{{ item.0.name }}/data/{{ item.1.name }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ docker_services | subelements('services') }}"
+      loop_control:
+        label: "{{ item.0.name }}/{{ item.1.name }}"
+    
+    - name: Create config directory for each service
+      ansible.builtin.file:
+        path: "{{ docker_services_directory }}/{{ item.0.name }}/config/{{ item.1.name }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ docker_services | subelements('services') }}"
+      loop_control:
+        label: "{{ item.0.name }}/{{ item.1.name }}"
+
+- name: Template docker-compose file for the services
+  ansible.builtin.template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ docker_services_directory }}/{{ stack.name }}/docker-compose.yml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  loop: "{{ docker_services }}"
+  loop_control:
+    loop_var: stack
+    label: "{{ docker_services_directory }}/{{ stack.name }}/docker-compose.yml"
+
+- name: Template config files for the services
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  loop: "{{ docker_services_configs }}"
+  loop_control:
+    label: "{{ item.dest }}"
+
+- name: Run docker-compose services
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_services_directory }}/{{ item.name }}"
+    state: present
+    remove_orphans: yes
+  loop: "{{ docker_services }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Add services cron jobs
+  ansible.builtin.cron:
+    name: "{{ item.name }}"
+    job: "docker exec -u {{ item.service_user }} {{ item.service }} {{ item.job }}"
+    month: "{{ item.month | default('*')}}"
+    weekday: "{{ item.weekday | default('*') }}"
+    day: "{{ item.day | default('*') }}"
+    hour: "{{ item.hour | default('*') }}"
+    minute: "{{ item.minute | default('*') }}"
+    user: "{{ ansible_user }}"
+  loop: "{{ docker_services_crons }}"
+  loop_control:
+    label: "{{ item.name }}"

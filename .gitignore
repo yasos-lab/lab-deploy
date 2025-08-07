@@ -2,4 +2,6 @@ docker/**/*.env
 
 .vscode/
 
-vagrant-provisioning/.vagrant/
+scripts/__pycache__
+
+.vault-pass

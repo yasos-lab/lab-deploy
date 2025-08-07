@@ -1,0 +1,49 @@
+---
+
+- name: Prepare Ansible Controller
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Ensure SSH key pair exists
+      ansible.builtin.openssh_keypair:
+        path: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
+        type: rsa
+        size: 4096
+        force: false
+    
+    - name: Ensure known_hosts file exists
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.ssh/known_hosts"
+        state: touch
+        mode: '0600'
+
+    - name: Remove known_hosts entry by IP
+      ansible.builtin.shell: ssh-keygen -R "{{ ansible_host_map[item] }}"
+      loop: "{{ groups['all'] }}"
+      when: ansible_host_map[item] is defined
+      vars:
+        ansible_host_map: >-
+          {{ dict(groups['all'] | zip(groups['all'] | map('extract', hostvars, 'ansible_host'))) }}
+
+- name: Push SSH key to managed hosts
+  hosts: all
+  gather_facts: false
+  vars:
+    ssh_pub_key_path: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
+  tasks:
+    - name: Read SSH public key
+      ansible.builtin.slurp:
+        src: "{{ ssh_pub_key_path }}"
+      register: ssh_pub_key_raw
+      delegate_to: localhost
+
+    - name: Set public key content
+      set_fact:
+        ssh_pub_key: "{{ ssh_pub_key_raw['content'] | b64decode }}"
+        
+    - name: Add SSH key to authorized_keys
+      ansible.builtin.authorized_key:
+        user: "{{ ansible_user }}"
+        state: present
+        key: "{{ ssh_pub_key }}"
+

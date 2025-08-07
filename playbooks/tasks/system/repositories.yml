@@ -1,0 +1,18 @@
+---
+
+- name: Add GPG keys
+  ansible.builtin.get_url:
+    url: "{{ item.gpg_url }}"
+    dest: "/etc/apt/trusted.gpg.d/{{ item.name }}.{{ item.gpg_extention }}"
+  loop: "{{ repositories }}"
+
+- name: Add APT repositories
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/trusted.gpg.d/{{ item.name }}.{{ item.gpg_extention }}] {{ item.repo_url }} {{ item.components | join(' ') }}"
+    filename: "{{ item.name }}-archive"
+    state: present
+  loop: "{{ repositories }}"
+  notify: "Update APT cache"
+
+- name: Run the handler
+  ansible.builtin.meta: flush_handlers
