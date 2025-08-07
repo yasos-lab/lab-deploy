@@ -1,7 +1,3 @@
-docker/**/*.env
-
 .vscode/
-
-scripts/__pycache__
 
 .vault-pass
