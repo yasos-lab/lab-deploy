@@ -1,4 +1,4 @@
-version: '3.8'
+---
 
 services:
   ubuntu_thinkpad:
@@ -7,6 +7,7 @@ services:
     tty: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ../yasos-lab-test:/yasos-lab
     networks:
       ansible:
         ipv4_address: 172.10.1.10
@@ -15,8 +16,8 @@ services:
       echo 'tzdata tzdata/Zones/America select Paris' | debconf-set-selections &&
       DEBIAN_FRONTEND=noninteractive apt update &&
       DEBIAN_FRONTEND=noninteractive apt install -y tzdata &&
-      apt update && apt install -y openssh-server sudo && 
-      useradd -m test && echo 'test:test' | chpasswd && usermod -aG sudo test &&
+      apt update && apt install -y sshpass openssh-server sudo && 
+      useradd -m test && echo 'test:test' | chpasswd && usermod -aG sudo test && echo 'export USER="test"' >> /home/test/.bashrc &&
       service ssh start && tail -f /dev/null"
   debian_thinkcenter:
     image: debian:latest
