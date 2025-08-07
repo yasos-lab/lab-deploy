@@ -95,38 +95,9 @@ common_packages:
   - vim
   - wget
 
-common_rclone_configs: 
-  - name: "mega"
-    properties:
-      type: "mega"
-      user: "{{ mega_username }}"
-      pass: "{{ mega_encpassword }}"
-  - name: "protondrive"
-    properties:
-      type: "protondrive"
-      username: "{{ proton_username }}"
-      password: "{{ proton_encpassword }}"
-      2fa: "{{ proton_2fa }}"
+common_rclone_configs: []
 
-common_rclone_mounts:
-  - name: "mega"
-    remote_name: "mega" 
-    remote_path: "/"
-    local_path: "/mnt/mega"
-    local_path_mode: '0755'
-    local_path_owner: "{{ rclone_config_owner.OWNER }}"
-    local_path_group: "{{ rclone_config_owner.GROUP }}"
-    auto_mount: true
-    extra_args: "--allow-other"
-  - name: "protondrive"
-    remote_name: "protondrive" 
-    remote_path: "/"
-    local_path: "/mnt/protondrive"
-    local_path_mode: '0755'
-    local_path_owner: "{{ rclone_config_owner.OWNER }}"
-    local_path_group: "{{ rclone_config_owner.GROUP }}"
-    auto_mount: true
-    extra_args: "--allow-other"
+common_rclone_mounts: []
 
 config_files:
   - file: .secrets

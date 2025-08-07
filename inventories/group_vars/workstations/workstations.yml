@@ -19,7 +19,6 @@ workstation_packages:
   - code
   - openjdk-17-jdk
   - python3-psycopg2
-  - virtualbox-7.1
 
 workstation_python_packages: []
 
@@ -35,29 +34,5 @@ workstation_repositories:
     components:
       - "{{ ansible_facts['distribution_release'] }}"
       - "stable"
-
-  - name: "brave"
-    repo_url: "https://brave-browser-apt-release.s3.brave.com"
-    gpg_url: "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg"
-    gpg_extention: "gpg"
-    components:
-      - "stable"
-      - "main"
-
-  - name: "vscode"
-    repo_url: "https://packages.microsoft.com/repos/code"
-    gpg_url: "https://packages.microsoft.com/keys/microsoft.asc"
-    gpg_extention: "asc"
-    components:
-      - "stable"
-      - "main"
-
-  - name: "virtualbox"
-    repo_url: "https://download.virtualbox.org/virtualbox/debian"
-    gpg_url: "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
-    gpg_extention: "asc"
-    components:
-      - "{{ ansible_facts['distribution_release'] }}"
-      - "contrib"
 
 workstation_systemd_services: []
