@@ -14,6 +14,7 @@ server_directories:
   - "{{ data_mount }}/media/movies"
   - "{{ data_mount }}/media/music"
   - "{{ data_mount }}/media/others"
+  - "{{ data_mount }}/media/quran"
   - "{{ data_mount }}/media/tv"
   - "{{ data_mount }}/torrents"
 
@@ -400,26 +401,6 @@ server_docker_services:
             - "traefik.http.routers.lidarr.rule=Host(`lidarr.media.{{ domain_name }}`)"
             - "traefik.http.routers.lidarr.middlewares=authelia@docker"
             - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
-          networks:
-            - frontend
-      - name: "readarr"
-        properties:
-          image: lscr.io/linuxserver/readarr:develop
-          volumes:
-            - "./config/readarr:/config"
-            - "{{ data_mount }}:/data"
-          environment:
-            - "PUID=1000"
-            - "PGID=1000"
-            - "TZ={{ timezone }}"
-          restart: "unless-stopped"
-          labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.readarr.tls=true"
-            - "traefik.http.routers.readarr.tls.certresolver=cloudflare"
-            - "traefik.http.routers.readarr.rule=Host(`readarr.media.{{ domain_name }}`)"
-            - "traefik.http.routers.readarr.middlewares=authelia@docker"
-            - "traefik.http.services.readarr.loadbalancer.server.port=8787"
           networks:
             - frontend
     networks:
