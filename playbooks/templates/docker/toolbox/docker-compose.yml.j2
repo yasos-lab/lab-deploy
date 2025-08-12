@@ -138,8 +138,8 @@ services:
     container_name: qbittorrent
     image: lscr.io/linuxserver/qbittorrent:latest
     network_mode: service:gluetunvpn
-    # depends_on:
-    #   - gluetunvpn
+    depends_on:
+      - 'gluetunvpn'
     volumes:
       - './config/qbittorrent:/config'
       - '{{ data_mount }}/torrents:/data/torrents'
