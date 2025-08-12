@@ -1,0 +1,145 @@
+---
+
+services:
+  jellyfin:
+    container_name: jellyfin
+    image: lscr.io/linuxserver/jellyfin:latest
+    volumes:
+      - './config/jellyfin:/config'
+      - '{{ data_mount }}/media:/media'
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - 'TZ={{ timezone }}'
+    restart: unless-stopped
+    devices:
+      - '/dev/dri/renderD128:/dev/dri/renderD128'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.jellyfin.tls=true'
+      - 'traefik.http.routers.jellyfin.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.jellyfin.rule=Host(`jellyfin.{{ domain_name }}`)'
+      - 'traefik.http.services.jellyfin.loadbalancer.server.port=8096'
+    networks:
+      - 'frontend'
+  jellyseerr:
+    container_name: jellyseerr
+    image: ghcr.io/fallenbagel/jellyseerr:latest
+    volumes:
+      - './config/jellyseerr:/app/config'
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - 'TZ={{ timezone }}'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.jellyseerr.tls=true'
+      - 'traefik.http.routers.jellyseerr.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.media.{{ domain_name }}`)'
+      - 'traefik.http.services.jellyseerr.loadbalancer.server.port=5055'
+    networks:
+      - 'frontend'
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
+    network_mode: container:gluetunvpn
+    volumes:
+      - './config/prowlarr:/config'
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - 'TZ={{ timezone }}'
+    restart: unless-stopped
+  flaresolverr:
+    container_name: flaresolverr
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    environment:
+      - 'TZ={{ timezone }}'
+    restart: unless-stopped
+    networks:
+      - 'frontend'
+  radarr:
+    container_name: radarr
+    image: lscr.io/linuxserver/radarr:latest
+    volumes:
+      - './config/radarr:/config'
+      - '{{ data_mount }}:/data'
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - 'TZ={{ timezone }}'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.radarr.tls=true'
+      - 'traefik.http.routers.radarr.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.radarr.rule=Host(`radarr.media.{{ domain_name }}`)'
+      - 'traefik.http.routers.radarr.middlewares=authelia@docker'
+      - 'traefik.http.services.radarr.loadbalancer.server.port=7878'
+    networks:
+      - 'frontend'
+  sonarr:
+    container_name: sonarr
+    image: lscr.io/linuxserver/sonarr:latest
+    volumes:
+      - './config/sonarr:/config'
+      - '{{ data_mount }}:/data'
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - 'TZ={{ timezone }}'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.sonarr.tls=true'
+      - 'traefik.http.routers.sonarr.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.sonarr.rule=Host(`sonarr.media.{{ domain_name }}`)'
+      - 'traefik.http.routers.sonarr.middlewares=authelia@docker'
+      - 'traefik.http.services.sonarr.loadbalancer.server.port=8989'
+    networks:
+      - 'frontend'
+  bazarr:
+    container_name: bazarr
+    image: lscr.io/linuxserver/bazarr:latest
+    volumes:
+      - './config/bazarr:/config'
+      - '{{ data_mount }}:/data'
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - 'TZ={{ timezone }}'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.bazarr.tls=true'
+      - 'traefik.http.routers.bazarr.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.bazarr.rule=Host(`bazarr.media.{{ domain_name }}`)'
+      - 'traefik.http.routers.bazarr.middlewares=authelia@docker'
+      - 'traefik.http.services.bazarr.loadbalancer.server.port=6767'
+    networks:
+      - 'frontend'
+  lidarr:
+    container_name: lidarr
+    image: lscr.io/linuxserver/lidarr:latest
+    volumes:
+      - './config/lidarr:/config'
+      - '{{ data_mount }}:/data'
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - 'TZ={{ timezone }}'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.lidarr.tls=true'
+      - 'traefik.http.routers.lidarr.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.lidarr.rule=Host(`lidarr.media.{{ domain_name }}`)'
+      - 'traefik.http.routers.lidarr.middlewares=authelia@docker'
+      - 'traefik.http.services.lidarr.loadbalancer.server.port=8686'
+    networks:
+      - 'frontend'
+
+networks:
+  frontend:
+    external: True
