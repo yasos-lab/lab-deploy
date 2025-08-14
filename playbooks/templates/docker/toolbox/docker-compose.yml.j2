@@ -117,21 +117,13 @@ services:
       - '8080' # qbittorrent ui
       - '6881/tcp' # qbittorrent torrent tcp
       - '6881/udp' # qbittorrent torrent udp
-      - '9696' # prowlarr
     labels:
       - 'traefik.enable=true'
-      ## QBITTORRENT
       - 'traefik.http.routers.qbittorrent.tls=true'
       - 'traefik.http.routers.qbittorrent.tls.certresolver=cloudflare'
       - 'traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ domain_name }}`)'
       - 'traefik.http.routers.qbittorrent.service=qbittorrent-service'
       - 'traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080'
-      ## PROWLARR
-      - 'traefik.http.routers.prowlarr.tls=true'
-      - 'traefik.http.routers.prowlarr.tls.certresolver=cloudflare'
-      - 'traefik.http.routers.prowlarr.rule=Host(`prowlarr.media.{{ domain_name }}`)'
-      - 'traefik.http.routers.prowlarr.service=prowlarr-service'
-      - 'traefik.http.services.prowlarr-service.loadbalancer.server.port=9696'
     networks:
       - 'frontend'
   qbittorrent:

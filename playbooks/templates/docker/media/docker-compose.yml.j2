@@ -43,7 +43,6 @@ services:
   prowlarr:
     container_name: prowlarr
     image: lscr.io/linuxserver/prowlarr:latest
-    network_mode: container:gluetunvpn
     volumes:
       - './config/prowlarr:/config'
     environment:
@@ -51,6 +50,15 @@ services:
       - 'PGID=1000'
       - 'TZ={{ timezone }}'
     restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.prowlarr.tls=true'
+      - 'traefik.http.routers.prowlarr.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.prowlarr.rule=Host(`prowlarr.media.{{ domain_name }}`)'
+      - 'traefik.http.routers.prowlarr.middlewares=authelia@docker'
+      - 'traefik.http.services.prowlarr.loadbalancer.server.port=9696'
+    networks:
+      - 'frontend'
   flaresolverr:
     container_name: flaresolverr
     image: ghcr.io/flaresolverr/flaresolverr:latest
