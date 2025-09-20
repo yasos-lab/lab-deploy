@@ -5,6 +5,10 @@ global:
 log:
   level: INFO
 
+metrics:
+  prometheus:
+    entryPoint: metrics
+
 entryPoints:
   web:
     address: ":80"
@@ -15,6 +19,8 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
+  metrics:
+    address: ":9100"
 
 api:
   dashboard: true
