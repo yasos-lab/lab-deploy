@@ -3,7 +3,7 @@
 services:
   nextcloud-app:
     container_name: nextcloud-app
-    image: nextcloud:30
+    image: nextcloud:31
     volumes:
       - './data/nextcloud-app:/var/www/html'
       - './config/nextcloud-app/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini'
