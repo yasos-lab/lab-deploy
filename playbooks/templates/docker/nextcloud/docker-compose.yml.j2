@@ -3,7 +3,7 @@
 services:
   nextcloud-app:
     container_name: nextcloud-app
-    image: nextcloud:31
+    image: nextcloud:32
     volumes:
       - './data/nextcloud-app:/var/www/html'
       - './config/nextcloud-app/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini'
@@ -35,8 +35,6 @@ services:
       - 'traefik.http.middlewares.secure_headers.headers.stsPreload=true'
       - 'traefik.http.routers.nextcloud.middlewares=secure_headers'
       - 'traefik.docker.network=frontend'
-    post_start:
-      - command: 'apt update && apt install -y sudo nano ffmpeg'
   nextcloud-redis:
     container_name: nextcloud-redis
     image: redis:6
@@ -50,7 +48,7 @@ services:
     image: mariadb:10
     volumes:
       - './data/nextcloud-db:/var/lib/mysql'
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --log-bin-trust-function-creators=1
     environment:
       - 'MYSQL_ROOT_PASSWORD={{ nextcloud_root_db_password }}'
       - 'MYSQL_PASSWORD={{ nextcloud_db_password }}'
