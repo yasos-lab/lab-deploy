@@ -156,6 +156,8 @@ server_rclone_configs:
       username: "{{ proton_username }}"
       password: "{{ proton_encpassword }}"
       2fa: "{{ proton_2fa }}"
+      replace_existing_draft: "true"
+      enable_caching: "false"
 
 server_rclone_mounts:
   # - name: "backblaze"

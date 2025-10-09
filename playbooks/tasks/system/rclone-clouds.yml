@@ -24,7 +24,7 @@
     
     - name: Validate rclone configs
       ansible.builtin.command:
-        cmd: "rclone ls '{{ item.name }}':"
+        cmd: "rclone lsd '{{ item.name }}':"
       loop: "{{ rclone_configs }}"
 
 - name: Ensure rclone remote directory exists
