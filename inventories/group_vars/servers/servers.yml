@@ -2,6 +2,8 @@
 
 data_mount: "/mnt/data"
 
+docker_traefik_subnet: '172.18.0.0/16'
+
 loki_url: "http://loki:3100"
 
 promtail_instance: "svr"
@@ -67,6 +69,13 @@ server_docker_plugins:
     alias: "loki"
 
 server_docker_services:
+  - stack_name: "home"
+    services:
+      - "home-assistant"
+    configs:
+      - src: "templates/docker/home/config/home-assistant/configuration.yaml.j2"
+        dest: "{{ docker_services_directory }}/home/config/home-assistant/configuration.yaml"
+    crons: []
   - stack_name: "toolbox"
     services:
       - "authelia"

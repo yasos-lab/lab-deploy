@@ -1,0 +1,25 @@
+---
+
+services:
+  home-assistant:
+    container_name: home-assistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    volumes:
+      - './config/home-assistant:/config'
+      - '/etc/localtime:/etc/localtime:ro'
+      - '/run/dbus:/run/dbus:ro'
+    environment:
+      - 'TZ={{ timezone }}'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.home-assistant.tls=true'
+      - 'traefik.http.routers.home-assistant.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.home-assistant.rule=Host(`home-assistant.{{ domain_name }}`)'
+      - 'traefik.http.services.home-assistant.loadbalancer.server.port=8123'
+    networks:
+      - 'frontend'
+
+networks:
+  frontend:
+    external: True
