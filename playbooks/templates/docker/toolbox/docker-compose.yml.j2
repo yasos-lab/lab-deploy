@@ -134,7 +134,7 @@ services:
       - 'gluetunvpn'
     volumes:
       - './config/qbittorrent:/config'
-      - '{{ data_mount }}/torrents:/data/torrents'
+      - '{{ media_mount }}/torrents:/data/torrents'
     environment:
       - 'PUID=1000'
       - 'PGID=1000'

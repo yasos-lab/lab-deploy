@@ -1,6 +1,8 @@
 ---
 
-data_mount: "/mnt/data"
+backup_mount: "/mnt/backup"
+
+media_mount: "/mnt/media"
 
 docker_traefik_subnet: '172.18.0.0/16'
 
@@ -11,25 +13,24 @@ promtail_instance: "svr"
 server_deb_packages: []
 
 server_directories:
-  - "{{ data_mount }}/media/books"
-  - "{{ data_mount }}/media/courses"
-  - "{{ data_mount }}/media/movies"
-  - "{{ data_mount }}/media/music"
-  - "{{ data_mount }}/media/others"
-  - "{{ data_mount }}/media/quran"
-  - "{{ data_mount }}/media/tv"
-  - "{{ data_mount }}/torrents"
+  - "{{ backup_mount }}/docker_backup"
+  - "{{ media_mount }}/library/books"
+  - "{{ media_mount }}/library/courses"
+  - "{{ media_mount }}/library/movies"
+  - "{{ media_mount }}/library/music"
+  - "{{ media_mount }}/library/other"
+  - "{{ media_mount }}/library/quran"
+  - "{{ media_mount }}/library/tv"
+  - "{{ media_mount }}/torrents"
 
 server_disk_lvs:
-  - lv: "docker_backup_lv"
-    vg: "backup_vg"
-    mount_point: "/mnt/docker_backup"
-    size: "256g"
-    fstype: "xfs"
-  - lv: "data_lv"
-    vg: "data_vg"
-    mount_point: "{{ data_mount }}"
-    size: "400g"
+  - lv: "lv_backup" # 256G
+    vg: "vg_sata"
+    mount_point: "{{ backup_mount }}"
+    fstype: "ext4"
+  - lv: "lv_media" # 512G
+    vg: "vg_sata"
+    mount_point: "{{ media_mount }}"
     fstype: "xfs"
 
 server_docker_networks:
@@ -181,7 +182,7 @@ server_repositories:
 server_restic_backup_configs:
   - name: "docker-services"
     dir_to_backup: "/opt/docker_services"
-    local_backup_repo: "/mnt/docker_backup"
+    local_backup_repo: "{{ backup_mount }}/docker_backup"
     remote_backup_repo: "{{ restic_remote }}:docker_backup"
     cron:
       hour: "4"

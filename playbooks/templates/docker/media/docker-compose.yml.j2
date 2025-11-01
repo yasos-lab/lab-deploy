@@ -6,7 +6,7 @@ services:
     image: lscr.io/linuxserver/jellyfin:latest
     volumes:
       - './config/jellyfin:/config'
-      - '{{ data_mount }}/media:/media'
+      - '{{ media_mount }}/library:/media'
     environment:
       - 'PUID=1000'
       - 'PGID=1000'
@@ -72,7 +72,7 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     volumes:
       - './config/radarr:/config'
-      - '{{ data_mount }}:/data'
+      - '{{ media_mount }}:/data'
     environment:
       - 'PUID=1000'
       - 'PGID=1000'
@@ -92,7 +92,7 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     volumes:
       - './config/sonarr:/config'
-      - '{{ data_mount }}:/data'
+      - '{{ media_mount }}:/data'
     environment:
       - 'PUID=1000'
       - 'PGID=1000'
@@ -112,7 +112,7 @@ services:
     image: lscr.io/linuxserver/bazarr:latest
     volumes:
       - './config/bazarr:/config'
-      - '{{ data_mount }}:/data'
+      - '{{ media_mount }}:/data'
     environment:
       - 'PUID=1000'
       - 'PGID=1000'
@@ -132,7 +132,7 @@ services:
     image: lscr.io/linuxserver/lidarr:latest
     volumes:
       - './config/lidarr:/config'
-      - '{{ data_mount }}:/data'
+      - '{{ media_mount }}:/data'
     environment:
       - 'PUID=1000'
       - 'PGID=1000'
