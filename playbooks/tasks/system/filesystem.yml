@@ -29,6 +29,6 @@
 - name: Persist the mount in fstab
   ansible.builtin.lineinfile:
     path: /etc/fstab
-    line: "/dev/{{ item.vg }}/{{ item.lv }} {{ item.mount_point }} {{ item.fstype }} defaults,nofail 0 2"
+    line: "/dev/{{ item.vg }}/{{ item.lv }} {{ item.mount_point }} {{ item.fstype }} defaults 0 2"
     state: present
   loop: "{{ disk_lvs }}"
