@@ -32,34 +32,6 @@ server_disk_lvs:
     size: "400g"
     fstype: "xfs"
 
-server_disk_partitions:
-  - partition_number: 1
-    device: "/dev/sda"
-    flags: [lvm]
-    part_start: "0GiB"
-    part_end: "256GiB"
-  - partition_number: 2
-    device: "/dev/sda"
-    flags: [lvm]
-    part_start: "256GiB"
-    part_end: "512GiB"
-  - partition_number: 3
-    device: "/dev/sda"
-    flags: [lvm]
-    part_start: "512GiB"
-    part_end: "768GiB"
-  - partition_number: 4
-    device: "/dev/sda"
-    flags: [lvm]
-    part_start: "768GiB"
-    part_end: "100%"
-
-server_disk_vgs:
-  - vg: "backup_vg"
-    pvs: [/dev/sda1, /dev/sda2]
-  - vg: "data_vg"
-    pvs: [/dev/sda3, /dev/sda4]
-
 server_docker_networks:
   - frontend
   - backend

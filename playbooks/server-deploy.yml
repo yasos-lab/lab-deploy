@@ -31,8 +31,6 @@
           ansible.builtin.import_tasks: tasks/system/filesystem.yml
           vars:
             directories: "{{ common_directories + server_directories }}"
-            disk_partitions: "{{ server_disk_partitions }}"
-            disk_vgs: "{{ server_disk_vgs }}"
             disk_lvs: "{{ server_disk_lvs }}"
           tags: server::filesystem
         

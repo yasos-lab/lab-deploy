@@ -31,8 +31,6 @@
           ansible.builtin.import_tasks: tasks/system/filesystem.yml
           vars:
             directories: "{{ common_directories + workstation_directories }}"
-            disk_partitions: []
-            disk_vgs: []
             disk_lvs: []
           tags: workstation::filesystem
 
