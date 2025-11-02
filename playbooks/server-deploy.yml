@@ -13,12 +13,6 @@
 
     - name: Deploy
       block:     
-        - name: Import repositories tasks
-          ansible.builtin.import_tasks: tasks/system/repositories.yml
-          vars:
-            repositories: "{{ server_repositories }}"
-          tags: server::repositories
-        
         - name: Import packages tasks
           ansible.builtin.import_tasks: tasks/system/packages.yml
           vars:
@@ -26,6 +20,12 @@
             deb_packages: "{{ common_deb_packages + server_deb_packages }}"
             python_packages: "{{ server_python_packages }}"
           tags: server::packages
+        
+        - name: Import repositories tasks
+          ansible.builtin.import_tasks: tasks/system/repositories.yml
+          vars:
+            repositories: "{{ server_repositories }}"
+          tags: server::repositories
 
         - name: Import filesystem tasks
           ansible.builtin.import_tasks: tasks/system/filesystem.yml
