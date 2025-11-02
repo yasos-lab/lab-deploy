@@ -85,12 +85,12 @@ common_packages:
   - curl
   - gnupg2
   - git
+  - htop
   - jq
   - lsb-release
   - openssl
   - python3-pip
   - restic
-  # - software-properties-common # not available for debian
   - unzip
   - vim
   - wget
