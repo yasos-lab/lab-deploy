@@ -1,34 +1,18 @@
 ---
 
-- name: Mount points and directories
-  block:
-    - name: Create mount points
-      ansible.builtin.file:
-        name: "{{ item.mount_point }}"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        state: directory
-      loop: "{{ disk_lvs }}"
 
-    - name: Create directories
-      ansible.builtin.file:
-        name: "{{ item }}"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        state: directory
-      loop: "{{ directories }}"
-
-- name: Mount logical volumes to mount points
-  ansible.builtin.mount:
+- name: Mount logical volumes
+  ansible.posix.mount:
     path: "{{ item.mount_point }}"
     src: "/dev/{{ item.vg }}/{{ item.lv }}"
     fstype: "{{ item.fstype }}"
     state: mounted
   loop: "{{ disk_lvs }}"
 
-- name: Persist the mount in fstab
-  ansible.builtin.lineinfile:
-    path: /etc/fstab
-    line: "/dev/{{ item.vg }}/{{ item.lv }} {{ item.mount_point }} {{ item.fstype }} defaults 0 2"
-    state: present
-  loop: "{{ disk_lvs }}"
+- name: Create directories
+  ansible.builtin.file:
+    name: "{{ item }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    state: directory
+  loop: "{{ directories }}"
