@@ -80,20 +80,6 @@ services:
       - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
     networks:
       - 'frontend'
-  postgres:
-    container_name: postgres
-    image: postgres:latest
-    environment:
-      - 'POSTGRES_DB={{ postgres_db }}'
-      - 'POSTGRES_USER={{ postgres_db_user }}'
-      - 'POSTGRES_PASSWORD={{ postgres_db_password }}'
-    volumes:
-      - './data/postgres:/var/lib/postgresql/data'
-    ports:
-      - '5432:5432'
-    networks:
-      - 'backend'
-    restart: unless-stopped
   gluetunvpn:
     container_name: gluetunvpn
     image: qmcgaw/gluetun:latest
