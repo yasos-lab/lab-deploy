@@ -8,6 +8,8 @@ services:
       - './config/home-assistant:/config'
       - '/etc/localtime:/etc/localtime:ro'
       - '/run/dbus:/run/dbus:ro'
+    devices:
+      - '/dev/serial/by-id/{{ home_assistant_zigbee_dongle }}:/dev/ttyUSB0'
     environment:
       - 'TZ={{ timezone }}'
     restart: unless-stopped

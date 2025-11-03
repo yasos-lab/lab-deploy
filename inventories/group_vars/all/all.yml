@@ -121,6 +121,8 @@ docker_packages:
 
 documents_directory: "{{ user_home }}/Documents"
 
+home_assistant_zigbee_dongle: "usb-Itead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_V2_b09546f368f3ef11a606c21b6d9880ab-if00-port0"
+
 postgres_host: "{{ ansible_facts.lo.ipv4.address }}"
 
 purge_all: no
