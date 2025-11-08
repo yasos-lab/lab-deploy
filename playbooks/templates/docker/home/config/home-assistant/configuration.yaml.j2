@@ -6,3 +6,6 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - {{ docker_traefik_subnet }}
+
+homeassistant:
+  packages: !include_dir_named packages

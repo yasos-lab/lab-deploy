@@ -48,6 +48,8 @@ server_docker_services:
     configs:
       - src: "templates/docker/home/config/home-assistant/configuration.yaml.j2"
         dest: "{{ docker_services_directory }}/home/config/home-assistant/configuration.yaml"
+      - src: "templates/docker/home/config/home-assistant/packages/plugs.yaml.j2"
+        dest: "{{ docker_services_directory }}/home/config/home-assistant/packages/plugs.yaml"
     crons: []
   - stack_name: "toolbox"
     services:
