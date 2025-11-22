@@ -120,6 +120,16 @@ server_docker_services:
         service_user: "www-data"
         job: "php /var/www/html/cron.php"
         minute: "*/5"
+  - stack_name: "tube"
+    services:
+      - "invidious-app"
+      - "companion"
+      - "invidious-db"
+    templates: []
+    configs:
+      - src: "templates/docker/tube/config/invidious-db/"
+        dest: "{{ docker_services_directory }}/tube/config/invidious-db/"
+    crons: []
 
 server_packages:
   - lvm2
