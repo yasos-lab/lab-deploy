@@ -45,11 +45,12 @@ server_docker_services:
   - stack_name: "home"
     services:
       - "home-assistant"
-    configs:
+    templates:
       - src: "templates/docker/home/config/home-assistant/configuration.yaml.j2"
         dest: "{{ docker_services_directory }}/home/config/home-assistant/configuration.yaml"
       - src: "templates/docker/home/config/home-assistant/packages/plugs.yaml.j2"
         dest: "{{ docker_services_directory }}/home/config/home-assistant/packages/plugs.yaml"
+    configs: []
     crons: []
   - stack_name: "toolbox"
     services:
@@ -62,7 +63,7 @@ server_docker_services:
       - "gluetunvpn"
       - "qbittorrent"
       - "vaultwarden"
-    configs:
+    templates:
       - src: "templates/docker/toolbox/config/traefik/external-services.yml.j2"
         dest: "{{ docker_services_directory }}/toolbox/config/traefik/external-services.yml"
       - src: "templates/docker/toolbox/config/traefik/traefik.yml.j2"
@@ -71,6 +72,7 @@ server_docker_services:
         dest: "{{ docker_services_directory }}/toolbox/config/authelia/users_database.yml"
       - src: "templates/docker/toolbox/config/authelia/configuration.yml.j2"
         dest: "{{ docker_services_directory }}/toolbox/config/authelia/configuration.yml"
+    configs: []
     crons: []
   - stack_name: "monitoring"
     services:
@@ -80,13 +82,14 @@ server_docker_services:
       - "cadvisor"
       - "node_exporter"
       - "promtail"
-    configs:
+    templates:
       - src: "templates/docker/monitoring/config/prometheus/prometheus.yml.j2"
         dest: "{{ docker_services_directory }}/monitoring/config/prometheus/prometheus.yml"
       - src: "templates/docker/monitoring/config/loki/loki-config.yml.j2"
         dest: "{{ docker_services_directory }}/monitoring/config/loki/loki-config.yml"
       - src: "templates/docker/monitoring/config/promtail/promtail-config.yml.j2"
         dest: "{{ docker_services_directory }}/monitoring/config/promtail/promtail-config.yml"
+    configs: []
     crons: []
   - stack_name: "media"
     services:
@@ -98,6 +101,7 @@ server_docker_services:
       - "sonarr"
       - "bazarr"
       - "lidarr"
+    templates: []
     configs: []
     crons: []
   - stack_name: "nextcloud"
@@ -106,9 +110,10 @@ server_docker_services:
       - "nextcloud-redis"
       - "nextcloud-db"
       - "nextcloud-onlyoffice"
-    configs:
+    templates:
       - src: "templates/docker/nextcloud/config/nextcloud-app/nextcloud.ini.j2"
         dest: "{{ docker_services_directory }}/nextcloud/config/nextcloud-app/nextcloud.ini"
+    configs: []
     crons:
       - name: "Nextcloud cron job"
         service: "nextcloud-app"

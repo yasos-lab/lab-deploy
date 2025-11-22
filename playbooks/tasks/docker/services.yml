@@ -24,14 +24,14 @@
       loop_control:
         label: "{{ docker_services_directory }}/{{ item.0.stack_name }}/config/{{ item.1 }}"
     
-    - name: Ensure all directories for docker service configs exist
+    - name: Ensure all directories for docker service templates exist
       ansible.builtin.file:
         path: "{{ item.dest | dirname }}"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         state: directory
         mode: '0755'
-      loop: "{{ docker_services | map(attribute='configs') | flatten(levels=1) }}"
+      loop: "{{ docker_services | map(attribute='templates') | flatten(levels=1) }}"
 
 - name: Template docker-compose file for the services
   ansible.builtin.template:
@@ -45,6 +45,16 @@
 
 - name: Template config files for the services
   ansible.builtin.template:
+    src: "{{ item.1.src }}"
+    dest: "{{ item.1.dest }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  loop: "{{ docker_services | subelements('templates') }}"
+  loop_control:
+    label: "{{ item.1.dest }}"
+
+- name: Copy config files for the services
+  ansible.builtin.copy:
     src: "{{ item.1.src }}"
     dest: "{{ item.1.dest }}"
     owner: "{{ ansible_user }}"
