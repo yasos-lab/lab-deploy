@@ -21,17 +21,17 @@
 
 - name: Restic remote Repository
   block:
-    - name: Verify restic remote
-      ansible.builtin.command: "{{ restic_remote_verify_command }}"
-      register: verify_result
-      ignore_errors: yes
+    # - name: Verify restic remote
+    #   ansible.builtin.command: "{{ restic_remote_verify_command }}"
+    #   register: verify_result
+    #   ignore_errors: yes
 
-    - name: Assert that restic remote is accessible
-      ansible.builtin.assert:
-        that:
-          - verify_result.rc == 0
-        fail_msg: "Restic remote verification failed for {{ restic_remote }}"
-        success_msg: "Restic remote for {{ restic_remote }} is accessible"
+    # - name: Assert that restic remote is accessible
+    #   ansible.builtin.assert:
+    #     that:
+    #       - verify_result.rc == 0
+    #     fail_msg: "Restic remote verification failed for {{ restic_remote }}"
+    #     success_msg: "Restic remote for {{ restic_remote }} is accessible"
 
     - name: Check if restic remote repo is initialized
       ansible.builtin.command: "restic snapshots --repo {{ item.remote_backup_repo }}"

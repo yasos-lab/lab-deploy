@@ -148,9 +148,11 @@ rclone_version: 1.69.1
 
 restic_env_vars:
   RESTIC_PASSWORD: "{{ restic_password }}"
+  B2_ACCOUNT_ID: "{{ restic_bucket_key_id }}"
+  B2_ACCOUNT_KEY: "{{ restic_bucket_app_key }}"
 restic_logs_directory: "/var/log/restic"
-restic_remote: "rclone:protondrive"
-restic_remote_verify_command: "rclone lsf protondrive:"
+restic_remote: "b2:{{ restic_bucket }}"
+# restic_remote_verify_command: "rclone lsf protondrive:"
 restic_scripts_directory: "{{ scripts_directory }}/restic"
 
 scripts_directory: "/opt/scripts"
