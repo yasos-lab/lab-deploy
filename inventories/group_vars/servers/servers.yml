@@ -100,7 +100,6 @@ server_docker_services:
       - "radarr"
       - "sonarr"
       - "bazarr"
-      - "lidarr"
     templates: []
     configs: []
     crons: []

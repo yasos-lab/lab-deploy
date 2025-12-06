@@ -127,26 +127,6 @@ services:
       - 'traefik.http.services.bazarr.loadbalancer.server.port=6767'
     networks:
       - 'frontend'
-  lidarr:
-    container_name: lidarr
-    image: lscr.io/linuxserver/lidarr:latest
-    volumes:
-      - './config/lidarr:/config'
-      - '{{ media_mount }}:/data'
-    environment:
-      - 'PUID=1000'
-      - 'PGID=1000'
-      - 'TZ={{ timezone }}'
-    restart: unless-stopped
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.lidarr.tls=true'
-      - 'traefik.http.routers.lidarr.tls.certresolver=cloudflare'
-      - 'traefik.http.routers.lidarr.rule=Host(`lidarr.media.{{ domain_name }}`)'
-      - 'traefik.http.routers.lidarr.middlewares=authelia@docker'
-      - 'traefik.http.services.lidarr.loadbalancer.server.port=8686'
-    networks:
-      - 'frontend'
 
 networks:
   frontend:
