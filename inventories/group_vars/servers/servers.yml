@@ -63,6 +63,7 @@ server_docker_services:
       - "gluetunvpn"
       - "qbittorrent"
       - "vaultwarden"
+      - "n8n"
     templates:
       - src: "templates/docker/toolbox/config/traefik/external-services.yml.j2"
         dest: "{{ docker_services_directory }}/toolbox/config/traefik/external-services.yml"
