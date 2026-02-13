@@ -110,6 +110,7 @@ server_docker_services:
       - "nextcloud-redis"
       - "nextcloud-db"
       - "nextcloud-onlyoffice"
+      - "paperless"
     templates:
       - src: "templates/docker/nextcloud/config/nextcloud-app/nextcloud.ini.j2"
         dest: "{{ docker_services_directory }}/nextcloud/config/nextcloud-app/nextcloud.ini"
