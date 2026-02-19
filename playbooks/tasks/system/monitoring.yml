@@ -8,7 +8,7 @@
 
     - name: Template config file
       ansible.builtin.template:
-        src: "templates/monitoring/config/promtail-config.yml.j2"
+        src: "templates/promtail/promtail-config.yml.j2"
         dest: "/etc/promtail/config.yml"
     
     - name: Restart promtail service

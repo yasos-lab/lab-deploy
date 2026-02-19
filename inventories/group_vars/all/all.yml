@@ -189,7 +189,7 @@ traefik_external_services:
     services_properties:
       loadBalancer:
         servers:
-          - url: "http://{{ lan_prefix }}.30:80"
+          - url: "http://{{ lan_prefix }}.10:80"
 
 user_home: "/home/{{ ansible_user }}"
 
