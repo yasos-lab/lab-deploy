@@ -32,6 +32,10 @@ server_disk_lvs:
     vg: "vg_sata"
     mount_point: "{{ media_mount }}"
     fstype: "xfs"
+  - lv: "lv_backup" # 256G
+    vg: "vg_sata"
+    mount_point: "/mnt/proxmox_backup"
+    fstype: "ext4"
 
 server_docker_networks:
   - frontend
@@ -124,6 +128,7 @@ server_docker_services:
 
 server_packages:
   - lvm2
+  - nfs-kernel-server
   - parted
   - python3-psycopg2
 
