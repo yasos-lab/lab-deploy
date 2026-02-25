@@ -1,14 +1,15 @@
 ---
 
-- name: Add GPG keys
-  ansible.builtin.get_url:
-    url: "{{ item.gpg_url }}"
-    dest: "/etc/apt/trusted.gpg.d/{{ item.name }}.{{ item.gpg_extention }}"
+- name: Add GPG keys (Dearmored)
+  shell: |
+    curl -fsSL {{ item.gpg_url }} | gpg --dearmor -o /usr/share/keyrings/{{ item.name }}.gpg
+  args:
+    creates: "/usr/share/keyrings/{{ item.name }}.gpg"
   loop: "{{ repositories }}"
 
 - name: Add APT repositories
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/trusted.gpg.d/{{ item.name }}.{{ item.gpg_extention }}] {{ item.repo_url }} {{ item.components | join(' ') }}"
+    repo: "deb [signed-by=/usr/share/keyrings/{{ item.name }}.gpg] {{ item.repo_url }} {{ item.components | join(' ') }}"
     filename: "{{ item.name }}-archive"
     state: present
   loop: "{{ repositories }}"
