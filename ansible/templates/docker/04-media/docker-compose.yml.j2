@@ -32,6 +32,10 @@ services:
       - 'PGID=1000'
       - 'TZ={{ timezone }}'
     restart: unless-stopped
+    depends_on:
+      - 'radarr'
+      - 'sonarr'
+      - 'jellyfin'
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.jellyseerr.tls=true'
@@ -50,6 +54,8 @@ services:
       - 'PGID=1000'
       - 'TZ={{ timezone }}'
     restart: unless-stopped
+    depends_on:
+      - 'qbittorrent'
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.prowlarr.tls=true'
@@ -78,6 +84,9 @@ services:
       - 'PGID=1000'
       - 'TZ={{ timezone }}'
     restart: unless-stopped
+    depends_on:
+      - 'qbittorrent'
+      - 'prowlarr'
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.radarr.tls=true'
@@ -98,6 +107,9 @@ services:
       - 'PGID=1000'
       - 'TZ={{ timezone }}'
     restart: unless-stopped
+    depends_on:
+      - 'qbittorrent'
+      - 'prowlarr'
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.sonarr.tls=true'
@@ -127,7 +139,52 @@ services:
       - 'traefik.http.services.bazarr.loadbalancer.server.port=6767'
     networks:
       - 'frontend'
-
+  gluetunvpn:
+    container_name: gluetunvpn
+    image: qmcgaw/gluetun:latest
+    cap_add:
+      - 'NET_ADMIN'
+    devices:
+      - '/dev/net/tun:/dev/net/tun'
+    environment:
+      - 'DNS_ADDRESS=127.0.0.11'
+      - 'VPN_PORT_FORWARDING=on'
+{% raw %}
+      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://127.0.0.1:8080/api/v2/app/setPreferences 2>&1'
+{% endraw %}
+      - 'VPN_SERVICE_PROVIDER={{ vpn_provider }}'
+      - 'VPN_TYPE=wireguard'
+      - 'WIREGUARD_PRIVATE_KEY={{ vpn_private_key }}'
+      - 'SERVER_COUNTRIES={{ vpn_countries }}'
+      - 'PORT_FORWARD_ONLY=on'
+    restart: unless-stopped
+    expose:
+      - '8080' # qbittorrent ui
+      - '6881/tcp' # qbittorrent torrent tcp
+      - '6881/udp' # qbittorrent torrent udp
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.qbittorrent.tls=true'
+      - 'traefik.http.routers.qbittorrent.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ domain_name }}`)'
+      - 'traefik.http.routers.qbittorrent.service=qbittorrent-service'
+      - 'traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080'
+    networks:
+      - 'frontend'
+  qbittorrent:
+    container_name: qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:latest
+    network_mode: service:gluetunvpn
+    depends_on:
+      - 'gluetunvpn'
+    volumes:
+      - './config/qbittorrent:/config'
+      - '{{ media_mount }}/torrents:/data/torrents'
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - '{{ timezone }}'
+    restart: unless-stopped
 networks:
   frontend:
     external: True

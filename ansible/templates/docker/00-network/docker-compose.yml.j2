@@ -1,0 +1,70 @@
+---
+
+services:
+  authelia:
+    container_name: authelia
+    image: authelia/authelia:latest
+    environment: 
+      - '{{ timezone }}'
+    volumes: 
+      - './config/authelia:/config'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.authelia.tls=true'
+      - 'traefik.http.routers.authelia.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.authelia.rule=Host(`sso.{{ domain_name }}`)'
+      - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://sso.{{ domain_name }}'
+      - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+    networks:
+      - 'frontend'
+  traefik:
+    container_name: traefik
+    image: traefik:v3
+    volumes:
+      - './config/traefik/ssl:/ssl:rw'
+      - './config/traefik/traefik.yml:/etc/traefik/traefik.yml:ro'
+      - './config/traefik/external-services.yml:/etc/traefik/external-services.yml:ro'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: unless-stopped
+    depends_on:
+      - 'authelia'
+    environment:
+      - 'CF_DNS_API_TOKEN={{ cloudflare_api_token }}'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.traefik.tls=true'
+      - 'traefik.http.routers.traefik.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.traefik.rule=Host(`proxy.{{ domain_name }}`)'
+      - 'traefik.http.routers.traefik.service=api@internal'
+      - 'traefik.http.routers.traefik.middlewares=authelia@docker'
+    networks:
+      - 'frontend'
+  whoami:
+    container_name: whoami
+    image: traefik/whoami
+    restart: unless-stopped
+    networks:
+      - 'frontend'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.whoami.tls=true'
+      - 'traefik.http.routers.whoami.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.whoami.rule=Host(`whoami.{{ domain_name }}`)'
+  cloudflare-ddns:
+    container_name: cloudflare-ddns
+    image: favonia/cloudflare-ddns:latest
+    network_mode: host
+    user: 1000:1000
+    environment:
+      - 'CLOUDFLARE_API_TOKEN={{ cloudflare_api_token }}'
+      - 'DOMAINS=home.{{ domain_name }}'
+      - 'IP6_PROVIDER=none'
+    restart: unless-stopped
+networks:
+  frontend:
+    external: True

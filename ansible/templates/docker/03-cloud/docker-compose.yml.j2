@@ -1,22 +1,22 @@
 ---
 
 services:
-  nextcloud-app:
-    container_name: nextcloud-app
+  nextcloud:
+    container_name: nextcloud
     image: nextcloud:32
     volumes:
-      - './data/nextcloud-app:/var/www/html'
-      - './config/nextcloud-app/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini'
+      - './data/nextcloud:/var/www/html'
+      - './config/nextcloud/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini'
     depends_on:
-      - 'nextcloud-redis'
-      - 'nextcloud-db'
-      - 'nextcloud-onlyoffice'
+      - 'redis'
+      - 'maria-db'
+      - 'onlyoffice'
     environment:
-      - 'MYSQL_HOST=nextcloud-db'
+      - 'MYSQL_HOST=maria-db'
       - 'MYSQL_PASSWORD={{ nextcloud_db_password }}'
       - 'MYSQL_DATABASE={{ nextcloud_db }}'
       - 'MYSQL_USER={{ nextcloud_db_user }}'
-      - 'REDIS_HOST=nextcloud-redis'
+      - 'REDIS_HOST=redis'
       - 'TRUSTED_PROXIES={{ lan_prefix }}.20'
       - 'NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ domain_name }}'
       - 'OVERWRITECLIURL=https://cloud.{{ domain_name }}'
@@ -35,19 +35,19 @@ services:
       - 'traefik.http.middlewares.secure_headers.headers.stsPreload=true'
       - 'traefik.http.routers.nextcloud.middlewares=secure_headers'
       - 'traefik.docker.network=frontend'
-  nextcloud-redis:
-    container_name: nextcloud-redis
+  redis:
+    container_name: redis
     image: redis:6
     restart: unless-stopped
     healthcheck: 
       test: 'redis-cli ping || exit 1'
     networks:
       - 'backend'
-  nextcloud-db:
-    container_name: nextcloud-db
+  maria-db:
+    container_name: maria-db
     image: mariadb:10
     volumes:
-      - './data/nextcloud-db:/var/lib/mysql'
+      - './data/maria-db:/var/lib/mysql'
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --log-bin-trust-function-creators=1
     environment:
       - 'MYSQL_ROOT_PASSWORD={{ nextcloud_root_db_password }}'
@@ -57,8 +57,8 @@ services:
     restart: unless-stopped
     networks:
       - 'backend'
-  nextcloud-onlyoffice:
-    container_name: nextcloud-onlyoffice
+  onlyoffice:
+    container_name: onlyoffice
     image: onlyoffice/documentserver:latest
     environment:
       - 'JWT_SECRET={{ nextcloud_onlyoffice_jwt }}'
@@ -77,12 +77,12 @@ services:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     restart: unless-stopped
     depends_on:
-      - nextcloud-redis
+      - redis
     volumes:
       - './data/paperless:/usr/src/paperless/media'
       - './config/paperless:/usr/src/paperless/data'
     environment:
-      - 'PAPERLESS_REDIS=redis://nextcloud-redis:6379'
+      - 'PAPERLESS_REDIS=redis://redis:6379'
       - 'PAPERLESS_URL=https://paperless.{{ domain_name }}'
     networks:
       - 'frontend'

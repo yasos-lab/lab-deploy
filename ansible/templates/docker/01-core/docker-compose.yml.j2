@@ -1,0 +1,39 @@
+---
+
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    volumes:
+      - './data/portainer:/data'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.portainer.tls=true'
+      - 'traefik.http.routers.portainer.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.portainer.rule=Host(`portainer.{{ domain_name }}`)'
+      - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
+    networks:
+      - 'frontend'
+  vaultwarden:
+    container_name: vaultwarden
+    image: vaultwarden/server:1.33.2
+    volumes:
+      - './data/vaultwarden:/data'
+      - '/etc/localtime:/etc/localtime'
+    environment:
+      - 'SIGNUPS_ALLOWED=false'
+      - '{{ timezone }}'
+      - 'ADMIN_TOKEN={{ vaultwarden_admin_token | replace('$', '$$') }}'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.vaultwarden.tls=true'
+      - 'traefik.http.routers.vaultwarden.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.vaultwarden.rule=Host(`vault.{{ domain_name }}`)'
+    networks:
+      - 'frontend'
+networks:
+  frontend:
+    external: True
