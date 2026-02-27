@@ -1,0 +1,177 @@
+---
+
+services:
+  authelia:
+    container_name: authelia
+    image: authelia/authelia:latest
+    environment: 
+      - '{{ timezone }}'
+    volumes: 
+      - './config/authelia:/config'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.authelia.tls=true'
+      - 'traefik.http.routers.authelia.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.authelia.rule=Host(`sso.{{ domain_name }}`)'
+      - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://sso.{{ domain_name }}'
+      - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+    networks:
+      - 'frontend'
+  traefik:
+    container_name: traefik
+    image: traefik:v3
+    volumes:
+      - './config/traefik/ssl:/ssl:rw'
+      - './config/traefik/traefik.yml:/etc/traefik/traefik.yml:ro'
+      - './config/traefik/external-services.yml:/etc/traefik/external-services.yml:ro'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: unless-stopped
+    depends_on:
+      - 'authelia'
+    environment:
+      - 'CF_DNS_API_TOKEN={{ cloudflare_api_token }}'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.traefik.tls=true'
+      - 'traefik.http.routers.traefik.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.traefik.rule=Host(`proxy.{{ domain_name }}`)'
+      - 'traefik.http.routers.traefik.service=api@internal'
+      - 'traefik.http.routers.traefik.middlewares=authelia@docker'
+    networks:
+      - 'frontend'
+  whoami:
+    container_name: whoami
+    image: traefik/whoami
+    restart: unless-stopped
+    networks:
+      - 'frontend'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.whoami.tls=true'
+      - 'traefik.http.routers.whoami.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.whoami.rule=Host(`whoami.{{ domain_name }}`)'
+  cloudflare-ddns:
+    container_name: cloudflare-ddns
+    image: favonia/cloudflare-ddns:latest
+    network_mode: host
+    user: 1000:1000
+    environment:
+      - 'CLOUDFLARE_API_TOKEN={{ cloudflare_api_token }}'
+      - 'DOMAINS=home.{{ domain_name }}'
+      - 'IP6_PROVIDER=none'
+    restart: unless-stopped
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    volumes:
+      - './data/portainer:/data'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.portainer.tls=true'
+      - 'traefik.http.routers.portainer.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.portainer.rule=Host(`portainer.{{ domain_name }}`)'
+      - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
+    networks:
+      - 'frontend'
+  gluetunvpn:
+    container_name: gluetunvpn
+    image: qmcgaw/gluetun:latest
+    cap_add:
+      - 'NET_ADMIN'
+    devices:
+      - '/dev/net/tun:/dev/net/tun'
+    environment:
+      - 'DNS_ADDRESS=127.0.0.11'
+      - 'VPN_PORT_FORWARDING=on'
+{% raw %}
+      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://127.0.0.1:8080/api/v2/app/setPreferences 2>&1'
+{% endraw %}
+      - 'VPN_SERVICE_PROVIDER={{ vpn_provider }}'
+      - 'VPN_TYPE=wireguard'
+      - 'WIREGUARD_PRIVATE_KEY={{ vpn_private_key }}'
+      - 'SERVER_COUNTRIES={{ vpn_countries }}'
+      - 'PORT_FORWARD_ONLY=on'
+    restart: unless-stopped
+    expose:
+      - '8080' # qbittorrent ui
+      - '6881/tcp' # qbittorrent torrent tcp
+      - '6881/udp' # qbittorrent torrent udp
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.qbittorrent.tls=true'
+      - 'traefik.http.routers.qbittorrent.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ domain_name }}`)'
+      - 'traefik.http.routers.qbittorrent.service=qbittorrent-service'
+      - 'traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080'
+    networks:
+      - 'frontend'
+  qbittorrent:
+    container_name: qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:latest
+    network_mode: service:gluetunvpn
+    depends_on:
+      - 'gluetunvpn'
+    volumes:
+      - './config/qbittorrent:/config'
+      - '{{ media_mount }}/torrents:/data/torrents'
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - '{{ timezone }}'
+    restart: unless-stopped
+  vaultwarden:
+    container_name: vaultwarden
+    image: vaultwarden/server:1.33.2
+    volumes:
+      - './data/vaultwarden:/data'
+      - '/etc/localtime:/etc/localtime'
+    environment:
+      - 'SIGNUPS_ALLOWED=false'
+      - '{{ timezone }}'
+      - 'ADMIN_TOKEN={{ vaultwarden_admin_token | replace('$', '$$') }}'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.vaultwarden.tls=true'
+      - 'traefik.http.routers.vaultwarden.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.vaultwarden.rule=Host(`vault.{{ domain_name }}`)'
+    networks:
+      - 'frontend'
+
+  n8n:
+    container_name: n8n
+    image: docker.n8n.io/n8nio/n8n
+    environment:
+      - 'N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true'
+      - 'N8N_EDITOR_BASE_URL=https://n8n.{{ domain_name }}/'
+      - 'N8N_PROTOCOL=https'
+      - 'N8N_HOST=n8n.{{ domain_name }}'
+      - 'N8N_PORT=5678'
+      - 'N8N_RUNNERS_ENABLED=true'
+      - 'NODE_ENV=production'
+      - 'WEBHOOK_URL=https://n8n.{{ domain_name }}/'
+      - 'GENERIC_TIMEZONE={{ timezone }}'
+      - 'TZ={{ timezone }}'
+    volumes:
+      - './data/n8n:/home/node/.n8n'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.n8n.tls=true'
+      - 'traefik.http.routers.n8n.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.n8n.rule=Host(`n8n.{{ domain_name }}`)'
+      - 'traefik.http.services.n8n.loadbalancer.server.port=5678'
+    networks:
+      - 'frontend'
+networks:
+  frontend:
+    external: True
+  backend:
+    external: True

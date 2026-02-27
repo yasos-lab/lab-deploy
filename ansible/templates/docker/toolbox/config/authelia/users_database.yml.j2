@@ -1,0 +1,12 @@
+---
+###############################################################
+#                         Users Database                      #
+###############################################################
+
+users:
+{% for user in authelia_users %}
+  {{ user.username }}:
+{% for key, value in user.properties.items() %}
+    {{ key }}: {{ value }}
+{% endfor %}
+{% endfor %}

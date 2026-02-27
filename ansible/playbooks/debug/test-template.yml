@@ -40,7 +40,7 @@
   tasks:
     - name: Template   
       ansible.builtin.template:
-        src: "../templates/test.j2"
+        src: "../../templates/test.j2"
         dest: "/home/yacin/docker-compose-test.yml"
       loop: "{{ workstations_docker_services }}"
       loop_control:

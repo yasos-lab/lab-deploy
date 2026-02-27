@@ -1,0 +1,46 @@
+---
+
+- name: Install docker packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: latest
+  loop: "{{ docker_packages }}"
+
+- name: Ensure Docker service is running
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Create docker group if not exists
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Add users to the docker group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
+
+- name: Create docker networks
+  community.docker.docker_network:
+    name: "{{ item }}"
+  loop: "{{ docker_networks }}"
+
+- name: Install docker plugins
+  community.docker.docker_plugin:
+    plugin_name: "{{ item.name }}"
+    alias: "{{ item.alias }}"
+    state: enable
+  loop: "{{ docker_plugins }}"
+
+- name: Template docker daemon.json file
+  ansible.builtin.template:
+    src: "docker/daemon.json.j2"
+    dest: "/etc/docker/daemon.json"
+  when: template_docker_daemon
+  notify: "Restart docker daemon"
+
+- name: Run the handler
+  ansible.builtin.meta: flush_handlers

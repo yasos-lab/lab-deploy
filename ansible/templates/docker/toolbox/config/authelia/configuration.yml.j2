@@ -1,0 +1,70 @@
+---
+###############################################################
+#                   Authelia configuration                    #
+###############################################################
+
+# This secret can also be set using the env variables AUTHELIA_JWT_SECRET_FILE
+jwt_secret: "{{ authelia_jwt_secret }}"
+default_redirection_url: "https://sso.{{ domain_name }}"
+
+log:
+  level: debug
+
+totp:
+  issuer: "sso.{{ domain_name }}"
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+
+access_control:
+  default_policy: deny
+  rules:
+    # Rules applied to everyone
+{% for item in authelia_domains_policy %}
+    - domain: "{{ item.domain }}"
+      policy: "{{ item.policy | default("bypass") }}"
+{% endfor %}
+
+session:
+  name: authelia_session
+  domain: "{{ domain_name }}"
+  secret: "{{ authelia_session_secret }}"
+  expiration: 1h
+  inactivity: 5m
+  remember_me_duration:  1M
+
+regulation:
+  max_retries: 3
+  find_time: 120
+  ban_time: 300
+
+storage:
+  encryption_key: "{{ authelia_storage_encryption_key }}"
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  smtp:
+    username: "{{ smtp_user }}"
+    # This secret can also be set using the env variables AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE
+    password: "{{ smtp_password }}"
+    host: "{{ smtp_server }}"
+    port: 465
+    sender: "{{ smtp_sender }}"
+
+identity_providers:
+  oidc:
+    ## The other portions of the mandatory OpenID Connect 1.0 configuration go here.
+    ## See: https://www.authelia.com/c/oidc
+    hmac_secret: "{{ authelia_oidc_hmac_secret }}"
+    issuer_private_key: |
+{{ authelia_oidc_private_key | indent(6, true) }}
+    clients:
+{% for client in authelia_oidc_clients %}
+      - id: {{ client.id }}
+{% for key, value in client.properties.items() %}
+        {{ key }}: {{ value }}
+{% endfor %}
+{% endfor %}
+        

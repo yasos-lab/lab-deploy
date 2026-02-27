@@ -1,0 +1,16 @@
+---
+
+services:
+{% for service in stack.services %}
+  {{ service.name }}:
+{% for key, value in service.items() %}
+    {{ key }}: {{ value }}
+{% endfor %}
+{% endfor %}
+networks:
+{% for network in stack.networks %}
+  {{ network.name }}:
+{% for key, value in network.items() %}
+    {{ key }}: {{ value }}
+{% endfor %}
+{% endfor %}

@@ -1,0 +1,103 @@
+# Package: Desk & Server Plug Energy Tracking from Power
+
+input_number:
+  electricity_price_per_kwh:
+    name: Electricity Price per kWh
+    initial: 0.224
+    min: 0
+    max: 2
+    step: 0.01
+    unit_of_measurement: "€"
+
+############################
+# 1) Integration: Power (W) → Energy (kWh)
+############################
+sensor:
+  - platform: integration
+    source: sensor.deskplug_power
+    name: DeskPlug Energy
+    unique_id: deskplug_energy_kwh
+    unit_prefix: k
+    round: 6
+    method: trapezoidal
+    unit_time: h
+
+  - platform: integration
+    source: sensor.serverplug_power
+    name: ServerPlug Energy
+    unique_id: serverplug_energy_kwh
+    unit_prefix: k
+    round: 6
+    method: trapezoidal
+    unit_time: h
+
+############################
+# 2) Utility Meters (daily / weekly / monthly)
+############################
+utility_meter:
+  # DeskPlug
+  deskplug_energy_daily:
+    source: sensor.deskplug_energy
+    cycle: daily
+  deskplug_energy_weekly:
+    source: sensor.deskplug_energy
+    cycle: weekly
+  deskplug_energy_monthly:
+    source: sensor.deskplug_energy
+    cycle: monthly
+
+  # ServerPlug
+  serverplug_energy_daily:
+    source: sensor.serverplug_energy
+    cycle: daily
+  serverplug_energy_weekly:
+    source: sensor.serverplug_energy
+    cycle: weekly
+  serverplug_energy_monthly:
+    source: sensor.serverplug_energy
+    cycle: monthly
+
+############################
+# 3) Cost Calculations
+############################
+{% raw %}
+template:
+  - sensor:
+      # DeskPlug
+      - name: "DeskPlug Daily Cost"
+        state: >
+          {{ states('sensor.deskplug_energy_daily') | float(0)
+             * states('input_number.electricity_price_per_kwh') | float(0) | round(4) }}
+        unit_of_measurement: "€"
+
+      - name: "DeskPlug Weekly Cost"
+        state: >
+          {{ states('sensor.deskplug_energy_weekly') | float(0)
+             * states('input_number.electricity_price_per_kwh') | float(0) | round(4) }}
+        unit_of_measurement: "€"
+
+      - name: "DeskPlug Monthly Cost"
+        state: >
+          {{ states('sensor.deskplug_energy_monthly') | float(0)
+             * states('input_number.electricity_price_per_kwh') | float(0) | round(4) }}
+        unit_of_measurement: "€"
+        
+      # ServerPlug
+      - name: "ServerPlug Daily Cost"
+        state: >
+          {{ states('sensor.serverplug_energy_daily') | float(0)
+             * states('input_number.electricity_price_per_kwh') | float(0) | round(4) }}
+        unit_of_measurement: "€"
+
+      - name: "ServerPlug Weekly Cost"
+        state: >
+          {{ states('sensor.serverplug_energy_weekly') | float(0)
+             * states('input_number.electricity_price_per_kwh') | float(0) | round(4) }}
+        unit_of_measurement: "€"
+
+      - name: "ServerPlug Monthly Cost"
+        state: >
+          {{ states('sensor.serverplug_energy_monthly') | float(0)
+             * states('input_number.electricity_price_per_kwh') | float(0) | round(4) }}
+        unit_of_measurement: "€"
+{% endraw %}

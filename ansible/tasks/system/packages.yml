@@ -1,0 +1,17 @@
+---
+
+- name: Install system packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: latest
+  loop: "{{ packages }}"
+
+- name: Install deb packages from url
+  ansible.builtin.apt:
+    deb: "{{ item }}"
+  loop: "{{ deb_packages }}"
+
+- name: Install python packages
+  ansible.builtin.pip:
+    name: "{{ item }}"
+  loop: "{{ python_packages }}"

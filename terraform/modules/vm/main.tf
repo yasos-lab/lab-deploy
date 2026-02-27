@@ -18,23 +18,23 @@ resource "proxmox_vm_qemu" "vm" {
   }
 
   os_type   = "cloud-init"
-  ipconfig0 = "ip=${var.vm_config.ip},gw=192.168.1.1"
+  ipconfig0 = "ip=${var.vm_config.ip},gw=${var.lan_prefix}.254"
 
   sshkeys = var.ssh_public_key
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt update",
-      "sudo apt install -y qemu-guest-agent",
-      "sudo systemctl enable qemu-guest-agent",
-      "sudo systemctl start qemu-guest-agent"
-    ]
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "sudo apt update",
+  #     "sudo apt install -y qemu-guest-agent",
+  #     "sudo systemctl enable qemu-guest-agent",
+  #     "sudo systemctl start qemu-guest-agent"
+  #   ]
 
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = file("~/.ssh/id_rsa")
-      host        = split("/", var.vm_config.ip)[0]
-    }
-  }
+  #   connection {
+  #     type        = "ssh"
+  #     user        = "ubuntu"
+  #     private_key = file("~/.ssh/id_rsa")
+  #     host        = split("/", var.vm_config.ip)[0]
+  #   }
+  # }
 }

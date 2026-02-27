@@ -125,14 +125,14 @@ home_assistant_zigbee_dongle: "usb-Itead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_V2_b0
 
 postgres_host: "{{ ansible_facts.lo.ipv4.address }}"
 
-purge_all: no
+purge_all: false
 
 purge_vars:
-  docker: no
-  packages: no
-  repositories: no
-  shell: no
-  services: no
+  docker: false
+  packages: false
+  repositories: false
+  shell: false
+  services: false
 
 rclone_config_location: "/root/.config/rclone/rclone.conf"
 
@@ -157,7 +157,7 @@ restic_scripts_directory: "{{ scripts_directory }}/restic"
 
 scripts_directory: "/opt/scripts"
 
-template_docker_daemon: no
+template_docker_daemon: false
 
 timezone: "Europe/Paris"
 
