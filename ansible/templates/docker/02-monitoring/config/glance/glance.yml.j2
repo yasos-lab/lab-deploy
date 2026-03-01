@@ -1,0 +1,63 @@
+pages:
+  - name: Yasos
+    columns:
+      - size: small
+        widgets:
+          - $include: internet-speed.yml
+          - type: dns-stats
+            url: https://pihole.{{ domain_name }}
+            allow-insecure: true
+            service: pihole-v6
+            password: {{ pihole_password }}
+          - $include: media-vpn-stats.yml
+          - $include: qbittorrent-stats.yml
+          - $include: jellyfin-playing.yml
+          - $include: jellyfin-stats.yml
+
+      - size: full
+        widgets:
+{% for service_type in glance_monitor_services %}
+          - type: monitor
+            cache: 1m
+            title: {{ service_type.title | capitalize }}
+            sites:
+{% for site in service_type.sites %}
+              - title: {{ site.name | capitalize }}
+                url: {{ site.url }}
+
+{% if site.icon is defined %}
+                icon: {{ site.icon }}
+{% else %}
+                icon: si:{{ site.name | replace(' ', '') | lower }}
+{% endif %}
+{% endfor %}
+{% endfor %}
+      - size: small
+        widgets:
+          - $include: homelab-consumption-stats.yml
+          - type: extension # https://github.com/not-first/restic-glance-extension/tree/master
+            title: Docker local backup
+            url: http://glance-restic-extension:8675/local-docker-backup
+            cache: 10m
+            allow-potentially-dangerous-html: true
+            parameters:
+              hide-file-count: false
+              limit: 3
+          - type: extension # https://github.com/not-first/restic-glance-extension/tree/master
+            title: Docker remote backup
+            url: http://glance-restic-extension:8675/remote-docker-backup
+            cache: 10m
+            allow-potentially-dangerous-html: true
+            parameters:
+              hide-file-count: false
+              limit: 3
+          # - type: server-stats
+          #   servers:
+          #     - type: remote
+          #       name:
+          #       url: 
+          #       token: 
+          #       hide-mountpoints-by-default: true
+          #       mountpoints:
+          #         "/":
+          #           hide: false
