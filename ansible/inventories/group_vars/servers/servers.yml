@@ -52,6 +52,7 @@ server_docker_services:
       - "traefik"
       - "whoami"
       - "cloudflare-ddns"
+      - "speedtest"
     templates:
       - src: "../templates/docker/00-network/config/traefik/external-services.yml.j2"
         dest: "{{ docker_services_directory }}/00-network/config/traefik/external-services.yml"
@@ -67,8 +68,8 @@ server_docker_services:
     services:
       - "portainer"
       - "vaultwarden"
-    templates: []
     configs: []
+    templates: []
     crons: []
   - stack_name: "02-monitoring"
     services:

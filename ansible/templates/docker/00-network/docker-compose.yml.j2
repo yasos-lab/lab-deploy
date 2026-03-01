@@ -65,6 +65,26 @@ services:
       - 'DOMAINS=home.{{ domain_name }}'
       - 'IP6_PROVIDER=none'
     restart: unless-stopped
+  speedtest:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    container_name: speedtest
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - 'TZ={{ timezone }}'
+      - 'APP_URL=speedtest.{{ domain_name }}'
+      - 'APP_KEY={{ speedtest_app_key }}'
+      - 'SPEEDTEST_SCHEDULE=0 */3 * * *'
+    volumes:
+      - ./config/speedtest:/config
+    networks:
+      - 'frontend'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.speedtest.tls=true'
+      - 'traefik.http.routers.speedtest.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.speedtest.rule=Host(`speedtest.{{ domain_name }}`)'
+    restart: unless-stopped
 networks:
   frontend:
     external: True
