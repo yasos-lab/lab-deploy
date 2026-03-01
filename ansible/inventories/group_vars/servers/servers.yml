@@ -113,7 +113,7 @@ server_docker_services:
       - "radarr"
       - "sonarr"
       - "bazarr"
-      - "gluetunvpn"
+      - "media-vpn"
       - "qbittorrent"
     templates: []
     configs: []

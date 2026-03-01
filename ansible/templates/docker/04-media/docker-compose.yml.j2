@@ -139,8 +139,8 @@ services:
       - 'traefik.http.services.bazarr.loadbalancer.server.port=6767'
     networks:
       - 'frontend'
-  gluetunvpn:
-    container_name: gluetunvpn
+  media-vpn:
+    container_name: media-vpn
     image: qmcgaw/gluetun:latest
     cap_add:
       - 'NET_ADMIN'
@@ -157,6 +157,9 @@ services:
       - 'WIREGUARD_PRIVATE_KEY={{ vpn_private_key }}'
       - 'SERVER_COUNTRIES={{ vpn_countries }}'
       - 'PORT_FORWARD_ONLY=on'
+{% raw %}
+      - HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE='{"auth":"apikey","apikey":"{% endraw %}{{ gluetun_control_server_apikey }}{% raw %}","routes":["GET /v1/publicip/ip"]}'
+{% endraw %}
     restart: unless-stopped
     expose:
       - '8080' # qbittorrent ui
@@ -164,6 +167,11 @@ services:
       - '6881/udp' # qbittorrent torrent udp
     labels:
       - 'traefik.enable=true'
+      - 'traefik.http.routers.media-vpn.tls=true'
+      - 'traefik.http.routers.media-vpn.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.media-vpn.rule=Host(`vpn.media.{{ domain_name }}`)'
+      - 'traefik.http.routers.media-vpn.service=media-vpn-service'
+      - 'traefik.http.services.media-vpn-service.loadbalancer.server.port=8000'
       - 'traefik.http.routers.qbittorrent.tls=true'
       - 'traefik.http.routers.qbittorrent.tls.certresolver=cloudflare'
       - 'traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ domain_name }}`)'
@@ -174,9 +182,9 @@ services:
   qbittorrent:
     container_name: qbittorrent
     image: lscr.io/linuxserver/qbittorrent:latest
-    network_mode: service:gluetunvpn
+    network_mode: service:media-vpn
     depends_on:
-      - 'gluetunvpn'
+      - 'media-vpn'
     volumes:
       - './config/qbittorrent:/config'
       - '{{ media_mount }}/torrents:/data/torrents'
