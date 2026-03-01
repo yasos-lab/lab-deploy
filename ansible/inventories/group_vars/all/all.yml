@@ -170,8 +170,6 @@ traefik_external_services:
       tls:
         certResolver: "cloudflare"
       service: "gateway"
-      middlewares:
-        - "authelia@docker"
     services_properties:
       loadBalancer:
         servers:
@@ -184,8 +182,6 @@ traefik_external_services:
       tls:
         certResolver: "cloudflare"
       service: "pihole"
-      middlewares:
-        - "authelia@docker"
     services_properties:
       loadBalancer:
         servers:
