@@ -30,6 +30,10 @@
       ansible.builtin.import_tasks: ../tasks/system/pivpn.yml
       tags: raspberry::pivpn
     
+    - name: Configure and deploy glance agent
+      ansible.builtin.import_tasks: ../tasks/system/glance-agent.yml
+      tags: raspberry::glance
+
     - name: Configure and deploy monitoring tools (node explorer for prometheus & promtail for loki)
       ansible.builtin.import_tasks: ../tasks/system/monitoring.yml
       tags: raspberry::monitoring

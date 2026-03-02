@@ -1,0 +1,13 @@
+server:
+  port: 27973
+  token: {{ glance_agent_token }}
+
+system:
+  hide-mountpoints-by-default: true
+  mountpoints:
+{% for mnt in glance_mountpoints_to_monitor %}
+    "{{ mnt.path }}":
+      hide: false
+      name: {{ mnt.name }}
+{% endfor %}
+

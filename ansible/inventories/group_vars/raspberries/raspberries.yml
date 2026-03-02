@@ -39,6 +39,11 @@ pivpn_wireguard_clients:
     vip: "{{ pivpn_network_base }}.10"
 
 ### MONITORING ###
+glance_agent_package: "agent-linux-arm64"
+glance_mountpoints_to_monitor:
+  - name: "Root"
+    path: "/"
+
 loki_url: "https://loki.{{ domain_name }}"
 
 node_exporter_archive_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz"

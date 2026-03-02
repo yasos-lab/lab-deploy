@@ -1,0 +1,24 @@
+---
+
+- name: Unarchive Glance server stats agent
+  ansible.builtin.unarchive:
+    src: "{{ glance_agent_archive_url }}"
+    dest: /tmp/
+    remote_src: true
+
+- name: Install Glance agent non-interactively
+  ansible.builtin.shell:
+    cmd: echo "install" | /tmp/agent install
+    creates: /opt/glance-agent/agent
+
+- name: Template agent config file
+  ansible.builtin.template:
+    src: "../templates/glance/agent.yml.j2"
+    dest: "/opt/glance-agent/agent.yml"
+
+- name: Restart glance-agent
+  ansible.builtin.service:
+    name: glance-agent
+    state: restarted
+    enabled: true
+    

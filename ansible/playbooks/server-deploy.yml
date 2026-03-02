@@ -65,6 +65,10 @@
           vars:
             restic_backup_configs: "{{ server_restic_backup_configs }}"
           tags: server::backup
+        
+        - name: Configure and deploy glance agent
+          ansible.builtin.import_tasks: ../tasks/system/glance-agent.yml
+          tags: server::glance
 
         - name: Import systemd services tasks
           ansible.builtin.import_tasks: ../tasks/system/services.yml
