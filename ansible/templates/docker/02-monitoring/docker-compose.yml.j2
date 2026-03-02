@@ -42,6 +42,7 @@ services:
       - 'REMOTE_DOCKER_BACKUP_RESTIC_ENV__B2_ACCOUNT_KEY={{ restic_bucket_app_key }}'
       - 'REMOTE_DOCKER_BACKUP_RESTIC_URL={{ restic_remote }}:docker_backup'
       - 'REMOTE_DOCKER_BACKUP_RESTIC_PASSWORD={{ restic_password | replace('$', '$$') }}'
+      - 'RESTIC_CACHE_INTERVAL=43200'
     networks:
       - 'backend'
   grafana:
