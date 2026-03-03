@@ -45,6 +45,20 @@ services:
       - 'RESTIC_CACHE_INTERVAL=43200'
     networks:
       - 'backend'
+  uptime-kuma:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma:2
+    restart: unless-stopped
+    volumes:
+      - ./data/uptime-kuma:/app/data
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.uptime-kuma.tls=true'
+      - 'traefik.http.routers.uptime-kuma.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.uptime-kuma.rule=Host(`uptime-kuma.{{ domain_name }}`)'
+      - 'traefik.http.services.uptime-kuma.loadbalancer.server.port=3001'
+    networks:
+      - 'frontend'
   grafana:
     container_name: grafana
     image: grafana/grafana:latest

@@ -147,6 +147,7 @@ server_docker_services:
       - "node_exporter"
       - "promtail"
       - "glance"
+      - "uptime-kuma"
     templates:
       - src: "../templates/docker/02-monitoring/config/glance/glance.yml.j2"
         dest: "{{ docker_services_directory }}/02-monitoring/config/glance/glance.yml"
