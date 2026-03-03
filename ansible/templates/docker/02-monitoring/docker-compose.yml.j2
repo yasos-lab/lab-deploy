@@ -124,6 +124,10 @@ services:
       - '/sys:/sys:ro'
       - '/var/lib/docker/:/var/lib/docker:ro'
     restart: unless-stopped
+    command:
+      - "--housekeeping_interval=30s"
+      - "--disable_metrics=tcp,udp,percpu,sched,process"
+      - "--docker_only"
     networks:
       - 'backend'
   node_exporter:
