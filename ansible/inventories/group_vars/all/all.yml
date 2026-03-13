@@ -188,6 +188,19 @@ traefik_external_services:
       loadBalancer:
         servers:
           - url: "http://{{ lan_prefix }}.10:80"
+  - name: "proxmox"
+    routers_properties:
+      rule: "Host(`proxmox.{{ domain_name }}`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "cloudflare"
+      service: "proxmox"
+    services_properties:
+      loadBalancer:
+        serversTransport: proxmoxTransport
+        servers:
+          - url: "https://{{ lan_prefix }}.30:8006"
 
 user_home: "/home/{{ ansible_user }}"
 

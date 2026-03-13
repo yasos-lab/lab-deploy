@@ -1,4 +1,7 @@
 http:
+  serversTransports:
+    proxmoxTransport:
+      insecureSkipVerify: true
   routers:
 {% for service in traefik_external_services %}
     {{ service.name }}:
