@@ -6,7 +6,6 @@ media_mount: "/mnt/media"
 
 docker_traefik_subnet: '172.18.0.0/16'
 
-glance_agent_package: "agent-linux-amd64"
 glance_monitor_services:
   - title: "Network & Infra"
     sites:

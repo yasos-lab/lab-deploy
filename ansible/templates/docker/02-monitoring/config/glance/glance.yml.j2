@@ -45,10 +45,10 @@ pages:
                 name: Debian server
                 url: http://{{ lan_prefix }}.20:27973
                 token: {{ glance_agent_token }}
-              # - type: remote
-              #   name: Proxmox server
-              #   url: http://{{ lan_prefix }}.30:27973
-              #   token: {{ glance_agent_token }}
+              - type: remote
+                name: Proxmox server
+                url: http://{{ lan_prefix }}.30:27973
+                token: {{ glance_agent_token }}
           - type: extension # https://github.com/not-first/restic-glance-extension/tree/master
             title: Docker local backup
             url: http://glance-restic-extension:8675/local-docker-backup

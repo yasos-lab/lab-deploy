@@ -1,0 +1,12 @@
+---
+
+glance_agent_package: "agent-linux-amd64"
+glance_mountpoints_to_monitor:
+  - name: "Root"
+    path: "/"
+
+node_exporter_package: "node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+node_exporter_service_user: "root"
+
+promtail_instance: "proxmox"
+promtail_package: "promtail_{{ promtail_version }}_amd64.deb"

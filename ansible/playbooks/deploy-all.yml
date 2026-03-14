@@ -3,8 +3,11 @@
 - name: "Workstation deploy"
   ansible.builtin.import_playbook: workstation-deploy.yml
 
+- name: "Raspberry PI deploy"
+  ansible.builtin.import_playbook: raspberry-deploy.yml
+
 - name: "Server deploy"
   ansible.builtin.import_playbook: server-deploy.yml
 
-- name: "Raspberry PI deploy"
-  ansible.builtin.import_playbook: raspberry-deploy.yml
+- name: "Proxmox deploy"
+  ansible.builtin.import_playbook: proxmox-deploy.yml

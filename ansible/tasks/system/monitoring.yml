@@ -1,10 +1,17 @@
 ---
 
+- name: Ensure required packages are installed
+  ansible.builtin.package:
+    name:
+      - unzip
+      - tar
+    state: present
+
 - name: Install & config Promtail
   block:
     - name: Install Promtail
       ansible.builtin.apt:
-        deb: "{{ promtail_package }}"
+        deb: "{{ promtail_package_url }}"
 
     - name: Template config file
       ansible.builtin.template:
@@ -19,18 +26,15 @@
 
 - name: Install & config Node Exporter
   block:
-    - name: Unarchive Node Exporter
+    - name: Download and extract node_exporter binary
       ansible.builtin.unarchive:
         src: "{{ node_exporter_archive_url }}"
-        dest: /tmp/
+        dest: /usr/local/bin/
         remote_src: true
-
-    - name: Copy node_exporter binary
-      ansible.builtin.copy:
-        src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-arm64/node_exporter"
-        dest: "/usr/local/bin/node_exporter"
-        mode: "0755"
-        remote_src: true
+        mode: '0755'
+        extra_opts:
+          - --strip-components=1
+        creates: /usr/local/bin/node_exporter
     
     - name: Configure and start node_exporter systemd service
       ansible.builtin.import_tasks: services.yml

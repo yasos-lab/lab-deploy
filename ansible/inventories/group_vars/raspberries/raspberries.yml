@@ -8,7 +8,7 @@ raspberry_packages:
   - unbound
   - unzip
   - wget
-  - "{{ promtail_package }}"
+  - "{{ promtail_package_url }}"
 
 ### PI-HOLE ###
 pihole_blocklists: 
@@ -44,27 +44,8 @@ glance_mountpoints_to_monitor:
   - name: "Root"
     path: "/"
 
-loki_url: "https://loki.{{ domain_name }}"
+node_exporter_package: "node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz"
+node_exporter_service_user: "{{ ansible_user }}"
 
-node_exporter_archive_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz"
-node_exporter_binary: "/usr/local/bin/node_exporter"
-node_exporter_systemd_service:
-  - name: "node_exporter"
-    unit_properties:
-      Description: "Node Exporter service for Prometheus monitoring"
-      Wants: "network-online.target"
-      After: "network-online.target"
-    service_properties:
-      Type: "simple"
-      ExecStart: "/usr/local/bin/node_exporter"
-      User: "{{ ansible_user }}"
-      Group: "{{ ansible_user }}"
-    install_properties:
-      WantedBy: "default.target"
-
-node_exporter_version: "1.9.1"
-
-promtail_binary: "/usr/local/bin/promtail"
 promtail_instance: "rbpi"
-promtail_package: "https://github.com/grafana/loki/releases/download/v{{ promtail_version }}/promtail_{{ promtail_version }}_arm64.deb"
-promtail_version: "3.4.4"
+promtail_package: "promtail_{{ promtail_version }}_arm64.deb"
