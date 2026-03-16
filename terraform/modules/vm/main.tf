@@ -1,40 +1,58 @@
+terraform {
+  required_providers {
+    proxmox = {
+      source = "Telmate/proxmox"
+    }
+  }
+}
+
 resource "proxmox_vm_qemu" "vm" {
   name        = var.vm_name
+  vmid        = "1${var.vm_id}"
   target_node = var.target_node
+  
+  bios        = "ovmf"
+  scsihw      = "virtio-scsi-pci"
   clone       = var.template_name
+  agent       = 1
 
-  cores  = var.vm_config.cores
   memory = var.vm_config.memory
+  cpu {
+    cores = var.vm_config.cores
+  }
 
   disk {
-    size    = var.vm_config.disk
-    type    = "scsi"
+    slot = "ide2"
+    type = "cloudinit"
     storage = "local-lvm"
   }
 
-  network {
-    model  = "virtio"
-    bridge = "vmbr0"
+  disk {
+    slot = "virtio0"
+    type = "ignore"
   }
 
-  os_type   = "cloud-init"
-  ipconfig0 = "ip=${var.vm_config.ip},gw=${var.lan_prefix}.254"
+  disk {
+    slot = "virtio1"
+    type = "disk"
+    size = var.vm_config.disk
+    storage = "local-lvm"
+  }
+  
+  network {
+    id     = 0
+    model  = "virtio"
+    bridge = "vmbr0"
+    mtu    = 1
+  }
 
+  serial {
+    id = 0
+  }
+
+  os_type    = "cloud-init"
+  ciuser     = var.vm_user
+  cipassword = var.vm_password
+  ipconfig0  = "ip=${var.lan_prefix}.${var.vm_id}/24,gw=${var.lan_prefix}.254"
   sshkeys = var.ssh_public_key
-
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "sudo apt update",
-  #     "sudo apt install -y qemu-guest-agent",
-  #     "sudo systemctl enable qemu-guest-agent",
-  #     "sudo systemctl start qemu-guest-agent"
-  #   ]
-
-  #   connection {
-  #     type        = "ssh"
-  #     user        = "ubuntu"
-  #     private_key = file("~/.ssh/id_rsa")
-  #     host        = split("/", var.vm_config.ip)[0]
-  #   }
-  # }
 }

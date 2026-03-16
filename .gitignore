@@ -10,3 +10,6 @@
 
 # TERRAFORM
 terraform.tfvars
+.terraform.lock.hcl
+.terraform/
+*.tfstate*

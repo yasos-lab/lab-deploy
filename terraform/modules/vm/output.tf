@@ -1,3 +1,3 @@
 output "ip_address" {
-  value = var.vm_config.ip
+  value = "${var.lan_prefix}.${var.vm_id}/24"
 }
