@@ -5,6 +5,7 @@ terraform {
       version = "3.0.2-rc07"
     }
   }
+  backend "s3" {}
 }
 
 provider "proxmox" {
