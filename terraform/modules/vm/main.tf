@@ -37,6 +37,7 @@ resource "proxmox_vm_qemu" "vm" {
     type = "disk"
     size = var.vm_config.disk
     storage = "local-lvm"
+    format = "raw"
   }
   
   network {
@@ -48,6 +49,12 @@ resource "proxmox_vm_qemu" "vm" {
 
   serial {
     id = 0
+  }
+
+  startup_shutdown {
+    order            = -1
+    shutdown_timeout = -1
+    startup_delay    = -1
   }
 
   os_type    = "cloud-init"
