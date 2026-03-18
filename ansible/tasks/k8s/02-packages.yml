@@ -1,0 +1,45 @@
+---
+
+- name: Add k8s repository
+  ansible.builtin.import_tasks: ../tasks/system/repositories.yml
+  vars:
+    repositories: "{{ k8s_repositories }}"
+
+- name: Install required packages
+  ansible.builtin.import_tasks: ../system/packages.yml
+  vars:
+    packages: "{{ k8s_nodes_packages + k8s_packages }}"
+    python_packages: []
+    deb_packages: []
+
+- name: Hold k8s packages at current version
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop: "{{ k8s_packages }}"
+
+- name: Ensure containerd conf directory exists
+  ansible.builtin.file:
+    name: "/etc/containerd"
+    state: directory
+
+- name: Template containerd config 
+  ansible.builtin.template:
+    src: "../templates/k8s/containerd/config.toml.j2"
+    dest: "/etc/containerd/config.toml"
+
+- name: Config crictl
+  ansible.builtin.copy:
+    dest: /etc/crictl.yaml
+    content: |
+      runtime-endpoint: unix:///run/containerd/containerd.sock
+      image-endpoint: unix:///run/containerd/containerd.sock
+      timeout: 10
+      debug: false
+
+- name: Restart containerd
+  ansible.builtin.service:
+    name: containerd
+    state: restarted
+    enabled: yes
+  

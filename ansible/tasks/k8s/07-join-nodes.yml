@@ -1,0 +1,49 @@
+---
+
+- name: Join kubernetes control planes
+  ansible.builtin.command: >
+    {{ hostvars[groups['k8s_controlplanes'][0]].kubeadm_join_cmd }}
+    --control-plane
+    --certificate-key {{ hostvars[groups['k8s_controlplanes'][0]].kubeadm_cert_key }}
+  args:
+    creates: "/etc/kubernetes/admin.conf"
+  when: inventory_hostname in groups['k8s_controlplanes'][1:]
+
+- name: Join kubernetes workers
+  ansible.builtin.command: >
+    {{ hostvars[groups['k8s_controlplanes'][0]].kubeadm_join_cmd }}
+  args:
+    creates: "/etc/kubernetes/kubelet.conf"
+  when: inventory_hostname in groups['k8s_workers']
+
+- name: Wait for nodes to be Ready
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  ansible.builtin.shell: kubectl get nodes -o json
+  register: node_json
+  retries: 20
+  delay: 15
+  until: >
+    (node_json.stdout | from_json)['items']
+    | map(attribute='status.conditions')
+    | map('selectattr', 'type', 'equalto', 'Ready')
+    | map('selectattr', 'status', 'equalto', 'True')
+    | map('list')
+    | map('length')
+    | select('greaterthan', 0)
+    | list
+    | length
+    ==
+    (groups['k8s_controlplanes'] | length + groups['k8s_workers'] | length)
+  delegate_to: "{{ groups['k8s_controlplanes'][0] }}"
+  run_once: true
+  changed_when: false
+
+- name: Label worker nodes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  ansible.builtin.command: >
+    kubectl label node {{ item }} node-role.kubernetes.io/worker=
+  loop: "{{ groups['k8s_workers'] }}"
+  delegate_to: "{{ groups['k8s_controlplanes'][0] }}"
+  run_once: true

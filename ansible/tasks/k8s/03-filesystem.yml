@@ -1,0 +1,19 @@
+---
+
+- name: Enable and start iscsid service
+  ansible.builtin.systemd:
+    name: iscsid
+    enabled: true
+    state: started
+
+- name: Format longhorn disk
+  ansible.builtin.filesystem:
+    fstype: "ext4"
+    dev: "/dev/vdb"
+
+- name: Mount longhorn disk
+  ansible.posix.mount:
+    path: "/mnt/longhorn"
+    src: "/dev/vdb"
+    fstype: "ext4"
+    state: mounted

@@ -1,0 +1,12 @@
+---
+
+- name: Verify all nodes are Ready
+  ansible.builtin.command: kubectl get nodes -o wide
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: cluster_nodes
+  changed_when: false
+
+- name: Print cluster status
+  ansible.builtin.debug:
+    msg: "{{ cluster_nodes.stdout_lines }}"

@@ -1,0 +1,42 @@
+---
+- name: Init Kubernetes
+  when: inventory_hostname == groups['k8s_controlplanes'][0]
+  block:
+    - name: Run kubeadm init
+      ansible.builtin.command: >
+        kubeadm init --control-plane-endpoint "{{ k8s_vip }}:6443"
+        --pod-network-cidr "172.28.0.0/16"
+        --service-cidr "172.29.0.0/16"
+        --skip-phases=addon/kube-proxy
+      args:
+        creates: "/etc/kubernetes/admin.conf"
+
+    - name: Save join command
+      ansible.builtin.shell: |
+        kubeadm token create --print-join-command
+      register: join_command
+
+    - name: Save cert key
+      ansible.builtin.shell: kubeadm init phase upload-certs --upload-certs | tail -1
+      register: cert_key
+
+    - name: Set join facts
+      ansible.builtin.set_fact:
+        kubeadm_join_cmd: "{{ join_command.stdout }}"
+        kubeadm_cert_key: "{{ cert_key.stdout }}"
+
+- name: Set kubeconfig path in kube-vip manifest
+  ansible.builtin.replace:
+    path: /etc/kubernetes/manifests/kube-vip.yaml
+    regexp: '(path:\s+)/etc/kubernetes/super-admin\.conf'
+    replace: '\1/etc/kubernetes/admin.conf'
+
+- name: Wait for API server to be reachable
+  ansible.builtin.uri:
+    url: "https://{{ k8s_vip }}:6443/version"
+    validate_certs: false
+    status_code: 200
+  register: api_check
+  retries: 20
+  delay: 10
+  until: api_check.status == 200
