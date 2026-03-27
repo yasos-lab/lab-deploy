@@ -9,11 +9,11 @@
 - name: Format longhorn disk
   ansible.builtin.filesystem:
     fstype: "ext4"
-    dev: "/dev/vdb"
+    dev: "/dev/sdb"
 
 - name: Mount longhorn disk
   ansible.posix.mount:
     path: "/mnt/longhorn"
-    src: "/dev/vdb"
+    src: "/dev/sdb"
     fstype: "ext4"
     state: mounted
