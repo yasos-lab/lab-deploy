@@ -8,9 +8,9 @@ terraform {
 
 locals {
   os_map = {
-    Ubuntu = "proxmox-share:import/ubuntu-24.04-amd64.qcow2"
-    Debian = "proxmox-share:import/debian-13-amd64.qcow2"
-    Alma   = "alma-10-x86_64.qcow2"
+    ubuntu = "proxmox-share:import/ubuntu-24.04-amd64.qcow2"
+    debian = "proxmox-share:import/debian-13-amd64.qcow2"
+    alma   = "proxmox-share:import/alma-10-x86_64.qcow2"
   }
 
   os = try(
@@ -21,7 +21,11 @@ locals {
   )
 }
 
-resource "proxmox_virtual_environment_vm" "vm" {
+resource "proxmox_virtual_environment_vm" "vms" {
+  depends_on = [
+    var.cloud_images_ready
+  ]
+  
   name        = var.vm_name
   description = "Managed by Terraform"
   tags        = var.vm_config.tags
