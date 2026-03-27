@@ -1,65 +1,104 @@
 terraform {
   required_providers {
     proxmox = {
-      source = "Telmate/proxmox"
+      source = "bpg/proxmox"
     }
   }
 }
 
-resource "proxmox_vm_qemu" "vm" {
+locals {
+  os_map = {
+    ubuntu = "proxmox-share:import/ubuntu-24.04-amd64.qcow2"
+    debian = "proxmox-share:import/debian-13-amd64.qcow2"
+    alma   = "proxmox-share:import/alma-10-x86_64.qcow2"
+  }
+
+  os = try(
+    local.os_map[
+      one([for tag in var.vm_config.tags : tag if contains(keys(local.os_map), tag)])
+    ],
+    var.os
+  )
+}
+
+resource "proxmox_virtual_environment_vm" "vms" {
+  depends_on = [
+    var.cloud_images_ready
+  ]
+  
   name        = var.vm_name
-  vmid        = "1${var.vm_id}"
-  target_node = var.target_node
-  
-  bios        = "ovmf"
-  scsihw      = "virtio-scsi-pci"
-  clone       = var.template_name
-  agent       = 1
+  description = "Managed by Terraform"
+  tags        = var.vm_config.tags
 
-  memory = var.vm_config.memory
+  node_name   = var.target_node
+  vm_id       = "1${var.vm_id}"
+
+  agent {
+    enabled = false
+  }
+  # if agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
+  stop_on_destroy = true
+
+  startup {
+    order      = var.vm_config.startup_order
+    up_delay   = "60"
+    down_delay = "60"
+  }
+
   cpu {
-    cores = var.vm_config.cores
+    cores        = 2
+    type         = "x86-64-v2-AES"  # recommended for modern CPUs
+  }
+
+  memory {
+    dedicated = var.vm_config.memory
+    floating  = var.vm_config.memory # set equal to dedicated to enable ballooning
   }
 
   disk {
-    slot = "ide2"
-    type = "cloudinit"
-    storage = "local-lvm"
+    interface    = "scsi0"
+    size         = 10
+    import_from  = local.os
   }
 
   disk {
-    slot = "virtio0"
-    type = "ignore"
+    interface    = "scsi1"
+    size         = var.vm_config.disk
   }
 
-  disk {
-    slot = "virtio1"
-    type = "disk"
-    size = var.vm_config.disk
-    storage = "local-lvm"
-    format = "raw"
+  initialization {
+    ip_config {
+      ipv4 {
+        gateway = "${var.lan_prefix}.254"
+        address = "${var.lan_prefix}.${var.vm_id}/24"
+      }
+    }
+    user_account {
+      keys     = var.ssh_public_key
+      password = var.vm_password
+      username = var.vm_user
+    }
   }
-  
-  network {
-    id     = 0
-    model  = "virtio"
+
+  keyboard_layout = "fr"
+
+  network_device {
     bridge = "vmbr0"
-    mtu    = 1
   }
 
-  serial {
-    id = 0
+  operating_system {
+    type = "l26"
   }
 
-  startup_shutdown {
-    order            = -1
-    shutdown_timeout = -1
-    startup_delay    = -1
-  }
+  # tpm_state {
+  #   version = "v2.0"
+  # }
 
-  os_type    = "cloud-init"
-  ciuser     = var.vm_user
-  cipassword = var.vm_password
-  ipconfig0  = "ip=${var.lan_prefix}.${var.vm_id}/24,gw=${var.lan_prefix}.254"
-  sshkeys = var.ssh_public_key
+  serial_device {}
+
+  # virtiofs {
+  #   mapping = "data_share"
+  #   cache = "always"
+  #   direct_io = true
+  # }
 }
