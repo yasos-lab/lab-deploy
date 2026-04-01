@@ -37,7 +37,7 @@
 
 - name: Template docker daemon.json file
   ansible.builtin.template:
-    src: "docker/daemon.json.j2"
+    src: "../../templates/docker/daemon.json.j2"
     dest: "/etc/docker/daemon.json"
   when: template_docker_daemon
   notify: "Restart docker daemon"
