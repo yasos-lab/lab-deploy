@@ -19,6 +19,8 @@ locals {
     ],
     var.os
   )
+  
+  vm_id = (var.target_node == "atlas") ? "10${var.vm_id}" : (var.target_node == "orion") ? "20${var.vm_id}" : "30${var.vm_id}"
 }
 
 resource "proxmox_virtual_environment_vm" "vms" {
@@ -26,12 +28,11 @@ resource "proxmox_virtual_environment_vm" "vms" {
     var.cloud_images_ready
   ]
   
+  vm_id       = local.vm_id
   name        = var.vm_name
   description = "Managed by Terraform"
   tags        = var.vm_config.tags
-
   node_name   = var.target_node
-  vm_id       = "1${var.vm_id}"
 
   agent {
     enabled = false
@@ -41,13 +42,13 @@ resource "proxmox_virtual_environment_vm" "vms" {
 
   startup {
     order      = var.vm_config.startup_order
-    up_delay   = "60"
-    down_delay = "60"
+    up_delay   = "30"
+    down_delay = "30"
   }
 
   cpu {
-    cores        = 2
-    type         = "x86-64-v2-AES"  # recommended for modern CPUs
+    cores        = var.vm_config.cores
+    type         = "x86-64-v2-AES"
   }
 
   memory {
@@ -57,13 +58,13 @@ resource "proxmox_virtual_environment_vm" "vms" {
 
   disk {
     interface    = "scsi0"
-    size         = 10
+    size         = var.vm_config.os_disk
     import_from  = local.os
   }
 
   disk {
     interface    = "scsi1"
-    size         = var.vm_config.disk
+    size         = var.vm_config.data_disk
   }
 
   initialization {
@@ -90,15 +91,9 @@ resource "proxmox_virtual_environment_vm" "vms" {
     type = "l26"
   }
 
-  # tpm_state {
-  #   version = "v2.0"
-  # }
+  tpm_state {
+    version = "v2.0"
+  }
 
   serial_device {}
-
-  # virtiofs {
-  #   mapping = "data_share"
-  #   cache = "always"
-  #   direct_io = true
-  # }
 }

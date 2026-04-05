@@ -1,6 +1,6 @@
-output "k8s_ips" {
+output "vms" {
   value = {
-    for vm_name, vm in module.k8s_cluster :
+    for vm_name, vm in module.vms :
     vm_name => vm.ip_address
   }
 }

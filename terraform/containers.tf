@@ -19,6 +19,10 @@ locals {
             verify = false 
         },
     ]
+    containes = concat(var.gitlab_runners)
+    container_password_map = {
+      "gitlab_runner"    = var.gitlab_runner_password
+    }
 }
 
 # Created once, shared across all VMs
@@ -27,7 +31,7 @@ resource "proxmox_virtual_environment_download_file" "lxc_templates" {
 
   content_type   = each.value.type
   datastore_id   = "proxmox-share"
-  node_name      = "pve1"
+  node_name      = "atlas"
   url            = each.value.url
   upload_timeout = 1800
   file_name      = each.value.name
@@ -37,7 +41,7 @@ resource "proxmox_virtual_environment_download_file" "lxc_templates" {
 module "lxcs" {
   source = "./modules/container"
 
-  for_each = { for lxc in var.gitlab_runners : lxc.name => lxc }
+  for_each = { for lxc in local.containes : lxc.name => lxc }
 
   lxc_name = each.value.name
   lxc_id   = each.value.id
@@ -47,11 +51,16 @@ module "lxcs" {
     memory = each.value.memory
     swap   = each.value.swap
     disk   = each.value.disk
-    tags   = ["ubuntu", "cicd"]
+    tags   = ["ubuntu", "cicd", "gitlab_runner"]
   }
   ssh_public_key = var.ssh_public_key
   lan_prefix     = var.lan_prefix
-  lxc_password   = var.gitlab_runner_password
+  lxc_password   = try(
+    local.container_password_map[
+      one([for tag in ["ubuntu", "cicd", "gitlab_runner"] : tag if contains(keys(local.container_password_map), tag)])
+    ],
+    var.vm_default_password
+  )
 
   lxc_templates_ready = { for k, v in proxmox_virtual_environment_download_file.lxc_templates : k => v.id }
 }
