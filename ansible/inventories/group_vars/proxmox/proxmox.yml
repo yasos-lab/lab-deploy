@@ -1,6 +1,5 @@
 ---
 
-glance_agent_package: "agent-linux-amd64"
 glance_mountpoints_to_monitor:
   - name: "Root"
     path: "/"
