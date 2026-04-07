@@ -218,7 +218,7 @@ traefik_external_services:
         - "websecure"
       tls:
         certResolver: "cloudflare"
-      service: "proxmox"
+      service: "atlas"
     services_properties:
       loadBalancer:
         serversTransport: proxmoxTransport
@@ -231,7 +231,7 @@ traefik_external_services:
         - "websecure"
       tls:
         certResolver: "cloudflare"
-      service: "proxmox"
+      service: "orion"
     services_properties:
       loadBalancer:
         serversTransport: proxmoxTransport
@@ -244,7 +244,7 @@ traefik_external_services:
         - "websecure"
       tls:
         certResolver: "cloudflare"
-      service: "proxmox"
+      service: "vega"
     services_properties:
       loadBalancer:
         serversTransport: proxmoxTransport
