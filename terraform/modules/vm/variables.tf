@@ -15,5 +15,5 @@ variable "os_type" {
 
 variable "cloud_images_ready" {
   description = "Pass the download file ids here to create an implicit dependency"
-  type        = map(string)  # receives the ids from the download resources
+  type        = map(string)
 }
