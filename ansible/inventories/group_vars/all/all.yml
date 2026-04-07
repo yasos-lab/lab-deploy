@@ -121,6 +121,7 @@ docker_packages:
 
 documents_directory: "{{ user_home }}/Documents"
 
+glance_agent_package: "agent-linux-amd64"
 glance_agent_archive_url: "https://github.com/glanceapp/agent/releases/download/v0.1.0/{{ glance_agent_package }}.tar.gz"
 
 home_assistant_zigbee_dongle: "usb-Itead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_V2_b09546f368f3ef11a606c21b6d9880ab-if00-port0"
@@ -210,9 +211,9 @@ traefik_external_services:
       loadBalancer:
         servers:
           - url: "http://{{ lan_prefix }}.10:80"
-  - name: "proxmox"
+  - name: "atlas"
     routers_properties:
-      rule: "Host(`proxmox.{{ domain_name }}`)"
+      rule: "Host(`atlas.pve.{{ domain_name }}`)"
       entryPoints:
         - "websecure"
       tls:
@@ -222,7 +223,33 @@ traefik_external_services:
       loadBalancer:
         serversTransport: proxmoxTransport
         servers:
-          - url: "https://{{ lan_prefix }}.30:8006"
+          - url: "https://{{ lan_prefix }}.1:8006"
+  - name: "orion"
+    routers_properties:
+      rule: "Host(`orion.pve.{{ domain_name }}`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "cloudflare"
+      service: "proxmox"
+    services_properties:
+      loadBalancer:
+        serversTransport: proxmoxTransport
+        servers:
+          - url: "https://{{ lan_prefix }}.2:8006"       
+  - name: "vega"
+    routers_properties:
+      rule: "Host(`vega.pve.{{ domain_name }}`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "cloudflare"
+      service: "proxmox"
+    services_properties:
+      loadBalancer:
+        serversTransport: proxmoxTransport
+        servers:
+          - url: "https://{{ lan_prefix }}.3:8006"
 
 user_home: "/home/{{ ansible_user }}"
 

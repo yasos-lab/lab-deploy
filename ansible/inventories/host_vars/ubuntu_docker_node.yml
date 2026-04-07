@@ -89,19 +89,7 @@ server_directories:
   - "{{ media_mount }}/library/tv"
   - "{{ media_mount }}/torrents"
 
-server_disk_lvs:
-  - lv: "lv_backup" # 256G
-    vg: "vg_sata"
-    mount_point: "{{ backup_mount }}"
-    fstype: "ext4"
-  - lv: "lv_media" # 512G
-    vg: "vg_sata"
-    mount_point: "{{ media_mount }}"
-    fstype: "xfs"
-  - lv: "lv_backup" # 256G
-    vg: "vg_sata"
-    mount_point: "/mnt/proxmox_backup"
-    fstype: "ext4"
+server_disk_lvs: []
 
 server_docker_networks:
   - frontend
@@ -271,8 +259,8 @@ server_rclone_mounts:
 
 server_repositories:
   - name: "docker"
-    repo_url: "https://download.docker.com/linux/debian"
-    gpg_url: "https://download.docker.com/linux/debian/gpg"
+    repo_url: "https://download.docker.com/linux/ubuntu"
+    gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
     gpg_extention: "asc"
     components:
       - "{{ ansible_facts['distribution_release'] }}"

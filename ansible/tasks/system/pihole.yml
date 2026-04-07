@@ -29,7 +29,7 @@
     regexp: '^\s*dnsmasq_lines = \[\]$'
     line: |
       dnsmasq_lines = [
-        "address=/.{{ domain_name }}/{{ lan_prefix }}.20",
+        "address=/.{{ domain_name }}/{{ lan_prefix }}.11",
         "address=/{{ gateway_web_url }}/{{ lan_prefix }}.254"
       ]
 

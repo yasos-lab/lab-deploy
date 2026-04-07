@@ -61,7 +61,7 @@
 
 - name: Template restic backup scripts
   ansible.builtin.template:
-    src: restic/backup.sh.j2
+    src: ../../templates/restic/backup.sh.j2
     dest: "{{ restic_scripts_directory }}/{{ restic_backup_config.name }}-backup.sh"
     owner: root
     group: root
