@@ -1,10 +1,11 @@
 On all nodes : 
 Run postinstall script
 Enable PCIe passthrough
-add subsomains with cert
+Config ACME for certs
+Create domains and generate certs
 
 On main node : 
-Mount storage 
+Mount storage and NFS export 
 Init cluster on the main node
 Create IaC (terraform) user
 Configure ACME certs

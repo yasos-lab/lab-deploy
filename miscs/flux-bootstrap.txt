@@ -1,0 +1,12 @@
+## Install Flux 
+
+## Bootstrap
+flux bootstrap gitlab \
+  --hostname=gitlab.com \
+  --owner=iamyacin \
+  --repository=yasos-lab \
+  --branch=main \
+  --path=kubernetes/clusters/main \
+  --token-auth \
+  --components-extra=image-reflector-controller,image-automation-controller,source-watcher \
+  --personal

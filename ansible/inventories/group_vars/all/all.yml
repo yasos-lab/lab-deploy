@@ -198,7 +198,7 @@ traefik_external_services:
     services_properties:
       loadBalancer:
         servers:
-          - url: "{{ gateway_web_url }}"
+          - url: "https://{{ gateway_hostname }}"
   - name: "pihole"
     routers_properties:
       rule: "Host(`pihole.{{ domain_name }}`)"
@@ -211,45 +211,19 @@ traefik_external_services:
       loadBalancer:
         servers:
           - url: "http://{{ lan_prefix }}.10:80"
-  - name: "atlas"
+  - name: "proxmox"
     routers_properties:
-      rule: "Host(`atlas.pve.{{ domain_name }}`)"
+      rule: "Host(`proxmox.{{ domain_name }}`)"
       entryPoints:
         - "websecure"
       tls:
         certResolver: "cloudflare"
-      service: "atlas"
+      service: "proxmox"
     services_properties:
       loadBalancer:
         serversTransport: proxmoxTransport
         servers:
-          - url: "https://{{ lan_prefix }}.1:8006"
-  - name: "orion"
-    routers_properties:
-      rule: "Host(`orion.pve.{{ domain_name }}`)"
-      entryPoints:
-        - "websecure"
-      tls:
-        certResolver: "cloudflare"
-      service: "orion"
-    services_properties:
-      loadBalancer:
-        serversTransport: proxmoxTransport
-        servers:
-          - url: "https://{{ lan_prefix }}.2:8006"       
-  - name: "vega"
-    routers_properties:
-      rule: "Host(`vega.pve.{{ domain_name }}`)"
-      entryPoints:
-        - "websecure"
-      tls:
-        certResolver: "cloudflare"
-      service: "vega"
-    services_properties:
-      loadBalancer:
-        serversTransport: proxmoxTransport
-        servers:
-          - url: "https://{{ lan_prefix }}.3:8006"
+          - url: "https://atlas.pve.{{ domain_name }}:8006"
 
 user_home: "/home/{{ ansible_user }}"
 

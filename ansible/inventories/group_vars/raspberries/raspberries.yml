@@ -18,10 +18,39 @@ pihole_blocklists:
     comment: "OISD NSFW full list"
 
 pihole_config_files:
-  - src: "pihole/setupVars.conf.j2"
+  - src: "../../templates/pihole/setupVars.conf.j2"
     dest: "/etc/pihole/setupVars.conf"
 
 pihole_installer_url: "https://install.pi-hole.net"
+
+pihole_proxy_dns_records:
+  - "gateway.{{ domain_name}}"
+  - "pihole.{{ domain_name}}"
+  - "proxmox.{{ domain_name }}"
+  - "proxy.{{ domain_name}}"
+  - "whoami.{{ domain_name }}"
+  - "sso.{{ domain_name }}"
+  - "speedtest.{{ domain_name}}"
+  - "glance.{{ domain_name}}"
+  - "grafana.{{ domain_name}}"
+  - "prometheus.{{ domain_name}}"
+  - "loki.{{ domain_name}}"
+  - "uptime-kuma.{{ domain_name }}"
+  - "portainer.{{ domain_name}}"
+  - "cloud.{{ domain_name }}"
+  - "office.cloud.{{ domain_name}}"
+  - "paperless.{{ domain_name}}"
+  - "vaultwarden.{{ domain_name }}"
+  - "home-assistant.{{ domain_name}}"
+  - "n8n.{{ domain_name }}"
+  - "jellyfin.{{ domain_name }}"
+  - "jellyseerr.media.{{ domain_name}}"
+  - "radarr.media.{{ domain_name}}"
+  - "sonarr.media.{{ domain_name}}"
+  - "bazarr.media.{{ domain_name}}"
+  - "prowlarr.media.{{ domain_name}}"
+  - "vpn.media.{{ domain_name}}"
+  - "torrent.{{ domain_name}}"
 
 ### PI-VPN ###
 pivpn_config_files:
