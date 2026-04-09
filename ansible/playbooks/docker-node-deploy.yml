@@ -33,12 +33,12 @@
           ansible.builtin.import_tasks: ../tasks/system/shell.yml
           tags: docker_node::shell
         
-        # - name: Import rclone tasks
-        #   ansible.builtin.import_tasks: ../tasks/system/rclone-clouds.yml
-        #   vars:
-        #     rclone_configs: "{{ common_rclone_configs + server_rclone_configs }}"
-        #     rclone_mounts: "{{ common_rclone_mounts + server_rclone_mounts }}"
-        #   tags: docker_node::rclone
+        - name: Import rclone tasks
+          ansible.builtin.import_tasks: ../tasks/system/rclone-clouds.yml
+          vars:
+            rclone_configs: "{{ common_rclone_configs + server_rclone_configs }}"
+            rclone_mounts: "{{ common_rclone_mounts + server_rclone_mounts }}"
+          tags: docker_node::rclone
 
         - name: Import docker tasks
           ansible.builtin.import_tasks: ../tasks/docker/docker.yml

@@ -43,6 +43,9 @@ services:
       - /dev/fuse:/dev/fuse
     volumes:
       - './data/zerobyte:/var/lib/zerobyte'
+      - '{{ backup_mount }}:/mnt/backup'
+      - '{{ rclone_config_location }}:/root/.config/rclone/rclone.conf:ro'
+      - '{{ docker_services_directory }}:/mnt/docker_services:ro'
       - '/etc/localtime:/etc/localtime:ro'
     environment:
       - 'BASE_URL=https://zerobyte.{{ domain_name }}'

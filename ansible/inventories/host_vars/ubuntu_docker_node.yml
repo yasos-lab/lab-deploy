@@ -213,16 +213,6 @@ server_packages:
 server_python_packages: []
 
 server_rclone_configs:
-  # - name: "backblaze"
-  #   properties:
-  #     type: "b2"
-  #     account: "{{ b2_account }}"
-  #     key: "{{ b2_appkey }}"
-  # - name: "mega"
-  #   properties:
-  #     type: "mega"
-  #     user: "{{ mega_username }}"
-  #     pass: "{{ mega_encpassword }}"
   - name: "protondrive"
     properties:
       type: "protondrive"
@@ -233,24 +223,6 @@ server_rclone_configs:
       enable_caching: "false"
 
 server_rclone_mounts:
-  # - name: "backblaze"
-  #   remote_name: "backblaze" 
-  #   remote_path: "/"
-  #   local_path: "/mnt/backblaze"
-  #   local_path_mode: "0755"
-  #   local_path_owner: "{{ rclone_config_owner.OWNER }}"
-  #   local_path_group: "{{ rclone_config_owner.GROUP }}"
-  #   auto_mount: true
-  #   extra_args: "--allow-other"
-  # - name: "mega"
-  #   remote_name: "mega" 
-  #   remote_path: "/"
-  #   local_path: "/mnt/mega"
-  #   local_path_mode: '0755'
-  #   local_path_owner: "{{ rclone_config_owner.OWNER }}"
-  #   local_path_group: "{{ rclone_config_owner.GROUP }}"
-  #   auto_mount: true
-  #   extra_args: "--allow-other"
   - name: "protondrive"
     remote_name: "protondrive" 
     remote_path: "/"
