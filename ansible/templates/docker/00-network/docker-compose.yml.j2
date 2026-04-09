@@ -5,7 +5,7 @@ services:
     container_name: authelia
     image: authelia/authelia:latest
     environment: 
-      - '{{ timezone }}'
+      - 'TZ={{ timezone }}'
     volumes: 
       - './config/authelia:/config'
     restart: unless-stopped

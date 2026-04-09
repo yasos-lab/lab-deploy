@@ -191,7 +191,7 @@ services:
     environment:
       - 'PUID=1000'
       - 'PGID=1000'
-      - '{{ timezone }}'
+      - 'TZ={{ timezone }}'
     restart: unless-stopped
 networks:
   frontend:

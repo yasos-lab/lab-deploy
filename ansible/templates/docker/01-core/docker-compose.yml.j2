@@ -24,7 +24,7 @@ services:
       - '/etc/localtime:/etc/localtime'
     environment:
       - 'SIGNUPS_ALLOWED=false'
-      - '{{ timezone }}'
+      - 'TZ={{ timezone }}'
       - 'ADMIN_TOKEN={{ vaultwarden_admin_token | replace('$', '$$') }}'
     restart: unless-stopped
     labels:
