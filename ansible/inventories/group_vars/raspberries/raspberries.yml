@@ -51,6 +51,7 @@ pihole_proxy_dns_records:
   - "prowlarr.media.{{ domain_name}}"
   - "vpn.media.{{ domain_name}}"
   - "torrent.{{ domain_name}}"
+  - "zerobyte.{{ domain_name}}"
 
 ### PI-VPN ###
 pivpn_config_files:
