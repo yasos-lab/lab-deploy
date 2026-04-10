@@ -51,7 +51,7 @@ module "vms" {
     cores         = each.value.config.cores
     memory        = each.value.config.memory
     os_disk       = each.value.config.os_disk
-    data_disk     = each.value.config.data_disk
+    data_disk     = try(each.value.config.data_disk, null)
     startup_order = each.value.config.startup_order
     tags          = each.value.tags
   }

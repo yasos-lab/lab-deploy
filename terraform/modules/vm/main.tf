@@ -62,9 +62,12 @@ resource "proxmox_virtual_environment_vm" "vms" {
     import_from  = local.os
   }
 
-  disk {
-    interface    = "scsi1"
-    size         = var.vm_config.data_disk
+  dynamic "disk" {
+    for_each = var.vm_config.data_disk != null ? [1] : []
+    content {
+      interface = "scsi1"
+      size      = var.vm_config.data_disk
+    }
   }
 
   initialization {

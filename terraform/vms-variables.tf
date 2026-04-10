@@ -10,20 +10,20 @@ variable "k8s_controlplanes" {
       name = "k8s-controlplane-01",
       target_node = "atlas",
       tags = ["ubuntu", "k8s"],
-      config = { cores = 2, memory = 4096, os_disk = 20, data_disk = 20, startup_order = 5 },
+      config = { cores = 2, memory = 4096, os_disk = 20, startup_order = 5 },
     },
     { 
       id = 23,
       name = "k8s-controlplane-02",
       target_node = "orion",
       tags = ["ubuntu", "k8s"],
-      config = { cores = 2, memory = 4096, os_disk = 20, data_disk = 20, startup_order = 5 },
+      config = { cores = 2, memory = 4096, os_disk = 20, startup_order = 5 },
     },{ 
       id = 33,
       name = "k8s-controlplane-03",
       target_node = "vega",
       tags = ["ubuntu", "k8s"],
-      config = { cores = 2, memory = 4096, os_disk = 20, data_disk = 20, startup_order = 5 },
+      config = { cores = 2, memory = 4096, os_disk = 20, startup_order = 5 },
     },
   ]
 }
@@ -35,21 +35,21 @@ variable "k8s_workers" {
       name = "k8s-worker-01",
       target_node = "atlas",
       tags = ["ubuntu", "k8s"],
-      config = { cores = 2, memory = 4096, os_disk = 20, data_disk = 20, startup_order = 6 },
+      config = { cores = 2, memory = 4096, os_disk = 20, data_disk = 30, startup_order = 6 },
     },
     { 
       id = 24,
       name = "k8s-worker-02",
       target_node = "orion",
       tags = ["ubuntu", "k8s"],
-      config = { cores = 2, memory = 4096, os_disk = 20, data_disk = 20, startup_order = 6 },
+      config = { cores = 2, memory = 4096, os_disk = 20, data_disk = 30, startup_order = 6 },
     },
     { 
       id = 34,
       name = "k8s-worker-03",
       target_node = "vega",
       tags = ["ubuntu", "k8s"],
-      config = { cores = 2, memory = 4096, os_disk = 20, data_disk = 20, startup_order = 6 },
+      config = { cores = 2, memory = 4096, os_disk = 20, data_disk = 30, startup_order = 6 },
     },
   ]
 }
