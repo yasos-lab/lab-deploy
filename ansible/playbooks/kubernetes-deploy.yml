@@ -16,6 +16,7 @@
     
     - name: "Prepare filesystem"
       ansible.builtin.import_tasks: ../tasks/k8s/03-filesystem.yml
+      when: inventory_hostname in groups['k8s_workers']
       tags: k8s::filesystem
     
     - name: "Setup kube-vip manifest"

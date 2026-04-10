@@ -17,3 +17,12 @@
     src: "/dev/sdb"
     fstype: "ext4"
     state: mounted
+
+- name: Disable and stop multipathd socket and service
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - multipathd.socket
+    - multipathd

@@ -14,6 +14,7 @@
       loop:
         - overlay
         - br_netfilter
+        - iscsi_tcp
 
     - name: Persist kernel modules across reboots
       ansible.builtin.copy:
@@ -21,6 +22,7 @@
         content: |
           overlay
           br_netfilter
+          iscsi_tcp
         owner: root
         group: root
         mode: "0644"
