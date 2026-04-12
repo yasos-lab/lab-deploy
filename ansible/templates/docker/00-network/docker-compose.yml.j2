@@ -8,7 +8,7 @@ services:
       - 'TZ={{ timezone }}'
     volumes: 
       - './config/authelia:/config'
-    restart: unless-stopped
+
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.authelia.tls=true'
@@ -30,7 +30,7 @@ services:
     ports:
       - '80:80'
       - '443:443'
-    restart: unless-stopped
+
     depends_on:
       - 'authelia'
     environment:
@@ -47,7 +47,7 @@ services:
   whoami:
     container_name: whoami
     image: traefik/whoami
-    restart: unless-stopped
+
     networks:
       - 'frontend'
     labels:
@@ -64,7 +64,7 @@ services:
       - 'CLOUDFLARE_API_TOKEN={{ cloudflare_api_token }}'
       - 'DOMAINS=home.{{ domain_name }}'
       - 'IP6_PROVIDER=none'
-    restart: unless-stopped
+
   speedtest:
     image: lscr.io/linuxserver/speedtest-tracker:latest
     container_name: speedtest
@@ -84,7 +84,7 @@ services:
       - 'traefik.http.routers.speedtest.tls=true'
       - 'traefik.http.routers.speedtest.tls.certresolver=cloudflare'
       - 'traefik.http.routers.speedtest.rule=Host(`speedtest.{{ domain_name }}`)'
-    restart: unless-stopped
+
 networks:
   frontend:
     external: True

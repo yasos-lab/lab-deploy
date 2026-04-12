@@ -4,7 +4,7 @@ services:
   glance:
     container_name: glance
     image: glanceapp/glance
-    restart: unless-stopped
+
     volumes:
       - './config/glance:/app/config'
       - '/etc/localtime:/etc/localtime:ro'
@@ -33,7 +33,7 @@ services:
     image: ghcr.io/not-first/restic-glance-extension
     volumes:
       - {{ backup_mount }}/docker_backup:/app/repos/local-docker-backup
-    restart: unless-stopped
+
     environment:
       - 'RESTIC_REPOS=local-docker-backup,remote-docker-backup'
       - 'RESTIC_STATS_MODE=repository-size'
@@ -48,7 +48,7 @@ services:
   uptime-kuma:
     container_name: uptime-kuma
     image: louislam/uptime-kuma:2
-    restart: unless-stopped
+
     volumes:
       - ./data/uptime-kuma:/app/data
     labels:
@@ -65,7 +65,7 @@ services:
     user: 1000:1000
     volumes:
       - './data/grafana/:/var/lib/grafana'
-    restart: unless-stopped
+
     environment:
       - 'GF_SERVER_ROOT_URL=https://grafana.{{ domain_name }}'
       - 'GF_AUTH_GENERIC_OAUTH_ENABLED=true'
@@ -101,7 +101,7 @@ services:
       - './config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml'
       - './data/prometheus:/prometheus'
     command: --config.file=/etc/prometheus/prometheus.yml
-    restart: unless-stopped
+
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.prometheus.tls=true'
@@ -118,7 +118,7 @@ services:
     volumes:
       - './config/loki/loki-config.yml:/etc/loki/loki-config.yml'
     command: -config.file=/etc/loki/loki-config.yml
-    restart: unless-stopped
+
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.loki.tls=true'
@@ -137,7 +137,7 @@ services:
       - '/var/run:/var/run:rw'
       - '/sys:/sys:ro'
       - '/var/lib/docker/:/var/lib/docker:ro'
-    restart: unless-stopped
+
     command:
       - "--housekeeping_interval=30s"
       - "--disable_metrics=tcp,udp,percpu,sched,process"
@@ -149,7 +149,7 @@ services:
     image: quay.io/prometheus/node-exporter:latest
     volumes:
       - '/:/host:ro,rslave'
-    restart: unless-stopped
+
     command: --path.rootfs=/host
     pid: host
     networks:
@@ -160,7 +160,7 @@ services:
     volumes:
       - '/var/log:/var/log'
       - './config/promtail/promtail-config.yml:/etc/promtail/promtail-config.yml'
-    restart: unless-stopped
+
     command: -config.file=/etc/promtail/promtail-config.yml
     networks:
       - 'backend'

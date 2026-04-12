@@ -251,6 +251,90 @@ server_restic_backup_configs:
       hour: "4"
       minute: "0"
 
-server_systemd_services: []
+server_systemd_services:
+  - name: "docker_network_stack"
+    unit_properties:
+      Description: "Docker network stack"
+      After: "docker.service"
+      Requires: "docker.service"
+    service_properties:
+      Type: oneshot
+      ExecStartPre: "/bin/sleep 120"
+      WorkingDirectory: "{{ docker_services_directory }}/00-network"
+      ExecStart: "/usr/bin/docker compose up -d"
+      ExecStop: "/usr/bin/docker compose down"
+      RemainAfterExit: yes
+    install_properties:
+      WantedBy: "multi-user.target"
+  - name: "docker_core_stack"
+    unit_properties:
+      Description: "Docker core stack"
+      After: "docker_network_stack.service"
+      Requires: "docker.service"
+    service_properties:
+      Type: oneshot
+      ExecStartPre: "/bin/sleep 120"
+      WorkingDirectory: "{{ docker_services_directory }}/01-core"
+      ExecStart: "/usr/bin/docker compose up -d"
+      ExecStop: "/usr/bin/docker compose down"
+      RemainAfterExit: yes
+    install_properties:
+      WantedBy: "multi-user.target"
+  - name: "docker_monitoring_stack"
+    unit_properties:
+      Description: "Docker monitoring stack"
+      After: "docker_core_stack.service"
+      Requires: "docker.service"
+    service_properties:
+      Type: oneshot
+      ExecStartPre: "/bin/sleep 120"
+      WorkingDirectory: "{{ docker_services_directory }}/02-monitoring"
+      ExecStart: "/usr/bin/docker compose up -d"
+      ExecStop: "/usr/bin/docker compose down"
+      RemainAfterExit: yes
+    install_properties:
+      WantedBy: "multi-user.target"  
+  - name: "docker_cloud_stack"
+    unit_properties:
+      Description: "Docker cloud stack"
+      After: "docker_core_stack.service"
+      Requires: "docker.service"
+    service_properties:
+      Type: oneshot
+      ExecStartPre: "/bin/sleep 120"
+      WorkingDirectory: "{{ docker_services_directory }}/03-cloud"
+      ExecStart: "/usr/bin/docker compose up -d"
+      ExecStop: "/usr/bin/docker compose down"
+      RemainAfterExit: yes
+    install_properties:
+      WantedBy: "multi-user.target"
+  - name: "docker_media_stack"
+    unit_properties:
+      Description: "Docker media stack"
+      After: "docker_cloud_stack.service"
+      Requires: "docker.service"
+    service_properties:
+      Type: oneshot
+      ExecStartPre: "/bin/sleep 120"
+      WorkingDirectory: "{{ docker_services_directory }}/04-media"
+      ExecStart: "/usr/bin/docker compose up -d"
+      ExecStop: "/usr/bin/docker compose down"
+      RemainAfterExit: yes
+    install_properties:
+      WantedBy: "multi-user.target"  
+  - name: "docker_automation_stack"
+    unit_properties:
+      Description: "Docker automation stack"
+      After: "docker_media_stack.service"
+      Requires: "docker.service"
+    service_properties:
+      Type: oneshot
+      ExecStartPre: "/bin/sleep 120"
+      WorkingDirectory: "{{ docker_services_directory }}/05-automation"
+      ExecStart: "/usr/bin/docker compose up -d"
+      ExecStop: "/usr/bin/docker compose down"
+      RemainAfterExit: yes
+    install_properties:
+      WantedBy: "multi-user.target"
 
 template_docker_daemon: true
