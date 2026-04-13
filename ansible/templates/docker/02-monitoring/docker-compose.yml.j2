@@ -28,23 +28,6 @@ services:
     networks:
       - 'frontend'
       - 'backend'
-  glance-restic-extension:
-    container_name: glance-restic-extension
-    image: ghcr.io/not-first/restic-glance-extension
-    volumes:
-      - {{ backup_mount }}/docker_backup:/app/repos/local-docker-backup
-    restart: unless-stopped
-    environment:
-      - 'RESTIC_REPOS=local-docker-backup,remote-docker-backup'
-      - 'RESTIC_STATS_MODE=repository-size'
-      - 'LOCAL_DOCKER_BACKUP_RESTIC_PASSWORD={{ restic_password | replace('$', '$$') }}'
-      - 'REMOTE_DOCKER_BACKUP_RESTIC_ENV__B2_ACCOUNT_ID={{ restic_bucket_key_id }}'
-      - 'REMOTE_DOCKER_BACKUP_RESTIC_ENV__B2_ACCOUNT_KEY={{ restic_bucket_app_key }}'
-      - 'REMOTE_DOCKER_BACKUP_RESTIC_URL={{ restic_remote }}:docker_backup'
-      - 'REMOTE_DOCKER_BACKUP_RESTIC_PASSWORD={{ restic_password | replace('$', '$$') }}'
-      - 'RESTIC_CACHE_INTERVAL=43200'
-    networks:
-      - 'backend'
   uptime-kuma:
     container_name: uptime-kuma
     image: louislam/uptime-kuma:2

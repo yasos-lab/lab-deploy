@@ -53,19 +53,3 @@ pages:
                 name: Vega
                 url: http://{{ lan_prefix }}.3:27973
                 token: {{ glance_agent_token }}
-          - type: extension # https://github.com/not-first/restic-glance-extension/tree/master
-            title: Docker local backup
-            url: http://glance-restic-extension:8675/local-docker-backup
-            cache: 10m
-            allow-potentially-dangerous-html: true
-            parameters:
-              hide-file-count: false
-              limit: 3
-          - type: extension # https://github.com/not-first/restic-glance-extension/tree/master
-            title: Docker remote backup
-            url: http://glance-restic-extension:8675/remote-docker-backup
-            cache: 10m
-            allow-potentially-dangerous-html: true
-            parameters:
-              hide-file-count: false
-              limit: 3
