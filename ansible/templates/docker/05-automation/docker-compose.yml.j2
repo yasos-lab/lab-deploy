@@ -12,7 +12,7 @@ services:
       - '/dev/serial/by-id/{{ home_assistant_zigbee_dongle }}:/dev/ttyUSB0'
     environment:
       - 'TZ={{ timezone }}'
-
+    restart: unless-stopped
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.home-assistant.tls=true'
@@ -37,7 +37,7 @@ services:
       - 'TZ={{ timezone }}'
     volumes:
       - './data/n8n:/home/node/.n8n'
-
+    restart: unless-stopped
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.n8n.tls=true'

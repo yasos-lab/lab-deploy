@@ -21,7 +21,7 @@ services:
       - 'NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ domain_name }}'
       - 'OVERWRITECLIURL=https://cloud.{{ domain_name }}'
       - 'OVERWRITEPROTOCOL=https'
-
+    restart: unless-stopped
     networks:
       - 'frontend'
       - 'backend'
@@ -38,7 +38,7 @@ services:
   redis:
     container_name: redis
     image: redis:6
-
+    restart: unless-stopped
     healthcheck: 
       test: 'redis-cli ping || exit 1'
     networks:
@@ -54,7 +54,7 @@ services:
       - 'MYSQL_PASSWORD={{ nextcloud_db_password }}'
       - 'MYSQL_DATABASE={{ nextcloud_db }}'
       - 'MYSQL_USER={{ nextcloud_db_user }}'
-
+    restart: unless-stopped
     networks:
       - 'backend'
   onlyoffice:
@@ -62,7 +62,7 @@ services:
     image: onlyoffice/documentserver:latest
     environment:
       - 'JWT_SECRET={{ nextcloud_onlyoffice_jwt }}'
-
+    restart: unless-stopped
     networks:
       - 'frontend'
     labels:
@@ -75,7 +75,7 @@ services:
   paperless:
     container_name: paperless
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
-
+    restart: unless-stopped
     depends_on:
       - redis
     volumes:
