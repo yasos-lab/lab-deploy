@@ -27,9 +27,6 @@ glance_monitor_services:
         url: "https://grafana.{{ domain_name}}"
       - name: "Portainer"
         url: "https://portainer.{{ domain_name}}"
-      - name: "Zerobyte"
-        url: "https://zerobyte.{{ domain_name}}"
-        icon: "sh:zerobyte"
   - title: "Services"
     sites:
       - name: "Nextcloud"
@@ -125,7 +122,6 @@ server_docker_services:
     services:
       - "portainer"
       - "vaultwarden"
-      - "zerobyte"
     configs: []
     templates: []
     crons: []
