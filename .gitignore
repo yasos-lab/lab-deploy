@@ -7,10 +7,3 @@
 
 # ANSIBLE
 .vault-pass
-
-# TERRAFORM
-.terraform.lock.hcl
-.terraform/
-*.tfstate*
-backend.hcl
-terraform.tfvars
