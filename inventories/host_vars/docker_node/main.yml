@@ -1,0 +1,179 @@
+---
+
+backup_mount: "/mnt/backup"
+
+media_mount: "/mnt/media"
+
+deb_packages: 
+  - "{{ rclone_package }}"
+
+directories:
+  - "{{ backup_mount }}/docker_backup"
+  - "{{ media_mount }}/library/books"
+  - "{{ media_mount }}/library/courses"
+  - "{{ media_mount }}/library/movies"
+  - "{{ media_mount }}/library/music"
+  - "{{ media_mount }}/library/other"
+  - "{{ media_mount }}/library/quran"
+  - "{{ media_mount }}/library/tv"
+  - "{{ media_mount }}/torrents"
+
+docker_networks:
+  - frontend
+  - backend
+
+docker_plugins:
+  - name: "grafana/loki-docker-driver:3.4.3-amd64"
+    alias: "loki"
+
+docker_services:
+  - stack_name: "00-network"
+    services:
+      - "authelia"
+      - "traefik"
+      - "whoami"
+      - "cloudflare-ddns"
+      - "speedtest"
+    templates:
+      - src: "docker/00-network/config/traefik/external-services.yml.j2"
+        dest: "{{ docker_services_directory }}/00-network/config/traefik/external-services.yml"
+      - src: "docker/00-network/config/traefik/traefik.yml.j2"
+        dest: "{{ docker_services_directory }}/00-network/config/traefik/traefik.yml"
+      - src: "docker/00-network/config/authelia/users_database.yml.j2"
+        dest: "{{ docker_services_directory }}/00-network/config/authelia/users_database.yml"
+      - src: "docker/00-network/config/authelia/configuration.yml.j2"
+        dest: "{{ docker_services_directory }}/00-network/config/authelia/configuration.yml"
+    configs: []
+    crons: []
+  - stack_name: "01-core"
+    services:
+      - "portainer"
+      - "vaultwarden"
+    configs: []
+    templates: []
+    crons: []
+  - stack_name: "02-monitoring"
+    services:
+      - "grafana"
+      - "prometheus"
+      - "loki"
+      - "cadvisor"
+      - "node_exporter"
+      - "promtail"
+      - "glance"
+      - "uptime-kuma"
+    templates:
+      - src: "docker/02-monitoring/config/glance/glance.yml.j2"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/glance/glance.yml"
+      - src: "docker/02-monitoring/config/prometheus/prometheus.yml.j2"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/prometheus/prometheus.yml"
+      - src: "docker/02-monitoring/config/loki/loki-config.yml.j2"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/loki/loki-config.yml"
+      - src: "docker/02-monitoring/config/promtail/promtail-config.yml.j2"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/promtail/promtail-config.yml"
+    configs:
+      - src: "common/glance/widgets/jellyfin-playing.yml"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/glance/jellyfin-playing.yml"
+      - src: "common/glance/widgets/jellyfin-stats.yml"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/glance/jellyfin-stats.yml"
+      - src: "common/glance/widgets/media-vpn-stats.yml"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/glance/media-vpn-stats.yml"
+      - src: "common/glance/widgets/qbittorrent-stats.yml"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/glance/qbittorrent-stats.yml"
+      - src: "common/glance/widgets/homelab-consumption-stats.yml"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/glance/homelab-consumption-stats.yml"
+      - src: "common/glance/widgets/internet-speed.yml"
+        dest: "{{ docker_services_directory }}/02-monitoring/config/glance/internet-speed.yml"
+    crons: []
+  - stack_name: "03-cloud"
+    services:
+      - "nextcloud"
+      - "redis"
+      - "maria-db"
+      - "onlyoffice"
+      - "paperless"
+    templates:
+      - src: "docker/03-cloud/config/nextcloud/nextcloud.ini.j2"
+        dest: "{{ docker_services_directory }}/03-cloud/config/nextcloud/nextcloud.ini"
+    configs: []
+    crons:
+      - name: "Nextcloud cron job"
+        service: "nextcloud"
+        service_user: "www-data"
+        job: "php /var/www/html/cron.php"
+        minute: "*/5"
+  - stack_name: "04-media"
+    services:
+      - "jellyfin"
+      - "jellyseerr"
+      - "prowlarr"
+      - "flaresolverr"
+      - "radarr"
+      - "sonarr"
+      - "bazarr"
+      - "media-vpn"
+      - "qbittorrent"
+    templates: []
+    configs: []
+    crons: []
+  - stack_name: "05-automation"
+    services:
+      - "home-assistant"
+      - "n8n"
+    templates:
+      - src: "docker/05-automation/config/home-assistant/configuration.yaml.j2"
+        dest: "{{ docker_services_directory }}/05-automation/config/home-assistant/configuration.yaml"
+      - src: "docker/05-automation/config/home-assistant/packages/plugs.yaml.j2"
+        dest: "{{ docker_services_directory }}/05-automation/config/home-assistant/packages/plugs.yaml"
+    configs: []
+    crons: []
+
+extra_packages:
+  - lvm2
+  - nfs-kernel-server
+  - parted
+  - python3-psycopg2
+  - restic
+
+packages: "{{ common_packages + extra_packages }}"
+
+rclone_configs:
+  - name: "protondrive"
+    properties:
+      type: "protondrive"
+      username: "{{ proton_username }}"
+      password: "{{ proton_encpassword }}"
+      2fa: "{{ proton_2fa }}"
+      replace_existing_draft: "true"
+      enable_caching: "false"
+
+rclone_mounts:
+  - name: "protondrive"
+    remote_name: "protondrive" 
+    remote_path: "/"
+    local_path: "/mnt/protondrive"
+    local_path_mode: '0755'
+    local_path_owner: "{{ rclone_config_owner.OWNER }}"
+    local_path_group: "{{ rclone_config_owner.GROUP }}"
+    auto_mount: true
+    extra_args: "--allow-other"
+
+repositories:
+  - name: "docker"
+    repo_url: "https://download.docker.com/linux/ubuntu"
+    gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
+    gpg_extention: "asc"
+    components:
+      - "{{ ansible_facts['distribution_release'] }}"
+      - "stable"
+
+restic_backup_configs:
+  - name: "docker-services"
+    dir_to_backup: "/opt/docker_services"
+    local_backup_repo: "{{ backup_mount }}/docker_backup"
+    remote_backup_repo: "{{ restic_remote }}:docker_backup"
+    cron:
+      hour: "4"
+      minute: "0"
+
+template_docker_daemon: true

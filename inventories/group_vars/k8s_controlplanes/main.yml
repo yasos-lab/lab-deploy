@@ -1,0 +1,7 @@
+---
+
+k8s_required_kernel_modules:
+  - overlay
+  - br_netfilter
+
+packages: "{{ common_packages + k8s_packages }}"

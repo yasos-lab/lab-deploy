@@ -1,0 +1,49 @@
+---
+
+- name: Deploy Docker node
+  hosts: docker_node
+  become: true
+  handlers:
+    - import_tasks: tasks/handlers/main.yml
+  tasks:
+    - name: Deploy
+      block:
+        - name: Import repositories tasks
+          ansible.builtin.import_tasks: tasks/common/repositories.yml
+          tags: docker_node::repositories
+
+        - name: Import packages tasks
+          ansible.builtin.import_tasks: tasks/common/packages.yml
+          tags: docker_node::packages
+
+        - name: Import filesystem tasks
+          ansible.builtin.import_tasks: tasks/common/filesystem.yml
+          tags: docker_node::filesystem
+        
+        - name: Import shell tasks
+          ansible.builtin.import_tasks: tasks/common/shell.yml
+          tags: docker_node::shell
+        
+        - name: Import rclone tasks
+          ansible.builtin.import_tasks: tasks/common/rclone.yml
+          tags: docker_node::rclone
+
+        - name: Import docker tasks
+          ansible.builtin.import_tasks: tasks/docker/docker.yml
+          tags: docker_node::docker
+        
+        - name: Import docker services tasks
+          ansible.builtin.import_tasks: tasks/docker/services.yml
+          tags: docker_node::docker::services
+        
+        - name: Import backup tasks
+          ansible.builtin.import_tasks: tasks/common/restic.yml
+          tags: docker_node::backup
+        
+        - name: Configure and deploy glance agent
+          ansible.builtin.import_tasks: tasks/common/glance-agent.yml
+          tags: docker_node::glance
+
+        - name: Import systemd services tasks
+          ansible.builtin.import_tasks: tasks/common/services.yml
+          tags: docker_node::services

@@ -1,16 +1,10 @@
 ---
 
 - name: Add k8s repository
-  ansible.builtin.import_tasks: ../tasks/system/repositories.yml
-  vars:
-    repositories: "{{ k8s_repositories }}"
+  ansible.builtin.import_tasks: ../common/repositories.yml
 
 - name: Install required packages
-  ansible.builtin.import_tasks: ../system/packages.yml
-  vars:
-    packages: "{{ k8s_nodes_packages + k8s_packages }}"
-    python_packages: []
-    deb_packages: []
+  ansible.builtin.import_tasks: ../common/packages.yml
 
 - name: Hold k8s packages at current version
   ansible.builtin.dpkg_selections:

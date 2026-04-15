@@ -6,19 +6,17 @@ REPO_DIR="${REPO_DIR:-$HOME/Code/yasos-lab}"
 VAULT_PASS="${VAULT_PASS:-$REPO_DIR/.vault-pass}"
 ANSIBLE_OPTS="--vault-password-file $VAULT_PASS"
 
-PROD=false
-TEST=false
+SSH_CONFIG=false
 INSTALL=false
 WORKSTATION=false
 
 print_usage() {
-    echo "Usage: $0 [--install] [--workstation] [--prod] [--test]"
+    echo "Usage: $0 [--install] [--workstation] [--ssh-config] [--test]"
     echo ""
     echo "Options:"
     echo "  --install     | -i           Install Ansible and dependencies"
     echo "  --workstation | -w           Deploy workstation (controller)"
-    echo "  --prod        | -p           Prepare production environment"
-    echo "  --test        | -t           Prepare test environment (docker)"
+    echo "  --ssh-config  | -s           SSH configuration for the inventory hosts"
     echo "  --help        | -h           Show this help message"
     exit 0
 }
@@ -26,8 +24,7 @@ print_usage() {
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
-        --prod|-p) PROD=true ;;
-        --test|-t) TEST=true ;;
+        --ssh-config|-s) SSH_CONFIG=true ;;
         --install|-i) INSTALL=true ;;
         --workstation|-w) WORKSTATION=true ;;
         --help|-h) print_usage ;;
@@ -37,7 +34,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Show help if no options were passed
-if ! $INSTALL && ! $PROD && ! $TEST && ! $WORKSTATION; then
+if ! $INSTALL && ! $SSH_CONFIG && ! $WORKSTATION; then
     echo "❗ No options provided."
     print_usage
 fi
@@ -54,35 +51,11 @@ if $WORKSTATION; then
 
     ansible-playbook -i "$REPO_DIR/inventories/hosts.yml" "$REPO_DIR/playbooks/workstation-deploy.yml" $ANSIBLE_OPTS
 fi
-    
 
-# 3. Run production prepare
-if $PROD; then
-    echo "🚀 Preparing production environment..."
+# 3. Run ssh configuration 
+if $SSH_CONFIG; then
+    echo "🚀 SSH configuration..."
 
     ansible-playbook -i "$REPO_DIR/inventories/hosts.yml" "$REPO_DIR/playbooks/prepare-controller.yml" $ANSIBLE_OPTS
     ansible all -m ping -i "$REPO_DIR/inventories/hosts.yml" $ANSIBLE_OPTS
-fi
-
-# 4. Run test environment prepare
-if $TEST; then
-    echo "🧪 Preparing test environment..."
-
-    echo "📁 Copying lab directory..."
-    TEST_DIR="${REPO_DIR}-test"
-    sudo rm -rf "$TEST_DIR" && cp -r "$REPO_DIR" "$TEST_DIR"
-
-    echo "🐳 Remove old Docker containers..."
-    docker compose down --remove-orphans
-
-    echo "🐳 Starting Docker containers..."
-    docker compose up -d
-    
-    WAIT_TIME="${WAIT_TIME:-60}"
-    echo "⏳ Waiting for services to start (${WAIT_TIME}s)..."
-    sleep "$WAIT_TIME"
-
-    echo "📦 Running Ansible setup on test environment..."
-    ansible-playbook -i "$REPO_DIR/inventories/hosts-test.yml" "$REPO_DIR/playbooks/prepare-controller.yml" $ANSIBLE_OPTS
-    ansible all -m ping -i "$REPO_DIR/inventories/hosts-test.yml" $ANSIBLE_OPTS
 fi

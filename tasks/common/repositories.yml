@@ -1,0 +1,29 @@
+---
+
+- name: Install required packages
+  ansible.builtin.import_tasks: packages.yml
+  vars:
+    deb_packages: []
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+
+- name: Add GPG keys (Dearmored)
+  shell: |
+    curl -fsSL {{ item.gpg_url }} | gpg --dearmor -o /usr/share/keyrings/{{ item.name }}.gpg
+  args:
+    creates: "/usr/share/keyrings/{{ item.name }}.gpg"
+  loop: "{{ repositories | default([]) }}"
+
+- name: Add APT repositories
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/{{ item.name }}.gpg] {{ item.repo_url }} {{ item.components | join(' ') }}"
+    filename: "{{ item.name }}-archive"
+    state: present
+  loop: "{{ repositories | default([]) }}"
+  notify: "Update APT cache"
+
+- name: Run the handler
+  ansible.builtin.meta: flush_handlers

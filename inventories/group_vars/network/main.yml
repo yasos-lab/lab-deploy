@@ -1,0 +1,80 @@
+---
+
+### COMMON ###
+
+extra_packages:
+  - unbound
+
+deb_packages:
+  - "{{ promtail_package_url }}"
+
+packages: "{{ common_packages + extra_packages }}"
+
+### PI-HOLE ###
+pihole_blocklists: 
+  - url: "https://big.oisd.nl"
+    comment: "OISD full list"
+  - url: "https://nsfw.oisd.nl"
+    comment: "OISD NSFW full list"
+
+pihole_config_files:
+  - src: "network/pihole/setupVars.conf.j2"
+    dest: "/etc/pihole/setupVars.conf"
+
+pihole_installer_url: "https://install.pi-hole.net"
+
+pihole_proxy_dns_records:
+  - "gateway.{{ domain_name}}"
+  - "pihole.{{ domain_name}}"
+  - "proxmox.{{ domain_name }}"
+  - "proxy.{{ domain_name}}"
+  - "whoami.{{ domain_name }}"
+  - "sso.{{ domain_name }}"
+  - "speedtest.{{ domain_name}}"
+  - "glance.{{ domain_name}}"
+  - "grafana.{{ domain_name}}"
+  - "prometheus.{{ domain_name}}"
+  - "loki.{{ domain_name}}"
+  - "uptime-kuma.{{ domain_name }}"
+  - "portainer.{{ domain_name}}"
+  - "cloud.{{ domain_name }}"
+  - "office.cloud.{{ domain_name}}"
+  - "paperless.{{ domain_name}}"
+  - "vaultwarden.{{ domain_name }}"
+  - "home-assistant.{{ domain_name}}"
+  - "n8n.{{ domain_name }}"
+  - "jellyfin.{{ domain_name }}"
+  - "jellyseerr.media.{{ domain_name}}"
+  - "radarr.media.{{ domain_name}}"
+  - "sonarr.media.{{ domain_name}}"
+  - "bazarr.media.{{ domain_name}}"
+  - "prowlarr.media.{{ domain_name}}"
+  - "vpn.media.{{ domain_name}}"
+  - "torrent.{{ domain_name}}"
+
+### PI-VPN ###
+pivpn_config_files:
+  - src: "network/pivpn/setupVars.conf.j2"
+    dest: "/tmp/setupVars.conf"
+
+pivpn_installer_url: "https://install.pivpn.io"
+
+pivpn_wireguard_clients:
+  - name: "{{ ansible_user }}-phone"
+    vip: "{{ pivpn_network_base }}.2"
+  - name: "{{ ansible_user }}-pc"
+    vip: "{{ pivpn_network_base }}.3"
+  - name: "wife-phone"
+    vip: "{{ pivpn_network_base }}.10"
+
+### MONITORING ###
+glance_agent_package: "agent-linux-arm64"
+glance_mountpoints_to_monitor:
+  - name: "Root"
+    path: "/"
+
+node_exporter_package: "node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz"
+node_exporter_service_user: "{{ ansible_user }}"
+
+promtail_instance: "rbpi"
+promtail_package: "promtail_{{ promtail_version }}_arm64.deb"

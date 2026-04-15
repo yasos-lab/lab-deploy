@@ -1,8 +1,0 @@
----
-
-- name: Debug var
-  hosts: workstations
-  tasks:
-    - name: Display the var to debug     
-      ansible.builtin.debug:
-        msg: "Variable to debug: {{ ansible_facts.lo.ipv4.address }}"

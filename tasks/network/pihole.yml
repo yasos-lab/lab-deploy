@@ -1,0 +1,55 @@
+---
+
+- name: Create Pi-hole config directory
+  ansible.builtin.file:
+    name: "/etc/pihole"
+    state: directory
+
+- name: Template Pi-hole config files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop: "{{ pihole_config_files }}"
+
+- name: Download Pi-hole installer
+  shell: "curl -sSL {{ pihole_installer_url }} -o /tmp/install_pihole.sh"
+  args:
+    creates: /tmp/install_pihole.sh
+
+- name: Run Pi-hole installer non-interactively
+  ansible.builtin.command: >
+    bash /tmp/install_pihole.sh --unattended
+  args:
+    creates: "/etc/pihole/pihole.toml"
+
+- name: Add custom dnsmasq lines to pihole.toml
+  ansible.builtin.replace:
+    path: /etc/pihole/pihole.toml
+    regexp: '(?s)dnsmasq_lines\s*=\s*\[.*?\]'
+    replace: |
+      dnsmasq_lines = [
+        "address=/atlas.pve.{{ domain_name }}/{{ lan_prefix }}.1",
+        "address=/orion.pve.{{ domain_name }}/{{ lan_prefix }}.2",
+        "address=/vega.pve.{{ domain_name }}/{{ lan_prefix }}.3",
+        "address=/{{ gateway_hostname }}/{{ lan_prefix }}.254",
+        ## Proxy
+        {% for domain in pihole_proxy_dns_records %}
+        "address=/{{ domain }}/{{ lan_prefix }}.11"{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+
+- name: Ensure Pi-hole FTL is running
+  ansible.builtin.service:
+    name: pihole-FTL
+    state: restarted
+    enabled: true
+
+- name: Add Pi-hole blocklists
+  ansible.builtin.shell: >
+    pihole-FTL sqlite3 /etc/pihole/gravity.db 
+    "INSERT OR IGNORE INTO adlist (address, comment, enabled) VALUES ('{{ item.url }}', '{{ item.comment }}', 1);"
+  loop: "{{ pihole_blocklists }}"
+
+- name: Reload Pi-hole Gravity database
+  ansible.builtin.command: pihole -g
+

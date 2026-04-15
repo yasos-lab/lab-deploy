@@ -1,0 +1,22 @@
+---
+
+extra_packages:
+  - openjdk-17-jdk
+  - python3-psycopg2
+  - terraform
+
+packages: "{{ common_packages + extra_packages }}"
+
+repositories:
+  - name: "docker"
+    repo_url: "https://download.docker.com/linux/ubuntu"
+    gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
+    components:
+      - "{{ ansible_facts['distribution_release'] }}"
+      - "stable"
+  - name: "hashicorp"
+    repo_url: "https://apt.releases.hashicorp.com"
+    gpg_url: "https://apt.releases.hashicorp.com/gpg"
+    components:
+      - "{{ ansible_facts['distribution_release'] }}"
+      - "main"

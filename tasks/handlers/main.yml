@@ -18,4 +18,5 @@
 - name: "Restart unbound service"
   ansible.builtin.service:
     name: unbound
+    enabled: true
     state: restarted

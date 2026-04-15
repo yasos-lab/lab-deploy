@@ -1,0 +1,70 @@
+---
+
+common_directories:
+  - "{{ zsh_directory }}"
+  - "{{ docker_services_directory }}"
+  - "{{ scripts_directory }}"
+
+common_packages:
+  - git
+  - htop
+  - openssl
+  - unzip
+  - vim
+  - wget
+
+config_files:
+  - file: .secrets
+    dest_path: "{{ user_home }}"
+    mode: '0600'
+  - file: .zshrc
+    dest_path: "{{ user_home }}"
+    mode: '0644'
+  - file: .p10k.zsh
+    dest_path: "{{ zsh_directory }}"
+    mode: '0644'
+
+documents_directory: "{{ user_home }}/Documents"
+
+rclone_config_location: "/root/.config/rclone/rclone.conf"
+
+rclone_config_owner:
+  OWNER: "{{ rclone_user }}"
+  GROUP: "{{ rclone_user }}"
+
+rclone_package: "https://downloads.rclone.org/v{{ rclone_version }}/rclone-v{{ rclone_version }}-linux-amd64.deb"
+
+rclone_user: "root"
+
+rclone_version: 1.69.1
+
+restic_env_vars:
+  RESTIC_PASSWORD: "{{ restic_password }}"
+  B2_ACCOUNT_ID: "{{ restic_bucket_key_id }}"
+  B2_ACCOUNT_KEY: "{{ restic_bucket_app_key }}"
+restic_logs_directory: "/var/log/restic"
+restic_remote: "b2:{{ restic_bucket }}"
+# restic_remote_verify_command: "rclone lsf protondrive:"
+restic_scripts_directory: "{{ scripts_directory }}/restic"
+
+scripts_directory: "/opt/scripts"
+
+timezone: "Europe/Paris"
+
+user_home: "/home/{{ ansible_user }}"
+
+zsh_directory: "{{ user_home }}/.zsh"
+
+zsh_packages:
+  - zsh
+
+zsh_repositories:
+  - repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "{{ zsh_directory }}/powerlevel10k"
+    depth: 1
+  - repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: "{{ zsh_directory }}/plugins/zsh-syntax-highlighting"
+    depth: 0
+  - repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: "{{ zsh_directory }}/plugins/zsh-autosuggestions"
+    depth: 0

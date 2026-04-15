@@ -1,0 +1,10 @@
+---
+
+- name: Debug
+  hosts: docker_node
+  tasks:
+    - name: Display the var to debug     
+      ansible.builtin.debug:
+        msg: "Variable to debug: {{ rclone_configs }}"
+      tags: debug::var
+    

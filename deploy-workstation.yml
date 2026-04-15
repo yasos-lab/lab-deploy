@@ -1,0 +1,39 @@
+---
+
+- name: Deploy workstation
+  hosts: workstations
+  become: true
+  handlers:
+    - import_tasks: tasks/handlers/main.yml
+  tasks:       
+    - name: Import repositories tasks
+      ansible.builtin.import_tasks: tasks/common/repositories.yml
+      tags: workstation::repositories
+    
+    - name: Import packages tasks
+      ansible.builtin.import_tasks: tasks/common/packages.yml
+      tags: workstation::packages
+    
+    - name: Import filesystem tasks
+      ansible.builtin.import_tasks: tasks/common/filesystem.yml
+      tags: workstation::filesystem
+
+    - name: Import shell tasks
+      ansible.builtin.import_tasks: tasks/common/shell.yml
+      tags: workstation::shell
+    
+    - name: Import rclone tasks
+      ansible.builtin.import_tasks: tasks/common/rclone.yml
+      tags: workstation::rclone
+    
+    - name: Import docker tasks
+      ansible.builtin.import_tasks: tasks/docker/docker.yml
+      tags: workstation::docker
+    
+    - name: Import docker services tasks
+      ansible.builtin.import_tasks: tasks/docker/services.yml
+      tags: workstation::docker::services
+
+    - name: Import systemd services tasks
+      ansible.builtin.import_tasks: tasks/common/services.yml
+      tags: workstation::services

@@ -1,0 +1,12 @@
+---
+
+docker_services_directory: /opt/docker_services
+
+docker_packages:
+  - docker-ce 
+  - docker-ce-cli
+  - containerd.io 
+  - docker-buildx-plugin 
+  - docker-compose-plugin
+
+template_docker_daemon: false
