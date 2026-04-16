@@ -49,13 +49,13 @@ fi
 if $WORKSTATION; then
     echo "🚀 Running workstation setup..."
 
-    ansible-playbook -i "$REPO_DIR/inventories/hosts.yml" "$REPO_DIR/playbooks/workstation-deploy.yml" $ANSIBLE_OPTS
+    ansible-playbook -i "$REPO_DIR/inventories/hosts.yml" "$REPO_DIR/deploy-workstation.yml" $ANSIBLE_OPTS
 fi
 
 # 3. Run ssh configuration 
 if $SSH_CONFIG; then
     echo "🚀 SSH configuration..."
 
-    ansible-playbook -i "$REPO_DIR/inventories/hosts.yml" "$REPO_DIR/playbooks/prepare-controller.yml" $ANSIBLE_OPTS
+    ansible-playbook -i "$REPO_DIR/inventories/hosts.yml" "$REPO_DIR/config-ssh.yml" $ANSIBLE_OPTS
     ansible all -m ping -i "$REPO_DIR/inventories/hosts.yml" $ANSIBLE_OPTS
 fi
