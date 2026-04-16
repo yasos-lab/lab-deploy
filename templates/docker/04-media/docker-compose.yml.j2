@@ -161,10 +161,6 @@ services:
       - HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE='{"auth":"apikey","apikey":"{% endraw %}{{ gluetun_control_server_apikey }}{% raw %}","routes":["GET /v1/publicip/ip"]}'
 {% endraw %}
     restart: unless-stopped
-    expose:
-      - '8080' # qbittorrent ui
-      - '6881/tcp' # qbittorrent torrent tcp
-      - '6881/udp' # qbittorrent torrent udp
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.media-vpn.tls=true'
@@ -177,6 +173,11 @@ services:
       - 'traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ domain_name }}`)'
       - 'traefik.http.routers.qbittorrent.service=qbittorrent-service'
       - 'traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080'
+      - 'traefik.http.routers.dispatcharr.tls=true'
+      - 'traefik.http.routers.dispatcharr.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.dispatcharr.rule=Host(`iptv.{{ domain_name }}`)'
+      - 'traefik.http.routers.dispatcharr.service=dispatcharr-service'
+      - 'traefik.http.services.dispatcharr-service.loadbalancer.server.port=9191'
     networks:
       - 'frontend'
   qbittorrent:
@@ -192,6 +193,15 @@ services:
       - 'PUID=1000'
       - 'PGID=1000'
       - 'TZ={{ timezone }}'
+    restart: unless-stopped
+  dispatcharr:
+    container_name: dispatcharr
+    image: ghcr.io/dispatcharr/dispatcharr:latest
+    network_mode: service:media-vpn
+    depends_on:
+      - 'media-vpn'
+    volumes:
+      - './data/dispatcharr:/data'
     restart: unless-stopped
 networks:
   frontend:

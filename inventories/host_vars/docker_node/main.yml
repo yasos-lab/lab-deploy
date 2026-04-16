@@ -113,6 +113,7 @@ docker_services:
       - "bazarr"
       - "media-vpn"
       - "qbittorrent"
+      - "dispatcharr"
     templates: []
     configs: []
     crons: []

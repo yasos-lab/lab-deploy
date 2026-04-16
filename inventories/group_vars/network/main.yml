@@ -50,6 +50,7 @@ pihole_proxy_dns_records:
   - "bazarr.media.{{ domain_name}}"
   - "prowlarr.media.{{ domain_name}}"
   - "vpn.media.{{ domain_name}}"
+  - "iptv.{{ domain_name}}"
   - "torrent.{{ domain_name}}"
 
 ### PI-VPN ###
