@@ -9,6 +9,25 @@
     creates: "/etc/kubernetes/admin.conf"
   when: inventory_hostname in groups['k8s_controlplanes'][1:]
 
+- name: Ensure .kube directory exists
+  ansible.builtin.file:
+    path: "/home/{{ k8s_user }}/.kube"
+    state: directory
+    owner: "{{ k8s_user }}"
+    group: "{{ k8s_user }}"
+    mode: '0700'
+  when: inventory_hostname in groups['k8s_controlplanes']
+
+- name: Copy admin.conf to user home directory
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/home/{{ k8s_user }}/.kube/config"
+    owner: "{{ k8s_user }}"
+    group: "{{ k8s_user }}"
+    mode: '0600'
+    remote_src: true
+  when: inventory_hostname in groups['k8s_controlplanes']
+
 - name: Join kubernetes workers
   ansible.builtin.command: >
     {{ hostvars[groups['k8s_controlplanes'][0]].kubeadm_join_cmd }}
