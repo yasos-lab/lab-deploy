@@ -5,6 +5,10 @@
     name: "{{ item }}"
     state: latest
   loop: "{{ packages | default([]) }}"
+  register: install_result
+  retries: 5
+  delay: 10
+  until: install_result is succeeded
 
 - name: Install deb packages from url
   ansible.builtin.apt:
