@@ -22,6 +22,7 @@
     --set k8sServiceHost={{ k8s_vip }}
     --set k8sServicePort=6443
   environment:
+    CILIUM_CLI_SKIP_REACHABILITY_CHECK: 1
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: cilium_status.rc != 0
 

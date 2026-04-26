@@ -13,7 +13,7 @@ k8s_packages:
   - ebtables
   - ethtool
 
-k8s_vip: "{{ lan_prefix }}.50"
+k8s_vip: "{{ lan_prefix }}.30"
 k8s_interface: eth0
 
 kubevip_version: "v1.1.1"
