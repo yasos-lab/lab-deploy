@@ -28,9 +28,6 @@
     regexp: '(?s)dnsmasq_lines\s*=\s*\[.*?\]'
     replace: |
       dnsmasq_lines = [
-        "address=/atlas.pve.{{ domain_name }}/{{ lan_prefix }}.1",
-        "address=/orion.pve.{{ domain_name }}/{{ lan_prefix }}.2",
-        "address=/vega.pve.{{ domain_name }}/{{ lan_prefix }}.3",
         "address=/{{ gateway_hostname }}/{{ lan_prefix }}.254",
         ## Proxy
         {% for domain in pihole_proxy_dns_records %}
