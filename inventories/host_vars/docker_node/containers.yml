@@ -183,4 +183,4 @@ traefik_external_services:
       loadBalancer:
         serversTransport: proxmoxTransport
         servers:
-          - url: "https://atlas.pve.{{ domain_name }}:8006"
+          - url: "https://{{ lan_prefix }}.100:8006"
