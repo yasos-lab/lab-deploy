@@ -1,0 +1,23 @@
+---
+
+- name: Deploy LXC node
+  hosts: ubuntu_lxc
+  become: true
+  handlers:
+    - import_tasks: tasks/handlers/main.yml
+  tasks:
+    - name: Import repositories tasks
+      ansible.builtin.import_tasks: tasks/common/repositories.yml
+      tags: docker_lxc::repositories
+
+    - name: Import packages tasks
+      ansible.builtin.import_tasks: tasks/common/packages.yml
+      tags: docker_lxc::packages
+    
+    - name: Import shell tasks
+      ansible.builtin.import_tasks: tasks/common/shell.yml
+      tags: docker_lxc::shell
+  
+    - name: Import jellyfin tasks
+      ansible.builtin.import_tasks: tasks/common/jellyfin.yml
+      tags: docker_lxc::jellyfin

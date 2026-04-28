@@ -1,0 +1,15 @@
+---
+
+- name: Add jellyfin user to render and video groups
+  ansible.builtin.user:
+    name: jellyfin
+    groups:
+      - render
+      - video
+    append: true
+
+- name: Restart Jellyfin
+  ansible.builtin.systemd:
+    name: jellyfin
+    enabled: true
+    state: restarted

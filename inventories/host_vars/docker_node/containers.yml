@@ -171,6 +171,18 @@ traefik_external_services:
       loadBalancer:
         servers:
           - url: "http://{{ lan_prefix }}.10:80"
+  - name: "jellyfin"
+    routers_properties:
+      rule: "Host(`jellyfin.{{ domain_name }}`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "cloudflare"
+      service: "jellyfin"
+    services_properties:
+      loadBalancer:
+        servers:
+          - url: "http://{{ lan_prefix }}.81:8096"
   - name: "proxmox"
     routers_properties:
       rule: "Host(`proxmox.{{ domain_name }}`)"

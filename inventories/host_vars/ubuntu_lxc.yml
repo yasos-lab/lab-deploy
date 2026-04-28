@@ -1,0 +1,19 @@
+---
+
+repositories:
+  - name: "jellyfin"
+    repo_url: "https://repo.jellyfin.org/ubuntu"
+    gpg_url: "https://repo.jellyfin.org/jellyfin_team.gpg.key"
+    gpg_extention: "gpg"
+    components:
+      - "{{ ansible_facts['distribution_release'] }}"
+      - "main"
+
+extra_packages:
+  - jellyfin
+  - mesa-va-drivers
+  - vainfo
+
+packages: "{{ common_packages + extra_packages }}"
+
+user_home: "/root"
