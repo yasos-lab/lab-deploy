@@ -34,7 +34,7 @@
         "address=/{{ gateway_hostname }}/{{ lan_prefix }}.254",
         ## Proxy
         {% for domain in pihole_proxy_dns_records %}
-        "address=/{{ domain }}/{{ lan_prefix }}.11"{% if not loop.last %},{% endif %}
+        "address=/{{ domain }}/{{ lan_prefix }}.21"{% if not loop.last %},{% endif %}
         {% endfor %}
       ]
 

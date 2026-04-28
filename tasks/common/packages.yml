@@ -1,9 +1,10 @@
 ---
 
 - name: Install system packages
-  ansible.builtin.package:
+  ansible.builtin.apt:
     name: "{{ item }}"
     state: latest
+    update_cache: true
   loop: "{{ packages | default([]) }}"
   register: install_result
   retries: 5

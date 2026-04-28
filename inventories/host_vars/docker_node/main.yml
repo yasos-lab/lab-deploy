@@ -18,6 +18,17 @@ directories:
   - "{{ media_mount }}/library/tv"
   - "{{ media_mount }}/torrents"
 
+disks_fs:
+  - device: "backup"
+    mount_point: "/mnt/backup"
+    fstype: "virtiofs"
+  - device: "media"
+    mount_point: "/mnt/media"
+    fstype: "virtiofs"
+  - device: "/dev/sdb"
+    mount_point: "{{ docker_services_directory }}"
+    fstype: "ext4"
+
 docker_networks:
   - frontend
   - backend
@@ -135,6 +146,7 @@ extra_packages:
   - parted
   - python3-psycopg2
   - restic
+  - qemu-guest-agent
 
 packages: "{{ common_packages + extra_packages }}"
 

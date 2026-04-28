@@ -1,13 +1,19 @@
 ---
 
+- name: Create filesystem on disk
+  community.general.filesystem:
+    fstype: "{{ item.fstype }}"
+    dev: "{{ item.device }}"
+  loop: "{{ disks_fs | default([]) }}"
+  when: item.fstype != "virtiofs"
 
-- name: Mount logical volumes
+- name: Mount volumes
   ansible.posix.mount:
     path: "{{ item.mount_point }}"
-    src: "/dev/{{ item.vg }}/{{ item.lv }}"
+    src: "{{ item.device }}"
     fstype: "{{ item.fstype }}"
     state: mounted
-  loop: "{{ disk_lvs | default([]) }}"
+  loop: "{{ disks_fs | default([]) }}"
 
 - name: Create directories
   ansible.builtin.file:
