@@ -12,13 +12,6 @@ metrics:
 entryPoints:
   web:
     address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-  websecure:
-    address: ":443"
   metrics:
     address: ":9100"
 
@@ -29,18 +22,4 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false  # Only route explicitly labeled containers
-  file:
-    filename: "/etc/traefik/external-services.yml"
-    watch: true
 
-certificatesResolvers:
-  cloudflare:
-    acme:
-      email: "{{ traefik_acme_email }}"
-      storage: "/ssl/cloudflare-acme.json"
-      caServer: "https://acme-v02.api.letsencrypt.org/directory"
-      dnsChallenge:
-        provider: cloudflare
-        resolvers:
-          - "1.1.1.1:53"
-          - "8.8.8.8:53"

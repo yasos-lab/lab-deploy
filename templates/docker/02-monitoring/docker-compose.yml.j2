@@ -21,8 +21,6 @@ services:
       - 'SPEEDTEST_API_TOKEN={{ speedtest_api_token }}'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.glance.tls=true'
-      - 'traefik.http.routers.glance.tls.certresolver=cloudflare'
       - 'traefik.http.routers.glance.rule=Host(`glance.{{ domain_name }}`)'
       - 'traefik.docker.network=frontend'
     networks:
@@ -36,8 +34,6 @@ services:
       - ./data/uptime-kuma:/app/data
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.uptime-kuma.tls=true'
-      - 'traefik.http.routers.uptime-kuma.tls.certresolver=cloudflare'
       - 'traefik.http.routers.uptime-kuma.rule=Host(`uptime-kuma.{{ domain_name }}`)'
       - 'traefik.http.services.uptime-kuma.loadbalancer.server.port=3001'
     networks:
@@ -68,8 +64,6 @@ services:
       - "GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], 'admin') && 'Admin' || contains(groups[*], 'editor') && 'Editor' || 'Viewer'"  # Not working
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.grafana.tls=true'
-      - 'traefik.http.routers.grafana.tls.certresolver=cloudflare'
       - 'traefik.http.routers.grafana.rule=Host(`grafana.{{ domain_name }}`)'
       - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
       - 'traefik.docker.network=frontend'
@@ -87,8 +81,6 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.prometheus.tls=true'
-      - 'traefik.http.routers.prometheus.tls.certresolver=cloudflare'
       - 'traefik.http.routers.prometheus.rule=Host(`prometheus.{{ domain_name }}`)'
       - 'traefik.http.services.prometheus.loadbalancer.server.port=9090'
       - 'traefik.docker.network=frontend'
@@ -104,8 +96,6 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.loki.tls=true'
-      - 'traefik.http.routers.loki.tls.certresolver=cloudflare'
       - 'traefik.http.routers.loki.rule=Host(`loki.{{ domain_name }}`)'
       - 'traefik.http.services.loki.loadbalancer.server.port=3100'
       - 'traefik.docker.network=frontend'

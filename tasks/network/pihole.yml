@@ -31,9 +31,16 @@
         "address=/{{ gateway_hostname }}/{{ lan_prefix }}.254",
         ## Proxy
         {% for domain in pihole_proxy_dns_records %}
-        "address=/{{ domain }}/{{ lan_prefix }}.21"{% if not loop.last %},{% endif %}
+        "address=/{{ domain }}/{{ lan_prefix }}.10"{% if not loop.last %},{% endif %}
         {% endfor %}
       ]
+
+- name: Set pihole port to 80 HTTPS (free ports 443 and 80 for Caddy)
+  ansible.builtin.lineinfile:
+    path: /etc/pihole/pihole.toml
+    regexp: '^\s*port = "80.*'
+    line: '  port = "80o,[::]:80o"'
+    backup: yes
 
 - name: Ensure Pi-hole FTL is running
   ansible.builtin.service:

@@ -11,8 +11,6 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.authelia.tls=true'
-      - 'traefik.http.routers.authelia.tls.certresolver=cloudflare'
       - 'traefik.http.routers.authelia.rule=Host(`sso.{{ domain_name }}`)'
       - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://sso.{{ domain_name }}'
       - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
@@ -25,7 +23,6 @@ services:
     volumes:
       - './config/traefik/ssl:/ssl:rw'
       - './config/traefik/traefik.yml:/etc/traefik/traefik.yml:ro'
-      - './config/traefik/external-services.yml:/etc/traefik/external-services.yml:ro'
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
     ports:
       - '80:80'
@@ -37,8 +34,6 @@ services:
       - 'CF_DNS_API_TOKEN={{ cloudflare_api_token }}'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.traefik.tls=true'
-      - 'traefik.http.routers.traefik.tls.certresolver=cloudflare'
       - 'traefik.http.routers.traefik.rule=Host(`proxy.{{ domain_name }}`)'
       - 'traefik.http.routers.traefik.service=api@internal'
       - 'traefik.http.routers.traefik.middlewares=authelia@docker'
@@ -52,8 +47,6 @@ services:
       - 'frontend'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.whoami.tls=true'
-      - 'traefik.http.routers.whoami.tls.certresolver=cloudflare'
       - 'traefik.http.routers.whoami.rule=Host(`whoami.{{ domain_name }}`)'
   cloudflare-ddns:
     container_name: cloudflare-ddns
@@ -81,8 +74,6 @@ services:
       - 'frontend'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.speedtest.tls=true'
-      - 'traefik.http.routers.speedtest.tls.certresolver=cloudflare'
       - 'traefik.http.routers.speedtest.rule=Host(`speedtest.{{ domain_name }}`)'
     restart: unless-stopped
 networks:

@@ -16,8 +16,6 @@ services:
       - 'sonarr'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.jellyseerr.tls=true'
-      - 'traefik.http.routers.jellyseerr.tls.certresolver=cloudflare'
       - 'traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.media.{{ domain_name }}`)'
       - 'traefik.http.services.jellyseerr.loadbalancer.server.port=5055'
     networks:
@@ -36,8 +34,6 @@ services:
       - 'qbittorrent'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.prowlarr.tls=true'
-      - 'traefik.http.routers.prowlarr.tls.certresolver=cloudflare'
       - 'traefik.http.routers.prowlarr.rule=Host(`prowlarr.media.{{ domain_name }}`)'
       - 'traefik.http.routers.prowlarr.middlewares=authelia@docker'
       - 'traefik.http.services.prowlarr.loadbalancer.server.port=9696'
@@ -67,8 +63,6 @@ services:
       - 'prowlarr'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.radarr.tls=true'
-      - 'traefik.http.routers.radarr.tls.certresolver=cloudflare'
       - 'traefik.http.routers.radarr.rule=Host(`radarr.media.{{ domain_name }}`)'
       - 'traefik.http.routers.radarr.middlewares=authelia@docker'
       - 'traefik.http.services.radarr.loadbalancer.server.port=7878'
@@ -90,8 +84,6 @@ services:
       - 'prowlarr'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.sonarr.tls=true'
-      - 'traefik.http.routers.sonarr.tls.certresolver=cloudflare'
       - 'traefik.http.routers.sonarr.rule=Host(`sonarr.media.{{ domain_name }}`)'
       - 'traefik.http.routers.sonarr.middlewares=authelia@docker'
       - 'traefik.http.services.sonarr.loadbalancer.server.port=8989'
@@ -110,8 +102,6 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.bazarr.tls=true'
-      - 'traefik.http.routers.bazarr.tls.certresolver=cloudflare'
       - 'traefik.http.routers.bazarr.rule=Host(`bazarr.media.{{ domain_name }}`)'
       - 'traefik.http.routers.bazarr.middlewares=authelia@docker'
       - 'traefik.http.services.bazarr.loadbalancer.server.port=6767'
@@ -141,18 +131,12 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.media-vpn.tls=true'
-      - 'traefik.http.routers.media-vpn.tls.certresolver=cloudflare'
       - 'traefik.http.routers.media-vpn.rule=Host(`vpn.media.{{ domain_name }}`)'
       - 'traefik.http.routers.media-vpn.service=media-vpn-service'
       - 'traefik.http.services.media-vpn-service.loadbalancer.server.port=8000'
-      - 'traefik.http.routers.qbittorrent.tls=true'
-      - 'traefik.http.routers.qbittorrent.tls.certresolver=cloudflare'
       - 'traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ domain_name }}`)'
       - 'traefik.http.routers.qbittorrent.service=qbittorrent-service'
       - 'traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080'
-      - 'traefik.http.routers.dispatcharr.tls=true'
-      - 'traefik.http.routers.dispatcharr.tls.certresolver=cloudflare'
       - 'traefik.http.routers.dispatcharr.rule=Host(`iptv.{{ domain_name }}`)'
       - 'traefik.http.routers.dispatcharr.service=dispatcharr-service'
       - 'traefik.http.services.dispatcharr-service.loadbalancer.server.port=9191'

@@ -46,8 +46,6 @@ docker_services:
       - "cloudflare-ddns"
       - "speedtest"
     templates:
-      - src: "docker/00-network/config/traefik/external-services.yml.j2"
-        dest: "{{ docker_services_directory }}/00-network/config/traefik/external-services.yml"
       - src: "docker/00-network/config/traefik/traefik.yml.j2"
         dest: "{{ docker_services_directory }}/00-network/config/traefik/traefik.yml"
       - src: "docker/00-network/config/authelia/users_database.yml.j2"

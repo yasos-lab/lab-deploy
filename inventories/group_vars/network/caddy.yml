@@ -1,0 +1,43 @@
+caddy_arch: arm64
+caddy_os: linux
+
+# Proxy routes: most-specific entries first
+caddy_routes:
+  - domain: "jellyfin.{{ domain_name }}"
+    backend: "{{ lan_prefix }}.81:8096"
+
+  - domain: "pihole.{{ domain_name }}"
+    backend: "127.0.0.1:80"
+    redirect: "/admin"
+
+  - domain: "proxmox.{{ domain_name }}"
+    backend: "https://{{ lan_prefix }}.100:8006"
+    tls_insecure: true
+  
+  - domain: "gateway.{{ domain_name }}"
+    backend: "https://{{ gateway_hostname }}"
+
+  - domain: "*.cloud.{{ domain_name }}"
+    backend: "{{ lan_prefix }}.21:80"
+
+  - domain: "*.media.{{ domain_name }}"
+    backend: "{{ lan_prefix }}.21:80"
+
+  - domain: "*.{{ domain_name }}"
+    backend: "{{ lan_prefix }}.21:80"
+
+caddy_systemd_service:
+  - name: "caddy"
+    unit_properties:
+      Description: "Caddy proxy"
+      Wants: "network-online.target"
+      After: "network-online.target"
+    service_properties:
+      User: caddy
+      Group: caddy
+      ExecStart: "/usr/bin/caddy run --config /etc/caddy/Caddyfile"
+      ExecReload: "/usr/bin/caddy reload --config /etc/caddy/Caddyfile"
+      AmbientCapabilities: "CAP_NET_BIND_SERVICE"
+      Restart: "on-failure"
+    install_properties:
+      WantedBy: "multi-user.target"

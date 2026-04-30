@@ -1,0 +1,37 @@
+---
+
+- name: Create caddy system user
+  ansible.builtin.user:
+    name: caddy
+    system: true
+    home: /var/lib/caddy
+    shell: /usr/sbin/nologin
+    create_home: true
+
+- name: Create /etc/caddy directory
+  ansible.builtin.file:
+    path: /etc/caddy
+    state: directory
+    owner: caddy
+    group: caddy
+    mode: "0750"
+
+- name: Download Caddy binary with Cloudflare plugin
+  ansible.builtin.get_url:
+    url: "https://caddyserver.com/api/download?os={{ caddy_os }}&arch={{ caddy_arch }}&p=github.com%2Fcaddy-dns%2Fcloudflare"
+    dest: /usr/bin/caddy
+    mode: "0755"
+    force: false
+
+- name: Template Caddyfile
+  ansible.builtin.template:
+    src: network/caddy/Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    owner: caddy
+    group: caddy
+    mode: "0640"
+
+- name: Deploy systemd service
+  ansible.builtin.import_tasks: ../common/services.yml
+  vars:
+    systemd_services: "{{ caddy_systemd_service }}"

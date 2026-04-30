@@ -27,8 +27,6 @@ services:
       - 'backend'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.nextcloud.tls=true'
-      - 'traefik.http.routers.nextcloud.tls.certresolver=cloudflare'
       - 'traefik.http.routers.nextcloud.rule=Host(`cloud.{{ domain_name }}`)'
       - 'traefik.http.middlewares.secure_headers.headers.stsSeconds=15552000'
       - 'traefik.http.middlewares.secure_headers.headers.stsIncludeSubdomains=true'
@@ -67,8 +65,6 @@ services:
       - 'frontend'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.office.tls=true'
-      - 'traefik.http.routers.office.tls.certresolver=cloudflare'
       - 'traefik.http.routers.office.rule=Host(`office.cloud.{{ domain_name }}`)'
       - 'traefik.http.middlewares.x_forwarded_proto.headers.customrequestheaders.X-Forwarded-Proto=https'
       - 'traefik.http.routers.office.middlewares=x_forwarded_proto'
@@ -89,8 +85,6 @@ services:
       - 'backend'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.paperless.tls=true'
-      - 'traefik.http.routers.paperless.tls.certresolver=cloudflare'
       - 'traefik.http.routers.paperless.rule=Host(`paperless.{{ domain_name }}`)'
       - 'traefik.http.services.paperless.loadbalancer.server.port=8000'
       - 'traefik.docker.network=frontend'

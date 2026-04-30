@@ -1,0 +1,21 @@
+{
+    email {{ acme_email }}
+    acme_dns cloudflare {{ cloudflare_api_token }}
+    auto_https disable_redirects
+}
+
+{% for route in caddy_routes %}
+{{ route.domain }} {
+{% if route.redirect | default(false) %}
+    redir / {{ route.redirect }} 301
+{% endif %}
+    reverse_proxy {{ route.backend }} {
+{% if route.tls_insecure | default(false) %}
+        transport http {
+            tls_insecure_skip_verify
+        }
+{% endif %}
+    }
+}
+
+{% endfor %}

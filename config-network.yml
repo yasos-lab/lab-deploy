@@ -26,6 +26,10 @@
       ansible.builtin.import_tasks: tasks/network/pivpn.yml
       tags: network::pivpn
     
+    - name: Configure and deploy Caddy proxy
+      ansible.builtin.import_tasks: tasks/network/caddy.yml
+      tags: network::caddy
+    
     - name: Configure and deploy glance agent
       ansible.builtin.import_tasks: tasks/common/glance-agent.yml
       tags: network::glance
