@@ -8,7 +8,7 @@ deb_packages:
   - "{{ rclone_package }}"
 
 directories:
-  - "{{ backup_mount }}/docker_backup"
+  - "{{ backup_mount }}"
   - "{{ media_mount }}/library/books"
   - "{{ media_mount }}/library/courses"
   - "{{ media_mount }}/library/movies"
@@ -19,8 +19,8 @@ directories:
   - "{{ media_mount }}/torrents"
 
 disks_fs:
-  - device: "backup"
-    mount_point: "/mnt/backup"
+  - device: "docker_backup"
+    mount_point: "{{ backup_mount }}"
     fstype: "virtiofs"
   - device: "media"
     mount_point: "/mnt/media"
@@ -181,7 +181,7 @@ repositories:
 restic_backup_configs:
   - name: "docker-services"
     dir_to_backup: "/opt/docker_services"
-    local_backup_repo: "{{ backup_mount }}/docker_backup"
+    local_backup_repo: "{{ backup_mount }}"
     remote_backup_repo: "{{ restic_remote }}:docker_backup"
     cron:
       hour: "4"
