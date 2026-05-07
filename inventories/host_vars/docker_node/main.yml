@@ -1,7 +1,5 @@
 ---
 
-backup_mount: "/mnt/backup"
-
 media_mount: "/mnt/media"
 
 deb_packages: 

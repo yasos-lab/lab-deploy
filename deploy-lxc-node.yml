@@ -8,16 +8,20 @@
   tasks:
     - name: Import repositories tasks
       ansible.builtin.import_tasks: tasks/common/repositories.yml
-      tags: docker_lxc::repositories
+      tags: lxc_node::repositories
 
     - name: Import packages tasks
       ansible.builtin.import_tasks: tasks/common/packages.yml
-      tags: docker_lxc::packages
+      tags: lxc_node::packages
     
     - name: Import shell tasks
       ansible.builtin.import_tasks: tasks/common/shell.yml
-      tags: docker_lxc::shell
+      tags: lxc_node::shell
   
     - name: Import jellyfin tasks
       ansible.builtin.import_tasks: tasks/common/jellyfin.yml
-      tags: docker_lxc::jellyfin
+      tags: lxc_node::jellyfin
+    
+    - name: Import backup tasks
+      ansible.builtin.import_tasks: tasks/common/restic.yml
+      tags: lxc_node::backup

@@ -17,3 +17,14 @@ extra_packages:
 packages: "{{ common_packages + extra_packages }}"
 
 user_home: "/root"
+
+restic_backup_configs:
+  - name: "jellyfin"
+    dir_to_backup: 
+      - "/etc/jellyfin"
+      - "/var/lib/jellyfin"
+    local_backup_repo: "{{ backup_mount }}"
+    remote_backup_repo: "{{ restic_remote }}:jellyfin_backup"
+    cron:
+      hour: "10"
+      minute: "0"

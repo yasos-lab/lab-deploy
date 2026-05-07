@@ -7,12 +7,14 @@ export {{ key }}='{{ value }}'
    
 LOG_FILE="{{ restic_logs_directory }}/{{ restic_backup_config.name }}-backup.log"
 
+{% set backup_paths = [restic_backup_config.dir_to_backup] if restic_backup_config.dir_to_backup is string else restic_backup_config.dir_to_backup %}
+
 for repo in "{{ restic_backup_config.local_backup_repo }}" "{{ restic_backup_config.remote_backup_repo }}"; do
     if [[ -n "$repo" ]]; then
         echo "==============================" >> "$LOG_FILE"
         echo "Starting backup for {{ restic_backup_config.name }} in $repo at $(date)" >> "$LOG_FILE"
         # Run backup
-        restic -r "$repo" backup "{{ restic_backup_config.dir_to_backup }}" >> "$LOG_FILE" 2>&1
+        restic -r "$repo" backup{% for path in backup_paths %} "{{ path }}"{% endfor %} >> "$LOG_FILE" 2>&1
         if [ $? -eq 0 ]; then
             echo "Backup completed successfully" >> "$LOG_FILE"
         else

@@ -1,5 +1,7 @@
 ---
 
+backup_mount: "/mnt/backup"
+
 common_directories:
   - "{{ zsh_directory }}"
   - "{{ docker_services_directory }}"
