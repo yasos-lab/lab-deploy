@@ -28,3 +28,11 @@ restic_backup_configs:
     cron:
       hour: "10"
       minute: "0"
+
+glance_mountpoints_to_monitor:
+  - name: "Root"
+    path: "/"
+
+node_exporter_service_user: "root"
+
+promtail_instance: "lxc_node"

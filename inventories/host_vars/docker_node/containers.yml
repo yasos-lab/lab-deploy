@@ -133,12 +133,6 @@ glance_mountpoints_to_monitor:
     path: "/"
   - name: "Docker services"
     path: "{{ docker_services_directory }}"
-  - name: "Backup"
-    path: "{{ backup_mount }}"
-  - name: "Media"
-    path: "{{ media_mount }}"
-  # - name: "Proxmox backup"
-  #   path: ""
 
 home_assistant_zigbee_dongle: "usb-Itead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_V2_b09546f368f3ef11a606c21b6d9880ab-if00-port0"
 

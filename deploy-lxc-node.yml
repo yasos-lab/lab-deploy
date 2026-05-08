@@ -25,3 +25,11 @@
     - name: Import backup tasks
       ansible.builtin.import_tasks: tasks/common/restic.yml
       tags: lxc_node::backup
+    
+    - name: Configure and deploy glance agent
+      ansible.builtin.import_tasks: tasks/common/glance-agent.yml
+      tags: lxc_node::glance
+
+    - name: Configure and deploy monitoring tools (node explorer for prometheus & promtail for loki)
+      ansible.builtin.import_tasks: tasks/common/monitoring.yml
+      tags: lxc_node::monitoring

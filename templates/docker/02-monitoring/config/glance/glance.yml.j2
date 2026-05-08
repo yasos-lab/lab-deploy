@@ -45,3 +45,11 @@ pages:
                 name: Proxmox
                 url: http://{{ lan_prefix }}.100:27973
                 token: {{ glance_agent_token }}
+              - type: remote
+                name: Docker-Node
+                url: http://{{ lan_prefix }}.21:27973
+                token: {{ glance_agent_token }}
+              - type: remote
+                name: LXC-Node
+                url: http://{{ lan_prefix }}.81:27973
+                token: {{ glance_agent_token }}

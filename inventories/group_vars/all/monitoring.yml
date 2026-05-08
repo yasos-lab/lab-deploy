@@ -19,8 +19,11 @@ node_exporter_systemd_service:
       Group: "{{ node_exporter_service_user }}"
     install_properties:
       WantedBy: "default.target"
+
+node_exporter_package: "node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
 node_exporter_version: "1.9.1"
 
 promtail_binary: "/usr/local/bin/promtail"
+promtail_package: "promtail_{{ promtail_version }}_amd64.deb"
 promtail_package_url: "https://github.com/grafana/loki/releases/download/v{{ promtail_version }}/{{ promtail_package }}"
 promtail_version: "3.4.4"
