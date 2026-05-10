@@ -1,35 +1,35 @@
 ---
 
-- name: Deploy LXC node
-  hosts: ubuntu_lxc
+- name: Deploy Jellyfin node
+  hosts: jellyfin_node
   become: true
   handlers:
     - import_tasks: tasks/handlers/main.yml
   tasks:
     - name: Import repositories tasks
       ansible.builtin.import_tasks: tasks/common/repositories.yml
-      tags: lxc_node::repositories
+      tags: jellyfin_node::repositories
 
     - name: Import packages tasks
       ansible.builtin.import_tasks: tasks/common/packages.yml
-      tags: lxc_node::packages
+      tags: jellyfin_node::packages
     
     - name: Import shell tasks
       ansible.builtin.import_tasks: tasks/common/shell.yml
-      tags: lxc_node::shell
+      tags: jellyfin_node::shell
   
     - name: Import jellyfin tasks
       ansible.builtin.import_tasks: tasks/common/jellyfin.yml
-      tags: lxc_node::jellyfin
+      tags: jellyfin_node::jellyfin
     
     - name: Import backup tasks
       ansible.builtin.import_tasks: tasks/common/restic.yml
-      tags: lxc_node::backup
+      tags: jellyfin_node::backup
     
     - name: Configure and deploy glance agent
       ansible.builtin.import_tasks: tasks/common/glance-agent.yml
-      tags: lxc_node::glance
+      tags: jellyfin_node::glance
 
     - name: Configure and deploy monitoring tools (node explorer for prometheus & promtail for loki)
       ansible.builtin.import_tasks: tasks/common/monitoring.yml
-      tags: lxc_node::monitoring
+      tags: jellyfin_node::monitoring

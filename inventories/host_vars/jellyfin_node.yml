@@ -35,4 +35,4 @@ glance_mountpoints_to_monitor:
 
 node_exporter_service_user: "root"
 
-promtail_instance: "lxc_node"
+promtail_instance: "jellyfin_node"
