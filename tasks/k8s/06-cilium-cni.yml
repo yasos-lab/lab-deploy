@@ -2,7 +2,7 @@
 
 - name: Extract cilium-cli
   ansible.builtin.unarchive:
-    src: "https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz"
+    src: "https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-{{ arch }}.tar.gz"
     dest: /usr/local/bin
     remote_src: yes
 

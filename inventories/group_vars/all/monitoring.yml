@@ -1,6 +1,6 @@
 ---
 
-glance_agent_package: "agent-linux-amd64"
+glance_agent_package: "agent-linux-{{ arch }}"
 glance_agent_archive_url: "https://github.com/glanceapp/agent/releases/download/v0.1.0/{{ glance_agent_package }}.tar.gz"
 
 loki_url: "https://loki.{{ domain_name }}"
@@ -20,10 +20,10 @@ node_exporter_systemd_service:
     install_properties:
       WantedBy: "default.target"
 
-node_exporter_package: "node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+node_exporter_package: "node_exporter-{{ node_exporter_version }}.linux-{{ arch }}.tar.gz"
 node_exporter_version: "1.9.1"
 
 promtail_binary: "/usr/local/bin/promtail"
-promtail_package: "promtail_{{ promtail_version }}_amd64.deb"
+promtail_package: "promtail_{{ promtail_version }}_{{ arch }}.deb"
 promtail_package_url: "https://github.com/grafana/loki/releases/download/v{{ promtail_version }}/{{ promtail_package }}"
 promtail_version: "3.4.4"

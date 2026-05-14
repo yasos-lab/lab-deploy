@@ -69,13 +69,10 @@ pivpn_wireguard_clients:
     vip: "{{ pivpn_network_base }}.10"
 
 ### MONITORING ###
-glance_agent_package: "agent-linux-arm64"
 glance_mountpoints_to_monitor:
   - name: "Root"
     path: "/"
 
-node_exporter_package: "node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz"
 node_exporter_service_user: "{{ ansible_user }}"
 
 promtail_instance: "rbpi"
-promtail_package: "promtail_{{ promtail_version }}_arm64.deb"

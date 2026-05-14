@@ -1,5 +1,4 @@
-caddy_arch: arm64
-caddy_os: linux
+---
 
 # Proxy routes: most-specific entries first
 caddy_routes:

@@ -18,7 +18,7 @@
 
 - name: Download Caddy binary with Cloudflare plugin
   ansible.builtin.get_url:
-    url: "https://caddyserver.com/api/download?os={{ caddy_os }}&arch={{ caddy_arch }}&p=github.com%2Fcaddy-dns%2Fcloudflare"
+    url: "https://caddyserver.com/api/download?os=linux&arch={{ arch }}&p=github.com%2Fcaddy-dns%2Fcloudflare"
     dest: /usr/bin/caddy
     mode: "0755"
     force: false

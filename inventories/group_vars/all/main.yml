@@ -1,5 +1,7 @@
 ---
 
+arch: "amd64"
+
 backup_mount: "/mnt/backup"
 
 common_directories:
@@ -34,7 +36,7 @@ rclone_config_owner:
   OWNER: "{{ rclone_user }}"
   GROUP: "{{ rclone_user }}"
 
-rclone_package: "https://downloads.rclone.org/v{{ rclone_version }}/rclone-v{{ rclone_version }}-linux-amd64.deb"
+rclone_package: "https://downloads.rclone.org/v{{ rclone_version }}/rclone-v{{ rclone_version }}-linux-{{ arch }}.deb"
 
 rclone_user: "root"
 
