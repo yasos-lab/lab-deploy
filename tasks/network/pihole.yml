@@ -28,11 +28,9 @@
     regexp: '(?s)dnsmasq_lines\s*=\s*\[.*?\]'
     replace: |
       dnsmasq_lines = [
+        "dhcp-option=6,{{ pihole_vip }}",
         "address=/{{ gateway_hostname }}/{{ lan_prefix }}.254",
-        ## Proxy
-        {% for domain in pihole_proxy_dns_records %}
-        "address=/{{ domain }}/{{ lan_prefix }}.10"{% if not loop.last %},{% endif %}
-        {% endfor %}
+        "address=/.{{ domain_name }}/{{ caddy_vip }}"
       ]
 
 - name: Set pihole port to 80 HTTPS (free ports 443 and 80 for Caddy)
@@ -42,7 +40,10 @@
     line: '  port = "80o,[::]:80o"'
     backup: yes
 
-- name: Ensure Pi-hole FTL is running
+- name: Set Pi-hole v6 password
+  ansible.builtin.command: pihole setpassword "{{ pihole_password }}"
+
+- name: Ensure Pi-hole FTL is restarted
   ansible.builtin.service:
     name: pihole-FTL
     state: restarted
@@ -56,4 +57,3 @@
 
 - name: Reload Pi-hole Gravity database
   ansible.builtin.command: pihole -g
-

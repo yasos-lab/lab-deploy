@@ -6,7 +6,6 @@ pages:
           - $include: internet-speed.yml
           - type: dns-stats
             url: https://pihole.{{ domain_name }}
-            allow-insecure: true
             service: pihole-v6
             password: {{ pihole_password }}
           - $include: media-vpn-stats.yml
@@ -40,6 +39,10 @@ pages:
               - type: remote
                 name: Raspberry PI
                 url: http://{{ lan_prefix }}.10:27973
+                token: {{ glance_agent_token }}
+              - type: remote
+                name: Raspberry PI Backup
+                url: http://{{ lan_prefix }}.82:27973
                 token: {{ glance_agent_token }}
               - type: remote
                 name: Proxmox

@@ -1,0 +1,13 @@
+---
+
+keepalived_priority: 100
+keepalived_router_id: "PIB"
+keepalived_state: "BACKUP"
+
+network_interface: "veth0"
+
+node_exporter_service_user: "root"
+
+user_home: "/root"
+
+promtail_instance: "rbpi_backup"

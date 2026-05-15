@@ -1,0 +1,9 @@
+---
+
+pivpn_wireguard_clients:
+  - name: "{{ ansible_user }}-phone"
+    vip: "{{ pivpn_net_prefix }}.2"
+  - name: "{{ ansible_user }}-pc"
+    vip: "{{ pivpn_net_prefix }}.3"
+  - name: "wife-phone"
+    vip: "{{ pivpn_net_prefix }}.10"

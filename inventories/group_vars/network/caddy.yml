@@ -6,9 +6,17 @@ caddy_routes:
     backend: "{{ lan_prefix }}.81:8096"
 
   - domain: "pihole.{{ domain_name }}"
-    backend: "127.0.0.1:80"
+    backend: "{{ pihole_vip }}:80"
     redirect: "/admin"
 
+  - domain: "pihole-main.{{ domain_name }}"
+    backend: "{{ lan_prefix }}.10:80"
+    redirect: "/admin"
+    
+  - domain: "pihole-backup.{{ domain_name }}"
+    backend: "{{ lan_prefix }}.82:80"
+    redirect: "/admin"
+  
   - domain: "proxmox.{{ domain_name }}"
     backend: "https://{{ lan_prefix }}.100:8006"
     tls_insecure: true

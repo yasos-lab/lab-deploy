@@ -1,13 +1,12 @@
 server:
-    # If no logfile is specified, syslog is used
-    # logfile: "/var/log/unbound/unbound.log"
+    logfile: "/var/log/unbound/unbound.log"
     verbosity: 0
 
     interface: 127.0.0.1
     port: 5335
-    do-ip4: true
-    do-udp: true
-    do-tcp: true
+    do-ip4: yes
+    do-udp: yes
+    do-tcp: yes
 
     # May be set to no if you don't have IPv6 connectivity
     do-ip6: no
@@ -21,10 +20,10 @@ server:
     #root-hints: "/var/lib/unbound/root.hints"
 
     # Trust glue only if it is within the server's authority
-    harden-glue: true
+    harden-glue: yes
 
     # Require DNSSEC data for trust-anchored zones, if such data is absent, the zone becomes BOGUS
-    harden-dnssec-stripped: true
+    harden-dnssec-stripped: yes
 
     # Don't use Capitalization randomization as it known to cause DNSSEC issues sometimes
     # see https://discourse.pi-hole.net/t/unbound-stubby-or-dnscrypt-proxy/9378 for further details
@@ -49,7 +48,7 @@ server:
 
     # Perform prefetching of close to expired message cache entries
     # This only applies to domains that have been frequently queried
-    prefetch: true
+    prefetch: yes
 
     # One thread should be sufficient, can be increased on beefy machines. In reality for most users running on small networks or on a single machine, it should be unnecessary to seek performance enhancement by increasing num-threads above 1.
     num-threads: 1

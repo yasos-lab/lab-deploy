@@ -1,0 +1,13 @@
+---
+
+pihole_blocklists: 
+  - url: "https://big.oisd.nl"
+    comment: "OISD full list"
+  - url: "https://nsfw.oisd.nl"
+    comment: "OISD NSFW full list"
+
+pihole_config_files:
+  - src: "network/pihole/setupVars.conf.j2"
+    dest: "/etc/pihole/setupVars.conf"
+
+pihole_installer_url: "https://install.pi-hole.net"

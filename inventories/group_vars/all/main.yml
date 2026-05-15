@@ -16,6 +16,7 @@ common_packages:
   - unzip
   - vim
   - wget
+  - curl
 
 config_files:
   - file: .secrets

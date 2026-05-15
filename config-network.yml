@@ -12,7 +12,7 @@
     
     - name: Import shell tasks
       ansible.builtin.import_tasks: tasks/common/shell.yml
-      tags: server::shell
+      tags: network::shell
 
     - name: Configure and deploy Unbound
       ansible.builtin.import_tasks: tasks/network/unbound.yml
@@ -29,6 +29,10 @@
     - name: Configure and deploy Caddy proxy
       ansible.builtin.import_tasks: tasks/network/caddy.yml
       tags: network::caddy
+    
+    - name: Configure and deploy Keepalived
+      ansible.builtin.import_tasks: tasks/network/keepalived.yml
+      tags: network::keepalived
     
     - name: Configure and deploy glance agent
       ansible.builtin.import_tasks: tasks/common/glance-agent.yml

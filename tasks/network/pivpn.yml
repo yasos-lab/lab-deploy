@@ -1,55 +1,93 @@
 ---
 
-- name: Template Pi-VPN config files
+- name: Create PiVPN group
+  ansible.builtin.group:
+    name: pivpn
+    system: true
+    state: present
+
+- name: Create PiVPN user
+  ansible.builtin.user:
+    name: pivpn
+    group: pivpn
+    shell: /bin/bash
+    create_home: true
+    home: /home/pivpn
+    system: false
+    state: present
+
+- name: Ensure config dirs is created
+  ansible.builtin.file: 
+    path: "{{ item }}"
+    state: directory
+    owner: pivpn
+    group: pivpn
+  loop:
+    - "/home/pivpn/configs"
+    - "/etc/pivpn/wireguard"
+
+- name: Template Pi-VPN config file
   ansible.builtin.template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-  loop: "{{ pivpn_config_files }}"
+    src: "network/pivpn/setupVars.conf.j2"
+    dest: "/etc/pivpn/wireguard/setupVars.conf"
+    force: false
 
 - name: Download Pi-VPN installer
   ansible.builtin.get_url:
-    url: "{{ pivpn_installer_url }}"
+    url: "https://install.pivpn.io"
     dest: /tmp/install_pivpn.sh
     mode: '0755'
 
 - name: Run Pi-VPN installer non-interactively
-  become: true
   ansible.builtin.shell: >
-    bash /tmp/install_pivpn.sh --unattended /tmp/setupVars.conf
+    bash /tmp/install_pivpn.sh --unattended /etc/pivpn/wireguard/setupVars.conf
   args:
-    creates: "/etc/pivpn/wireguard/setupVars.conf"
+    creates: "/etc/wireguard/wg0.conf"
 
-- name: Extract WireGuard IP network portion
+- name: Add WireGuard clients
+  ansible.builtin.command: "pivpn -a -n {{ item.name }} -ip {{ item.vip }}"
+  args:
+    creates: "/home/pivpn/configs/{{ item.name }}.conf"
+  loop: "{{ pivpn_wireguard_clients }}"
+  when: inventory_hostname == 'raspberry'
+
+# ── MASTER → BACKUP SYNC ───────────────────────────────────────────────────────
+- name: Sync WireGuard and PiVPN configs from master to backup
+  when: inventory_hostname == 'raspberry_backup'
   block:
-    - name: Get the WireGuard Address line
-      command: grep Address /etc/wireguard/wg0.conf
-      register: wg_address_output
+    - name: Find all files in source directories
+      ansible.builtin.find:
+        paths: 
+          - "/etc/wireguard"
+          - "/home/pivpn/configs"
+        recurse: yes
+      delegate_to: raspberry
+      register: found_files
 
-    - name: Extract the first 3 octets (e.g., 10.6.0)
-      set_fact:
-        pivpn_network_base: "{{ wg_address_output.stdout | regex_search('Address *= *([0-9]+\\.[0-9]+\\.[0-9]+)\\.[0-9]+', '\\1') | first }}"
-        # pivpn_network_base: "{{ (wg_address_output.stdout | regex_search('([0-9]+\\.[0-9]+\\.[0-9]+)\\.[0-9]+')) }}"
-    
-    - name: Debug the result
-      debug:
-        msg: "PiVPN network base is {{ pivpn_network_base }}"
+    - name: Ensure directories exist on raspberry_backup
+      ansible.builtin.file:
+        path: "{{ item.path | dirname }}"
+        state: directory
+        owner: "{{ item.pw_name }}"
+        group: "{{ item.gr_name }}"
+        mode: "{{ item.mode | default('0755') }}"
+      loop: "{{ found_files.files }}"
 
-- name: Add custom configs to pivpn
-  ansible.builtin.lineinfile:
-    path: /etc/pivpn/wireguard/setupVars.conf
-    regexp: "{{ item.regex }}"
-    line: "{{ item.line }}"
-  loop: 
-    - regex: '^pivpnHOST'
-      line: "pivpnHOST={{ pivpn_host }}"
-    - regex: '^pivpnDNS1'
-      line: "pivpnDNS1={{ pivpn_network_base }}.1"
-    - regex: '^pivpnDNS2'
-      line: "pivpnDNS2="
-    - regex: '^dhcpReserv'
-      line: "dhcpReserv=1"
-    - regex: '^useNetworkManager'
-      line: ""
+    - name: Read file content from raspberry
+      ansible.builtin.slurp:
+        src: "{{ item.path }}"
+      delegate_to: raspberry
+      loop: "{{ found_files.files }}"
+      register: remote_content
+
+    - name: Write content to raspberry_backup
+      ansible.builtin.copy:
+        content: "{{ item.content | b64decode }}"
+        dest: "{{ item.source }}"
+        owner: "{{ item.pw_name | default('root') }}"
+        group: "{{ item.gr_name | default('root') }}"
+        mode: "{{ item.mode | default('0644') }}"
+      loop: "{{ remote_content.results }}"
 
 - name: Reload new configs
   block:
@@ -60,9 +98,3 @@
         name: wg-quick@wg0
         state: restarted
         enabled: true
-
-- name: Add WireGuard clients
-  ansible.builtin.command: "pivpn -a -n {{ item.name }} -ip {{ item.vip }}"
-  args:
-    creates: "/home/{{ ansible_user }}/configs/{{ item.name }}.conf"
-  loop: "{{ pivpn_wireguard_clients }}"

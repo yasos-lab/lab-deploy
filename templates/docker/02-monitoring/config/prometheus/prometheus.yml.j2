@@ -15,6 +15,10 @@ scrape_configs:
     static_configs:
       - targets: ['{{ lan_prefix }}.10:9100']
   
+  - job_name: 'raspberrypi_backup'
+    static_configs:
+      - targets: ['{{ lan_prefix }}.82:9100']
+  
   - job_name: 'jellyfin_node'
     static_configs:
       - targets: ['{{ lan_prefix }}.81:9100']

@@ -1,0 +1,40 @@
+global_defs {
+    router_id {{ keepalived_router_id }}
+    enable_script_security
+    script_user root
+}
+
+{% for config in keepalived_vrrp_configs %}
+vrrp_script chk_{{ config.name | lower }} {
+    script "{{ config.check_script }}" 
+    interval 2
+}
+{% endfor %}
+
+{% for config in keepalived_vrrp_configs %}
+vrrp_instance {{ config.name | upper }}_VI {
+    state {{ keepalived_state }}
+    interface {{ network_interface }}
+    virtual_router_id {{ config.virtual_router_id }}
+    priority {{ keepalived_priority }}
+    advert_int 1
+
+    authentication {
+        auth_type PASS
+        auth_pass {{ keepalived_auth_pass }}
+    }
+
+    virtual_ipaddress {
+        {{ config.vip }}
+    }
+
+    track_script {
+        chk_{{ config.name | lower }}
+    }
+
+{% for script in config.notify_scripts | default([]) %}
+    {{ script }}
+{% endfor %}
+}
+
+{% endfor %}

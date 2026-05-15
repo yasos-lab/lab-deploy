@@ -1,3 +1,13 @@
 ---
 
 arch: arm64
+
+keepalived_priority: 150
+keepalived_router_id: "PI"
+keepalived_state: "MASTER"
+
+network_interface: "eth0"
+
+node_exporter_service_user: "{{ ansible_user }}"
+
+promtail_instance: "rbpi"

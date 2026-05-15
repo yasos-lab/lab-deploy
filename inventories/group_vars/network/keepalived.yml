@@ -1,0 +1,24 @@
+---
+
+keepalived_vrrp_configs:
+  - name: pihole
+    virtual_router_id: 53
+    vip: "{{ pihole_vip }}/24 dev {{ network_interface }} label pihole_vip"
+    check_script: "/usr/bin/killall -0 pihole-FTL"
+    notify_scripts:
+      - 'notify_master "/usr/bin/pihole-FTL --config dhcp.active true"'
+      - 'notify_backup "/usr/bin/pihole-FTL --config dhcp.active false"'
+  - name: pivpn
+    virtual_router_id: 51
+    vip: "{{ pivpn_vip }}/24 dev {{ network_interface }} label pivpn_vip"
+    check_script: "/usr/bin/wg show wg0"
+  - name: caddy
+    virtual_router_id: 52
+    vip: "{{ caddy_vip }}/24 dev {{ network_interface }} label caddy_vip"
+    check_script: "/usr/bin/killall -0 caddy"
+
+keepalived_virtual_router_id: 52
+
+caddy_vip: "{{ lan_prefix }}.252"
+pihole_vip: "{{ lan_prefix }}.253"
+pivpn_vip: "{{ lan_prefix }}.251"
