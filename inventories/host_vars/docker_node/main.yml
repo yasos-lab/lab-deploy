@@ -143,8 +143,13 @@ extra_packages:
   - python3-psycopg2
   - restic
   - qemu-guest-agent
+  - ffmpeg
+  - pipx
 
 packages: "{{ common_packages + extra_packages }}"
+
+python_packages:
+  - spotdl
 
 rclone_configs:
   - name: "protondrive"
