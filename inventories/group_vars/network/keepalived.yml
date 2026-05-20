@@ -8,6 +8,7 @@ keepalived_vrrp_configs:
     notify_scripts:
       - 'notify_master "/usr/bin/pihole-FTL --config dhcp.active true"'
       - 'notify_backup "/usr/bin/pihole-FTL --config dhcp.active false"'
+      - 'notify_fault "/usr/bin/pihole-FTL --config dhcp.active true"'
   - name: pivpn
     virtual_router_id: 51
     vip: "{{ pivpn_vip }}/24 dev {{ network_interface }} label pivpn_vip"
