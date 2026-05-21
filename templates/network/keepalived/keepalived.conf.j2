@@ -7,7 +7,10 @@ global_defs {
 {% for config in keepalived_vrrp_configs %}
 vrrp_script chk_{{ config.name | lower }} {
     script "{{ config.check_script }}" 
-    interval 2
+    interval 5
+    timeout 3
+    fall 3
+    rise 2
 }
 {% endfor %}
 
@@ -17,7 +20,7 @@ vrrp_instance {{ config.name | upper }}_VI {
     interface {{ network_interface }}
     virtual_router_id {{ config.virtual_router_id }}
     priority {{ keepalived_priority }}
-    advert_int 1
+    advert_int 2
 
     authentication {
         auth_type PASS
@@ -36,5 +39,4 @@ vrrp_instance {{ config.name | upper }}_VI {
     {{ script }}
 {% endfor %}
 }
-
 {% endfor %}

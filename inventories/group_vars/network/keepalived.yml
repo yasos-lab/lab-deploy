@@ -6,13 +6,12 @@ keepalived_vrrp_configs:
     vip: "{{ pihole_vip }}/24 dev {{ network_interface }} label pihole_vip"
     check_script: "/usr/bin/killall -0 pihole-FTL"
     notify_scripts:
-      - 'notify_master "/usr/bin/pihole-FTL --config dhcp.active true"'
-      - 'notify_backup "/usr/bin/pihole-FTL --config dhcp.active false"'
-      - 'notify_fault "/usr/bin/pihole-FTL --config dhcp.active true"'
+      - notify_master "/bin/sh -c 'nohup /usr/bin/pihole-FTL --config dhcp.active true >/dev/null 2>&1 & sleep 1'"
+      - notify_backup "/bin/sh -c 'nohup /usr/bin/pihole-FTL --config dhcp.active false >/dev/null 2>&1 & sleep 1'"
   - name: pivpn
     virtual_router_id: 51
     vip: "{{ pivpn_vip }}/24 dev {{ network_interface }} label pivpn_vip"
-    check_script: "/usr/bin/wg show wg0"
+    check_script: "/usr/bin/ip link show wg0"
   - name: caddy
     virtual_router_id: 52
     vip: "{{ caddy_vip }}/24 dev {{ network_interface }} label caddy_vip"
