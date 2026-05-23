@@ -146,6 +146,8 @@ services:
     container_name: qbittorrent
     image: lscr.io/linuxserver/qbittorrent:latest
     network_mode: service:media-vpn
+    mem_limit: 3g
+    cpus: 2
     depends_on:
       - 'media-vpn'
     volumes:
@@ -160,6 +162,8 @@ services:
     container_name: dispatcharr
     image: ghcr.io/dispatcharr/dispatcharr:latest
     network_mode: service:media-vpn
+    mem_limit: 1g
+    cpus: 2
     depends_on:
       - 'media-vpn'
     volumes:

@@ -4,6 +4,8 @@ services:
   nextcloud:
     container_name: nextcloud
     image: nextcloud:32
+    mem_limit: 4g
+    cpus: 2
     volumes:
       - './data/nextcloud:/var/www/html'
       - './config/nextcloud/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini'
@@ -58,6 +60,8 @@ services:
   onlyoffice:
     container_name: onlyoffice
     image: onlyoffice/documentserver:latest
+    mem_limit: 2g
+    cpus: 2
     environment:
       - 'JWT_SECRET={{ nextcloud_onlyoffice_jwt }}'
     restart: unless-stopped
@@ -71,6 +75,8 @@ services:
   paperless:
     container_name: paperless
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    mem_limit: 1g
+    cpus: 1
     restart: unless-stopped
     depends_on:
       - redis
