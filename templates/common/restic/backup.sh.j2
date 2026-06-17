@@ -4,39 +4,72 @@
 {% for key, value in restic_env_vars.items() %}
 export {{ key }}='{{ value }}'
 {% endfor %}
-   
+
 LOG_FILE="{{ restic_logs_directory }}/{{ restic_backup_config.name }}-backup.log"
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG_FILE"
+}
 
 {% set backup_paths = [restic_backup_config.dir_to_backup] if restic_backup_config.dir_to_backup is string else restic_backup_config.dir_to_backup %}
 
 for repo in "{{ restic_backup_config.local_backup_repo }}" "{{ restic_backup_config.remote_backup_repo }}"; do
     if [[ -n "$repo" ]]; then
-        echo "==============================" >> "$LOG_FILE"
-        echo "Starting backup for {{ restic_backup_config.name }} in $repo at $(date)" >> "$LOG_FILE"
+
+        log "=============================="
+        log "Starting backup for {{ restic_backup_config.name }} in $repo"
+
+        # Unlock repo
+        restic -r "$repo" unlock >> "$LOG_FILE" 2>&1 || true
+
         # Run backup
-        restic -r "$repo" backup{% for path in backup_paths %} "{{ path }}"{% endfor %} >> "$LOG_FILE" 2>&1
+        restic -r "$repo" backup \
+            {% for path in backup_paths %} "{{ path }}" {% endfor %} \
+            {% if restic_backup_config.excludes is defined %}
+            {% for path in restic_backup_config.excludes %}
+            --exclude "{{ path }}" \
+            {% endfor %}
+            {% endif %}
+            --host "$(hostname -f 2>/dev/null || hostname)" \
+            --tag "{{ restic_backup_config.name }}" \
+            >> "$LOG_FILE" 2>&1
+
         if [ $? -eq 0 ]; then
-            echo "Backup completed successfully" >> "$LOG_FILE"
+            log "Backup completed successfully"
         else
-            echo "Backup failed!" >> "$LOG_FILE"
+            log "Backup failed!"
             exit 1
         fi
 
         # Apply retention policy
-        echo "Applying retention policy..." >> "$LOG_FILE"
-        restic -r "$repo" forget --keep-daily 7 --keep-weekly 4 --keep-monthly 6 --prune >> "$LOG_FILE" 2>&1
+        log "Applying retention policy..."
 
-        # Verify repository integrity
-        echo "Verifying backup integrity..." >> "$LOG_FILE"
-        restic -r "$repo" check >> "$LOG_FILE" 2>&1
+        restic -r "$repo" forget \
+            --prune \
+            --keep-daily {{ restic_backup_config.retention.daily | default(7) }} \
+            --keep-weekly {{ restic_backup_config.retention.weekly | default(4) }} \
+            --keep-monthly {{ restic_backup_config.retention.monthly | default(6) }} \
+            --keep-yearly {{ restic_backup_config.retention.yearly | default(2) }} \
+            >> "$LOG_FILE" 2>&1
+
+        # Verify repository integrity (light check)
+        log "Verifying backup integrity..."
+
+        restic -r "$repo" check --read-data-subset=5% >> "$LOG_FILE" 2>&1
+
         if [ $? -eq 0 ]; then
-            echo "Backup verification successful" >> "$LOG_FILE"
+            log "Backup verification successful"
         else
-            echo "Backup verification failed!" >> "$LOG_FILE"
+            log "Backup verification failed!"
             exit 1
         fi
 
-        echo "Backup process completed for {{ restic_backup_config.name }} in $repo at $(date)" >> "$LOG_FILE"
-        echo "==============================" >> "$LOG_FILE"
+        # Snapshot summary
+        log "Latest snapshots:"
+        restic -r "$repo" snapshots --latest 5 >> "$LOG_FILE" 2>&1 || true
+
+        log "Backup process completed for {{ restic_backup_config.name }} in $repo"
+
+        log "=============================="
     fi
 done
