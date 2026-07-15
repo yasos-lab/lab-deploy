@@ -30,6 +30,9 @@ caddy_routes:
   - domain: "*.media.{{ domain_name }}"
     backend: "{{ lan_prefix }}.21:80"
 
+  - domain: "*.ai.{{ domain_name }}"
+    backend: "{{ lan_prefix }}.21:80"
+
   - domain: "*.{{ domain_name }}"
     backend: "{{ lan_prefix }}.21:80"
 
