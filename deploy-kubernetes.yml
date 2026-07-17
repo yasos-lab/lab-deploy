@@ -43,3 +43,8 @@
       when: inventory_hostname == groups['k8s_controlplanes'][0]
       tags: k8s::verify
 
+    - name: "Bootstrap secrets"
+      ansible.builtin.import_tasks: tasks/k8s/09-bootstrap-secrets.yml
+      tags: k8s::secrets
+      when: inventory_hostname == groups['k8s_controlplanes'][0]
+
