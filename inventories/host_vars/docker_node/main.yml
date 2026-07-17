@@ -135,6 +135,14 @@ docker_services:
         dest: "{{ docker_services_directory }}/05-automation/config/home-assistant/packages/plugs.yaml"
     configs: []
     crons: []
+  - stack_name: "06-ai"
+    services:
+      - "hermes"
+      - "openwebui"
+      - "ollama"
+    templates: [] 
+    configs: []
+    crons: []
 
 extra_packages:
   - lvm2

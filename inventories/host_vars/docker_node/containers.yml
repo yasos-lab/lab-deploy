@@ -105,6 +105,12 @@ glance_monitor_services:
         url: "https://home-assistant.{{ domain_name }}"
       - name: "N8n"
         url: "https://n8n.{{ domain_name }}"
+      - name: "Hermes Agent"
+        url: "https://hermes.ai.{{ domain_name }}"
+        icon: "auto-invert https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/hermes-agent.png"
+      - name: "Open WebUI"
+        url: "https://openwebui.ai.{{ domain_name }}"
+        icon: "sh:open-webui"
   - title: "Media"
     sites:
       - name: "Jellyfin"

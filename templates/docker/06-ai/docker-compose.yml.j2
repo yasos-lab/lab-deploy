@@ -1,0 +1,52 @@
+---
+
+services:
+  hermes:
+    container_name: hermes
+    image: nousresearch/hermes-agent:latest
+    environment:
+      - 'HERMES_DASHBOARD=1'
+    volumes:
+      - './data/hermes:/opt/data'
+    restart: unless-stopped
+    command: gateway run
+    mem_limit: 3g
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.hermes.rule=Host(`hermes.ai.{{ domain_name }}`)'
+      - 'traefik.http.routers.hermes.service=hermes'
+      - 'traefik.http.services.hermes.loadbalancer.server.port=9119'
+      - 'traefik.http.routers.hermes-gw.rule=Host(`hermes-gw.ai.{{ domain_name }}`)'
+      - 'traefik.http.routers.hermes-gw.service=hermes-gw'
+      - 'traefik.http.services.hermes-gw.loadbalancer.server.port=8642'
+    networks:
+      - 'frontend'
+  openwebui:
+    container_name: openwebui
+    image: ghcr.io/open-webui/open-webui:main
+    volumes:
+      - './data/openwebui:/app/backend/data'
+    restart: unless-stopped
+    mem_limit: 1g
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.openwebui.rule=Host(`openwebui.ai.{{ domain_name }}`)'
+      - 'traefik.http.services.openwebui.loadbalancer.server.port=8080'
+    networks:
+      - 'frontend'
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    volumes:
+      - './data/ollama:/root/.ollama'
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.ollama.rule=Host(`ollama.ai.{{ domain_name }}`)'
+      - 'traefik.http.services.ollama.loadbalancer.server.port=11434'
+    networks:
+      - 'frontend'
+
+networks:
+  frontend:
+    external: True
