@@ -43,3 +43,8 @@
       when: inventory_hostname == groups['k8s_controlplanes'][0]
       tags: k8s::verify
 
+    - name: "Bootstrap Flux"
+      ansible.builtin.import_tasks: tasks/k8s/10-bootstrap-flux.yml
+      when: inventory_hostname == groups['k8s_controlplanes'][0]
+      tags: k8s::flux
+

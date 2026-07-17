@@ -18,6 +18,11 @@ k8s_interface: eth0
 
 kubevip_version: "v1.1.1"
 
+flux_version: "latest"
+flux_git_url: ""
+flux_git_branch: main
+flux_git_path: clusters/production
+
 repositories:
   - name: "k8s"
     repo_url: "https://pkgs.k8s.io/core:/stable:/v1.31/deb/"
