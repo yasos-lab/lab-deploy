@@ -32,6 +32,9 @@ caddy_routes:
 
   - domain: "*.ai.{{ domain_name }}"
     backend: "{{ lan_prefix }}.21:80"
+  
+  - domain: "*.k8s.{{ domain_name }}"
+    backend: "{% for n in ['31', '32', '33', '34', '35', '36'] %}{{ lan_prefix }}.{{ n }}:30653{% if not loop.last %} {% endif %}{% endfor %}"
 
   - domain: "*.{{ domain_name }}"
     backend: "{{ lan_prefix }}.21:80"
