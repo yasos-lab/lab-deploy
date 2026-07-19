@@ -1,29 +1,89 @@
 ---
 
-- name: Install required packages
+- name: Install APT bootstrap packages
   ansible.builtin.import_tasks: packages.yml
   vars:
     deb_packages: []
+    rpm_packages: []
     packages:
       - apt-transport-https
       - ca-certificates
       - curl
       - gnupg
+  when: ansible_os_family == "Debian"
+
+- name: Install DNF bootstrap packages
+  ansible.builtin.import_tasks: packages.yml
+  vars:
+    deb_packages: []
+    rpm_packages: []
+    packages:
+      - ca-certificates
+      - curl
+      - gnupg2
+  when: ansible_os_family == "RedHat"
+
+# --- APT repositories (Debian/Ubuntu) ---
 
 - name: Add GPG keys (Dearmored)
-  shell: |
-    curl -fsSL {{ item.gpg_url }} | gpg --dearmor -o /usr/share/keyrings/{{ item.name }}.gpg
+  ansible.builtin.shell: |
+    curl -fsSL {{ item.apt.gpg_url }} | gpg --dearmor -o /usr/share/keyrings/{{ item.name }}.gpg
   args:
     creates: "/usr/share/keyrings/{{ item.name }}.gpg"
   loop: "{{ repositories | default([]) }}"
+  when:
+    - ansible_os_family == "Debian"
+    - item.apt is defined
+    - item.apt.gpg_url is defined
 
 - name: Add APT repositories
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/{{ item.name }}.gpg] {{ item.repo_url }} {{ item.components | join(' ') }}"
+    repo: "deb [signed-by=/usr/share/keyrings/{{ item.name }}.gpg] {{ item.apt.repo_url }} {{ item.apt.components | join(' ') }}"
     filename: "{{ item.name }}-archive"
     state: present
   loop: "{{ repositories | default([]) }}"
-  notify: "Update APT cache"
+  when:
+    - ansible_os_family == "Debian"
+    - item.apt is defined
+  notify: "Update package cache"
 
-- name: Run the handler
+- name: Run handlers (APT)
   ansible.builtin.meta: flush_handlers
+  when: ansible_os_family == "Debian"
+
+# --- DNF repositories (Fedora/RHEL) ---
+
+- name: Import DNF GPG keys
+  ansible.builtin.command:
+    cmd: "rpm --import {{ item.dnf.gpg_url }}"
+  loop: "{{ repositories | default([]) }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - item.dnf is defined
+    - item.dnf.gpg_url is defined
+
+- name: Add DNF repositories (from .repo file URL)
+  ansible.builtin.get_url:
+    url: "{{ item.dnf.repo_file_url }}"
+    dest: "/etc/yum.repos.d/{{ item.name }}.repo"
+    mode: "0644"
+  loop: "{{ repositories | default([]) }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - item.dnf is defined
+    - item.dnf.repo_file_url is defined
+
+- name: Add DNF repositories (from baseurl)
+  ansible.builtin.yum_repository:
+    name: "{{ item.name }}"
+    description: "{{ item.name }} repo"
+    baseurl: "{{ item.dnf.baseurl }}"
+    gpgcheck: true
+    gpgkey: "{{ item.dnf.gpgkey | default(omit) }}"
+    enabled: true
+  loop: "{{ repositories | default([]) }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - item.dnf is defined
+    - item.dnf.baseurl is defined
+    - item.dnf.repo_file_url is not defined

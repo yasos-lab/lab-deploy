@@ -1,22 +1,46 @@
 ---
 
-extra_packages:
-  - openjdk-17-jdk
+extra_packages_deb:
+  - code
   - python3-psycopg2
   - terraform
+
+extra_packages_rpm:
+  - code
+  - python3-psycopg2
+  - terraform
+
+extra_packages: "{{ (ansible_os_family == 'Debian') | ternary(extra_packages_deb, extra_packages_rpm) }}"
 
 packages: "{{ common_packages + extra_packages }}"
 
 repositories:
+  - name: "vscode"
+    apt:
+      repo_url: "https://packages.microsoft.com/repos/code"
+      gpg_url: "https://packages.microsoft.com/keys/microsoft.asc"
+      components:
+        - "stable"
+        - "main"
+    dnf:
+      baseurl: "https://packages.microsoft.com/yumrepos/vscode"
+      gpgkey: "https://packages.microsoft.com/keys/microsoft.asc"
   - name: "docker"
-    repo_url: "https://download.docker.com/linux/ubuntu"
-    gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
-    components:
-      - "{{ ansible_facts['distribution_release'] }}"
-      - "stable"
+    apt:
+      repo_url: "https://download.docker.com/linux/ubuntu"
+      gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
+      components:
+        - "{{ ansible_facts['distribution_release'] }}"
+        - "stable"
+    dnf:
+      repo_file_url: "https://download.docker.com/linux/fedora/docker-ce.repo"
+      gpg_url: "https://download.docker.com/linux/fedora/gpg"
   - name: "hashicorp"
-    repo_url: "https://apt.releases.hashicorp.com"
-    gpg_url: "https://apt.releases.hashicorp.com/gpg"
-    components:
-      - "{{ ansible_facts['distribution_release'] }}"
-      - "main"
+    apt:
+      repo_url: "https://apt.releases.hashicorp.com"
+      gpg_url: "https://apt.releases.hashicorp.com/gpg"
+      components:
+        - "{{ ansible_facts['distribution_release'] }}"
+        - "main"
+    dnf:
+      repo_file_url: "https://rpm.releases.hashicorp.com/fedora/hashicorp.repo"

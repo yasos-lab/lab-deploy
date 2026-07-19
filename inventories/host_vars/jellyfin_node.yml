@@ -2,12 +2,12 @@
 
 repositories:
   - name: "jellyfin"
-    repo_url: "https://repo.jellyfin.org/ubuntu"
-    gpg_url: "https://repo.jellyfin.org/jellyfin_team.gpg.key"
-    gpg_extention: "gpg"
-    components:
-      - "{{ ansible_facts['distribution_release'] }}"
-      - "main"
+    apt:
+      repo_url: "https://repo.jellyfin.org/ubuntu"
+      gpg_url: "https://repo.jellyfin.org/jellyfin_team.gpg.key"
+      components:
+        - "{{ ansible_facts['distribution_release'] }}"
+        - "main"
 
 extra_packages:
   - jellyfin

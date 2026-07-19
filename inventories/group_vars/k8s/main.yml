@@ -20,7 +20,8 @@ kubevip_version: "v1.1.1"
 
 repositories:
   - name: "k8s"
-    repo_url: "https://pkgs.k8s.io/core:/stable:/v1.31/deb/"
-    gpg_url: "https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key"
-    components:
-      - "/"
+    apt:
+      repo_url: "https://pkgs.k8s.io/core:/stable:/v1.31/deb/"
+      gpg_url: "https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key"
+      components:
+        - "/"

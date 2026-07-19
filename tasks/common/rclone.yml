@@ -1,8 +1,16 @@
 ---
 
-- name: Install rclone
+- name: Install rclone (Debian)
   ansible.builtin.apt:
-    deb: "{{ rclone_package }}"
+    deb: "{{ rclone_package_deb }}"
+  when: ansible_os_family == "Debian"
+
+- name: Install rclone (Fedora)
+  ansible.builtin.dnf:
+    name: "{{ rclone_package_rpm }}"
+    state: present
+    disable_gpg_check: true
+  when: ansible_os_family == "RedHat"
 
 - name: Setup rclone configs
   block:

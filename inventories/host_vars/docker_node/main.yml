@@ -2,8 +2,8 @@
 
 media_mount: "/mnt/media"
 
-deb_packages: 
-  - "{{ rclone_package }}"
+deb_packages:
+  - "{{ rclone_package_deb }}"
 
 directories:
   - "{{ backup_mount }}"
@@ -182,12 +182,12 @@ rclone_mounts:
 
 repositories:
   - name: "docker"
-    repo_url: "https://download.docker.com/linux/ubuntu"
-    gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
-    gpg_extention: "asc"
-    components:
-      - "{{ ansible_facts['distribution_release'] }}"
-      - "stable"
+    apt:
+      repo_url: "https://download.docker.com/linux/ubuntu"
+      gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
+      components:
+        - "{{ ansible_facts['distribution_release'] }}"
+        - "stable"
 
 restic_backup_configs:
   - name: "docker-services"
