@@ -6,9 +6,8 @@
   tasks:
     - name: Ensure SSH key pair exists
       ansible.builtin.openssh_keypair:
-        path: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
-        type: rsa
-        size: 4096
+        path: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519"
+        type: ed25519
         force: false
     
     - name: Ensure known_hosts file exists
@@ -29,7 +28,7 @@
   hosts: all
   gather_facts: false
   vars:
-    ssh_pub_key_path: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
+    ssh_pub_key_path: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
   tasks:
     - name: Read SSH public key
       ansible.builtin.slurp:
