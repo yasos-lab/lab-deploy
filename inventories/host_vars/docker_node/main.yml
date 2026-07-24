@@ -194,6 +194,8 @@ restic_backup_configs:
     dir_to_backup: "/opt/docker_services"
     local_backup_repo: "{{ backup_mount }}"
     remote_backup_repo: "{{ restic_remote }}:docker_backup"
+    excludes:
+      - "/opt/docker_services/03-cloud/data/nextcloud/data/appdata_*/preview"
     cron:
       hour: "4"
       minute: "0"

@@ -59,6 +59,14 @@
     - "{{ restic_scripts_directory }}"
     - "{{ restic_logs_directory }}"
 
+- name: Write restic environment file
+  ansible.builtin.template:
+    src: common/restic/restic-env.j2
+    dest: "{{ restic_scripts_directory }}/.restic-env"
+    owner: root
+    group: root
+    mode: '0600'
+
 - name: Template restic backup scripts
   ansible.builtin.template:
     src: common/restic/backup.sh.j2
