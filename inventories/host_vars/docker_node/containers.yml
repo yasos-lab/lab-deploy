@@ -96,6 +96,9 @@ glance_monitor_services:
     sites:
       - name: "Nextcloud"
         url: "https://cloud.{{ domain_name }}"
+      - name: "Seafile"
+        url: "https://drive.{{ domain_name }}"
+        icon: "si:seafile"
       - name: "Paperless"
         url: "https://paperless.{{ domain_name }}"
         icon: "si:paperlessngx"

@@ -94,6 +94,55 @@ services:
       - 'traefik.http.routers.paperless.rule=Host(`paperless.{{ domain_name }}`)'
       - 'traefik.http.services.paperless.loadbalancer.server.port=8000'
       - 'traefik.docker.network=frontend'
+  seafile-db:
+    container_name: seafile-db
+    image: mariadb:10
+    volumes:
+      - './data/seafile-db:/var/lib/mysql'
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --log-bin-trust-function-creators=1
+    environment:
+      - 'MYSQL_ROOT_PASSWORD={{ seafile_root_db_password }}'
+      - 'MYSQL_PASSWORD={{ seafile_db_password }}'
+      - 'MYSQL_DATABASE={{ seafile_db }}'
+      - 'MYSQL_USER={{ seafile_db_user }}'
+    restart: unless-stopped
+    networks:
+      - 'backend'
+  seafile:
+    container_name: seafile
+    image: seafileltd/seafile-mc:13.0-latest
+    mem_limit: 2g
+    cpus: 2
+    volumes:
+      - './data/seafile:/shared'
+    depends_on:
+      - 'seafile-db'
+      - 'redis'
+    environment:
+      - 'SEAFILE_SERVER_HOSTNAME=drive.{{ domain_name }}'
+      - 'SEAFILE_SERVER_PROTOCOL=https'
+      - 'INIT_SEAFILE_MYSQL_ROOT_PASSWORD={{ seafile_root_db_password }}'
+      - 'SEAFILE_MYSQL_DB_HOST=seafile-db'
+      - 'SEAFILE_MYSQL_DB_PORT=3306'
+      - 'SEAFILE_MYSQL_DB_USER={{ seafile_db_user }}'
+      - 'SEAFILE_MYSQL_DB_PASSWORD={{ seafile_db_password }}'
+      - 'SEAFILE_MYSQL_DB_SEAFILE_DB_NAME={{ seafile_db }}'
+      - 'SEAFILE_MYSQL_DB_SEAHUB_DB_NAME={{ seafile_seahub_db }}'
+      - 'SEAFILE_MYSQL_DB_CCNET_DB_NAME={{ seafile_ccnet_db }}'
+      - 'JWT_PRIVATE_KEY={{ seafile_jwt_key }}'
+      - 'CACHE_PROVIDER=redis'
+      - 'REDIS_HOST=redis'
+      - 'REDIS_PORT=6379'
+      - 'TIME_ZONE={{ timezone }}'
+    restart: unless-stopped
+    networks:
+      - 'frontend'
+      - 'backend'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.seafile.rule=Host(`drive.{{ domain_name }}`)'
+      - 'traefik.http.services.seafile.loadbalancer.server.port=80'
+      - 'traefik.docker.network=frontend'
 networks:
   frontend:
     external: True

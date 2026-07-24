@@ -99,6 +99,8 @@ docker_services:
       - "maria-db"
       - "onlyoffice"
       - "paperless"
+      - "seafile"
+      - "seafile-db"
     templates:
       - src: "docker/03-cloud/config/nextcloud/nextcloud.ini.j2"
         dest: "{{ docker_services_directory }}/03-cloud/config/nextcloud/nextcloud.ini"
