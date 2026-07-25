@@ -99,6 +99,8 @@ glance_monitor_services:
       - name: "Seafile"
         url: "https://drive.{{ domain_name }}"
         icon: "si:seafile"
+      - name: "Immich"
+        url: "https://photos.{{ domain_name }}"
       - name: "Paperless"
         url: "https://paperless.{{ domain_name }}"
         icon: "si:paperlessngx"

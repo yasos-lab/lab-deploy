@@ -101,6 +101,10 @@ docker_services:
       - "paperless"
       - "seafile"
       - "seafile-db"
+      - "immich-server"
+      - "immich-machine-learning"
+      - "immich-redis"
+      - "immich-postgres"
     templates:
       - src: "docker/03-cloud/config/nextcloud/nextcloud.ini.j2"
         dest: "{{ docker_services_directory }}/03-cloud/config/nextcloud/nextcloud.ini"
@@ -198,6 +202,7 @@ restic_backup_configs:
     remote_backup_repo: "{{ restic_remote }}:docker_backup"
     excludes:
       - "/opt/docker_services/03-cloud/data/nextcloud/data/appdata_*/preview"
+      - "/opt/docker_services/03-cloud/data/immich-machine-learning"
     cron:
       hour: "4"
       minute: "0"
