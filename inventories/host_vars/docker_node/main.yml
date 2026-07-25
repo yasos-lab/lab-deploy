@@ -159,6 +159,7 @@ extra_packages:
   - qemu-guest-agent
   - ffmpeg
   - pipx
+  - linux-image-amd64
 
 packages: "{{ common_packages + extra_packages }}"
 
@@ -189,8 +190,8 @@ rclone_mounts:
 repositories:
   - name: "docker"
     apt:
-      repo_url: "https://download.docker.com/linux/ubuntu"
-      gpg_url: "https://download.docker.com/linux/ubuntu/gpg"
+      repo_url: "https://download.docker.com/linux/debian"
+      gpg_url: "https://download.docker.com/linux/debian/gpg"
       components:
         - "{{ ansible_facts['distribution_release'] }}"
         - "stable"

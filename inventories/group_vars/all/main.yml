@@ -11,6 +11,7 @@ common_directories:
 
 common_packages:
   - git
+  - cron
   - htop
   - openssl
   - unzip
