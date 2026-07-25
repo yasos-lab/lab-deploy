@@ -5,6 +5,7 @@
   vars:
     deb_packages: []
     rpm_packages: []
+    python_packages: []
     packages:
       - apt-transport-https
       - ca-certificates
@@ -17,6 +18,7 @@
   vars:
     deb_packages: []
     rpm_packages: []
+    python_packages: []
     packages:
       - ca-certificates
       - curl
