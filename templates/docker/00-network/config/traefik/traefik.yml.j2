@@ -12,6 +12,9 @@ metrics:
 entryPoints:
   web:
     address: ":80"
+    forwardedHeaders:
+      trustedIPs:
+        - "{{ caddy_vip }}/24"
   metrics:
     address: ":9100"
 

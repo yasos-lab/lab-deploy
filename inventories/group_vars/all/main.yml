@@ -76,3 +76,8 @@ zsh_repositories:
   - repo: https://github.com/zsh-users/zsh-autosuggestions
     dest: "{{ zsh_directory }}/plugins/zsh-autosuggestions"
     depth: 0
+
+### VIPs
+caddy_vip: "{{ lan_prefix }}.252"
+pihole_vip: "{{ lan_prefix }}.253"
+pivpn_vip: "{{ lan_prefix }}.251"

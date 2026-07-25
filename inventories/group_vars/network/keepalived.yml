@@ -18,7 +18,3 @@ keepalived_vrrp_configs:
     check_script: "/usr/bin/killall -0 caddy"
 
 keepalived_virtual_router_id: 52
-
-caddy_vip: "{{ lan_prefix }}.252"
-pihole_vip: "{{ lan_prefix }}.253"
-pivpn_vip: "{{ lan_prefix }}.251"
