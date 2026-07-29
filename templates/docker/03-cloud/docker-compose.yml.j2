@@ -203,6 +203,20 @@ services:
     restart: unless-stopped
     networks:
       - 'backend'
+  baikal:
+    container_name: baikal
+    image: ckulka/baikal:0.10.1-nginx
+    volumes:
+      - './data/baikal/Specific:/var/www/baikal/Specific'
+      - './config/baikal:/var/www/baikal/config'
+    restart: unless-stopped
+    networks:
+      - 'frontend'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.baikal.rule=Host(`cdav.{{ domain_name }}`)'
+      - 'traefik.http.services.baikal.loadbalancer.server.port=80'
+      - 'traefik.docker.network=frontend'
 networks:
   frontend:
     external: True
