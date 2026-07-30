@@ -217,6 +217,24 @@ services:
       - 'traefik.http.routers.baikal.rule=Host(`cdav.{{ domain_name }}`)'
       - 'traefik.http.services.baikal.loadbalancer.server.port=80'
       - 'traefik.docker.network=frontend'
+  vikunja:
+    container_name: vikunja
+    image: vikunja/vikunja:latest
+    user: 0:0
+    volumes:
+      - './data/vikunja/files:/app/vikunja/files'
+      - './data/vikunja/db:/db'
+    environment:
+      - 'VIKUNJA_SERVICE_PUBLICURL=https://kanban.{{ domain_name }}'
+      - 'VIKUNJA_SERVICE_SECRET={{ vikunja_secret }}'
+    restart: unless-stopped
+    networks:
+      - 'frontend'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.vikunja.rule=Host(`kanban.{{ domain_name }}`)'
+      - 'traefik.http.services.vikunja.loadbalancer.server.port=3456'
+      - 'traefik.docker.network=frontend'
 networks:
   frontend:
     external: True

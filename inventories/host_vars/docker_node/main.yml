@@ -106,6 +106,7 @@ docker_services:
       - "immich-redis"
       - "immich-postgres"
       - "baikal"
+      - "vikunja"
     templates:
       - src: "docker/03-cloud/config/nextcloud/nextcloud.ini.j2"
         dest: "{{ docker_services_directory }}/03-cloud/config/nextcloud/nextcloud.ini"
