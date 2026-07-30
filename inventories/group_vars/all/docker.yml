@@ -10,3 +10,6 @@ docker_packages:
   - docker-compose-plugin
 
 template_docker_daemon: false
+
+mariadb_databases: []
+postgres_databases: []

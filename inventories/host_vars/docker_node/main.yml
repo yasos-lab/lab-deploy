@@ -56,8 +56,14 @@ docker_services:
     services:
       - "portainer"
       - "vaultwarden"
+      - "mariadb"
+      - "postgres"
     configs: []
-    templates: []
+    templates:
+      - src: "docker/01-core/config/mariadb/init.sql.j2"
+        dest: "{{ docker_services_directory }}/01-core/config/mariadb/init.sql"
+      - src: "docker/01-core/config/postgres/init.sql.j2"
+        dest: "{{ docker_services_directory }}/01-core/config/postgres/init.sql"
     crons: []
   - stack_name: "02-monitoring"
     services:

@@ -30,6 +30,31 @@ services:
       - 'traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.{{ domain_name }}`)'
     networks:
       - 'frontend'
+  mariadb:
+    container_name: mariadb
+    image: mariadb:12
+    volumes:
+      - './data/mariadb:/var/lib/mysql'
+      - './config/mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql'
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --log-bin-trust-function-creators=1
+    environment:
+      - 'MYSQL_ROOT_PASSWORD={{ mariadb_root_password }}'
+    restart: unless-stopped
+    networks:
+      - 'backend'
+  postgres:
+    container_name: postgres
+    image: postgres:16
+    volumes:
+      - './data/postgres:/var/lib/postgresql/data'
+      - './config/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql'
+    environment:
+      - 'POSTGRES_PASSWORD={{ postgres_root_password }}'
+    restart: unless-stopped
+    networks:
+      - 'backend'
 networks:
   frontend:
+    external: True
+  backend:
     external: True

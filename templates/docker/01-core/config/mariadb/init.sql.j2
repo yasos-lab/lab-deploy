@@ -1,0 +1,6 @@
+{% for db in mariadb_databases %}
+CREATE DATABASE IF NOT EXISTS `{{ db.name }}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS '{{ db.user }}'@'%' IDENTIFIED BY '{{ db.password }}';
+GRANT ALL PRIVILEGES ON `{{ db.name }}`.* TO '{{ db.user }}'@'%';
+{% endfor %}
+FLUSH PRIVILEGES;
