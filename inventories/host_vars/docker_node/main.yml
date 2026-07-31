@@ -23,7 +23,7 @@ disks_fs:
   - device: "media"
     mount_point: "/mnt/media"
     fstype: "virtiofs"
-  - device: "/dev/sda"
+  - device: "/dev/sdb"
     mount_point: "{{ docker_services_directory }}"
     fstype: "ext4"
 

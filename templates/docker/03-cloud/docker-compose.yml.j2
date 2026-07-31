@@ -60,7 +60,7 @@ services:
   onlyoffice:
     container_name: onlyoffice
     image: onlyoffice/documentserver:9.2
-    mem_limit: 2g
+    mem_limit: 1g
     cpus: 2
     environment:
       - 'JWT_SECRET={{ nextcloud_onlyoffice_jwt }}'
@@ -147,6 +147,8 @@ services:
   immich-server:
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:release
+    mem_limit: 2g
+    cpus: 2
     volumes:
       - './data/immich-server:/data'
       - '/etc/localtime:/etc/localtime:ro'
@@ -174,6 +176,8 @@ services:
   immich-machine-learning:
     container_name: immich_machine_learning
     image: ghcr.io/immich-app/immich-machine-learning:release
+    mem_limit: 2g
+    cpus: 2
     volumes:
       - './data/immich-machine-learning:/cache'
     environment:

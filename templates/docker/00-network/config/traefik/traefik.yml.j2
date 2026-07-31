@@ -15,6 +15,11 @@ entryPoints:
     forwardedHeaders:
       trustedIPs:
         - "{{ caddy_vip }}/24"
+    transport:
+      respondingTimeouts:
+        readTimeout: 0s
+        writeTimeout: 0s
+        idleTimeout: 0s
   metrics:
     address: ":9100"
 
