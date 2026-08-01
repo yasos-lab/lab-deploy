@@ -23,7 +23,7 @@ disks_fs:
   - device: "media"
     mount_point: "/mnt/media"
     fstype: "virtiofs"
-  - device: "/dev/sdb"
+  - device: "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1"
     mount_point: "{{ docker_services_directory }}"
     fstype: "ext4"
 
