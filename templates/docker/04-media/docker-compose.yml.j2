@@ -158,17 +158,17 @@ services:
       - 'PGID=1000'
       - 'TZ={{ timezone }}'
     restart: unless-stopped
-  dispatcharr:
-    container_name: dispatcharr
-    image: ghcr.io/dispatcharr/dispatcharr:latest
-    network_mode: service:media-vpn
-    mem_limit: 3g
-    cpus: 2
-    depends_on:
-      - 'media-vpn'
-    volumes:
-      - './data/dispatcharr:/data'
-    restart: unless-stopped
+  # dispatcharr:
+  #   container_name: dispatcharr
+  #   image: ghcr.io/dispatcharr/dispatcharr:latest
+  #   network_mode: service:media-vpn
+  #   mem_limit: 3g
+  #   cpus: 2
+  #   depends_on:
+  #     - 'media-vpn'
+  #   volumes:
+  #     - './data/dispatcharr:/data'
+  #   restart: unless-stopped
 networks:
   frontend:
     external: True
