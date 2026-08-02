@@ -38,10 +38,10 @@ for repo in "{{ restic_backup_config.local_backup_repo }}" "{{ restic_backup_con
 
         if [ $backup_rc -eq 0 ]; then
             log "Backup completed successfully"
-        elif [ $backup_rc -eq 1 ]; then
-            log "Backup completed with warnings (exit code $backup_rc)"
+        elif [ $backup_rc -eq 3 ]; then
+            log "Backup completed with warnings (some source files unreadable), snapshot saved (exit code $backup_rc)"
         else
-            log "Backup failed (exit code $backup_rc)!"
+            log "Backup FAILED (exit code $backup_rc) - no snapshot created, skipping forget/prune"
             continue
         fi
 
