@@ -37,7 +37,7 @@ services:
   #     - 'traefik.docker.network=frontend'
   redis:
     container_name: redis
-    image: redis:6
+    image: redis:7
     restart: unless-stopped
     healthcheck: 
       test: 'redis-cli ping || exit 1'
@@ -239,6 +239,95 @@ services:
       - 'traefik.http.routers.vikunja.rule=Host(`kanban.{{ domain_name }}`)'
       - 'traefik.http.services.vikunja.loadbalancer.server.port=3456'
       - 'traefik.docker.network=frontend'
+  dawarich_db:
+    container_name: dawarich_db
+    image: postgis/postgis:17-3.5-alpine
+    shm_size: 128mb
+    volumes:
+      - './data/dawarich-db:/var/lib/postgresql/data'
+    environment:
+      - 'POSTGRES_PASSWORD={{ dawarich_db_password }}'
+      - 'POSTGRES_USER=dawarich'
+      - 'POSTGRES_DB=dawarich'
+    restart: unless-stopped
+    networks:
+      - 'backend'
+  dawarich_app:
+    container_name: dawarich_app
+    image: freikin/dawarich:latest
+    mem_limit: 2g
+    cpus: 1
+    stdin_open: true
+    tty: true
+    entrypoint: web-entrypoint.sh
+    command: ['bin/rails', 'server', '-p', '3000', '-b', '::']
+    volumes:
+      - './data/dawarich-app/public:/var/app/public'
+      - './data/dawarich-app/watched:/var/app/tmp/imports/watched'
+      - './data/dawarich-app/storage:/var/app/storage'
+    depends_on:
+      - 'dawarich_db'
+      - 'redis'
+    environment:
+      - 'TZ={{ timezone }}'
+      - 'RAILS_ENV=production'
+      - 'REDIS_URL=redis://redis:6379'
+      - 'DATABASE_HOST=dawarich_db'
+      - 'DATABASE_PORT=5432'
+      - 'DATABASE_USERNAME=dawarich'
+      - 'DATABASE_PASSWORD={{ dawarich_db_password }}'
+      - 'DATABASE_NAME=dawarich'
+      - 'APPLICATION_HOSTS=timeline.{{ domain_name }}'
+      - 'APPLICATION_PROTOCOL=https'
+      - 'TIME_ZONE={{ timezone }}'
+      - 'SECRET_KEY_BASE={{ dawarich_secret_key_base }}'
+      - 'SELF_HOSTED=true'
+      - 'STORE_GEODATA=true'
+    restart: unless-stopped
+    networks:
+      - 'frontend'
+      - 'backend'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.dawarich.rule=Host(`timeline.{{ domain_name }}`)'
+      - 'traefik.http.services.dawarich.loadbalancer.server.port=3000'
+      - 'traefik.docker.network=frontend'
+  dawarich_sidekiq:
+    container_name: dawarich_sidekiq
+    image: freikin/dawarich:latest
+    mem_limit: 1g
+    cpus: 0.5
+    stdin_open: true
+    tty: true
+    volumes:
+      - './data/dawarich-app/public:/var/app/public'
+      - './data/dawarich-app/watched:/var/app/tmp/imports/watched'
+      - './data/dawarich-app/storage:/var/app/storage'
+    depends_on:
+      - 'dawarich_db'
+      - 'redis'
+      - 'dawarich_app'
+    entrypoint: sidekiq-entrypoint.sh
+    command: ['sidekiq']
+    environment:
+      - 'TZ={{ timezone }}'
+      - 'RAILS_ENV=production'
+      - 'REDIS_URL=redis://redis:6379'
+      - 'DATABASE_HOST=dawarich_db'
+      - 'DATABASE_PORT=5432'
+      - 'DATABASE_USERNAME=dawarich'
+      - 'DATABASE_PASSWORD={{ dawarich_db_password }}'
+      - 'DATABASE_NAME=dawarich'
+      - 'APPLICATION_HOSTS=timeline.{{ domain_name }}'
+      - 'APPLICATION_PROTOCOL=https'
+      - 'TIME_ZONE={{ timezone }}'
+      - 'SECRET_KEY_BASE={{ dawarich_secret_key_base }}'
+      - 'SELF_HOSTED=true'
+      - 'STORE_GEODATA=true'
+    restart: unless-stopped
+    networks:
+      - 'frontend'
+      - 'backend'
 networks:
   frontend:
     external: True

@@ -107,6 +107,9 @@ docker_services:
       - "immich-postgres"
       - "baikal"
       - "vikunja"
+      - "dawarich-db"
+      - "dawarich-app"
+      - "dawarich-sidekiq"
     templates:
       - src: "docker/03-cloud/config/nextcloud/nextcloud.ini.j2"
         dest: "{{ docker_services_directory }}/03-cloud/config/nextcloud/nextcloud.ini"
@@ -135,6 +138,12 @@ docker_services:
         job: "sh -c 'PGPASSWORD=\"{{ immich_db_password }}\" pg_dumpall -U immich' > {{ docker_services_directory }}/03-cloud/data/immich-dump.sql"
         hour: "0"
         minute: "0"
+      - name: "Dawarich Postgres daily dump"
+        service: "dawarich_db"
+        service_user: "root"
+        job: "sh -c 'PGPASSWORD=\"{{ dawarich_db_password }}\" pg_dumpall -U dawarich' > {{ docker_services_directory }}/03-cloud/data/dawarich-dump.sql"
+        hour: "1"
+        minute: "30"
   - stack_name: "04-media"
     services:
       - "jellyfin"
