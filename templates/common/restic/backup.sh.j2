@@ -17,9 +17,8 @@ for repo in "{{ restic_backup_config.local_backup_repo }}" "{{ restic_backup_con
         log "=============================="
         log "Starting backup for {{ restic_backup_config.name }} in $repo"
 
-        # Unlock repo and repair index
+        # Unlock repo (in case a previous run left a stale lock)
         restic -r "$repo" unlock >> "$LOG_FILE" 2>&1 || true
-        restic -r "$repo" repair index >> "$LOG_FILE" 2>&1 || true
 
         # Run backup
         set +e
@@ -45,19 +44,37 @@ for repo in "{{ restic_backup_config.local_backup_repo }}" "{{ restic_backup_con
             continue
         fi
 
+        # Tag as long-term archive snapshot on 15 Jan, 15 May, 15 Sep
+        today="$(date +%m-%d)"
+        if [ "$today" = "01-15" ] || [ "$today" = "05-15" ] || [ "$today" = "09-15" ]; then
+            log "Archive date detected ($today) - tagging latest snapshot as 'archive'"
+            restic -r "$repo" tag \
+                --add archive \
+                --host "$(hostname -f 2>/dev/null || hostname)" \
+                --tag "{{ restic_backup_config.name }}" \
+                latest \
+                >> "$LOG_FILE" 2>&1 || log "Archive tagging encountered issues"
+        fi
+
         # Apply retention policy
         log "Applying retention policy..."
         restic -r "$repo" forget \
+            --group-by tags \
             --keep-daily {{ restic_backup_config.retention.daily | default(7) }} \
-            --keep-weekly {{ restic_backup_config.retention.weekly | default(4) }} \
-            --keep-monthly {{ restic_backup_config.retention.monthly | default(6) }} \
-            --keep-yearly {{ restic_backup_config.retention.yearly | default(2) }} \
+            --keep-weekly {{ restic_backup_config.retention.weekly | default(5) }} \
+            --keep-monthly {{ restic_backup_config.retention.monthly | default(12) }} \
+            --keep-tag archive \
             >> "$LOG_FILE" 2>&1 || log "Forget encountered issues"
         log "Retention policy applied"
 
-        # Prune unused data
-        log "Pruning unused data..."
-        restic -r "$repo" prune >> "$LOG_FILE" 2>&1 || log "Prune skipped (will retry next run)"
+        # Prune unused data (weekly only - heavy I/O op)
+{% raw %}        if [ "$(date +%u)" -eq 7 ]; then
+{% endraw %}
+            log "Pruning unused data..."
+            restic -r "$repo" prune >> "$LOG_FILE" 2>&1 || log "Prune skipped (will retry next run)"
+        else
+            log "Skipping prune (not scheduled day)"
+        fi
 
         # Snapshot summary
         log "Latest snapshots:"
