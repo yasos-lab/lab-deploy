@@ -175,6 +175,8 @@ docker_services:
       - "hermes"
       - "openwebui"
       - "ollama"
+      - "litellm"
+      - "litellm-db"
     templates: [] 
     configs: []
     crons: []

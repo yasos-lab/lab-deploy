@@ -34,6 +34,43 @@ services:
       - 'traefik.http.services.openwebui.loadbalancer.server.port=8080'
     networks:
       - 'frontend'
+  litellm:
+    container_name: litellm
+    image: docker.litellm.ai/berriai/litellm-database:latest
+    restart: unless-stopped
+    depends_on:
+      litellm-db:
+        condition: service_healthy
+    environment:
+      - 'LITELLM_MASTER_KEY={{ litellm_master_key }}'
+      - 'LITELLM_SALT_KEY={{ litellm_salt_key }}'
+      - 'DATABASE_URL=postgresql://{{ litellm_db_user }}:{{ litellm_db_password }}@litellm-db:5432/{{ litellm_db_name }}'
+      - 'STORE_MODEL_IN_DB=true'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.litellm.rule=Host(`llm.{{ domain_name }}`)'
+      - 'traefik.http.services.litellm.loadbalancer.server.port=4000'
+      - 'traefik.docker.network=frontend'
+    networks:
+      - 'frontend'
+      - 'backend'
+  litellm-db:
+    image: postgres:16
+    container_name: litellm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: {{ litellm_db_user }}
+      POSTGRES_PASSWORD: {{ litellm_db_password }}
+      POSTGRES_DB: {{ litellm_db_name }}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ litellm_db_user }}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./data/litellm-db:/var/lib/postgresql/data
+    networks:
+      - 'backend'
   # ollama:
   #   container_name: ollama
   #   image: ollama/ollama:latest
@@ -49,4 +86,6 @@ services:
 
 networks:
   frontend:
+    external: True
+  backend:
     external: True

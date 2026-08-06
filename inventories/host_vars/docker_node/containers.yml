@@ -125,6 +125,9 @@ glance_monitor_services:
       - name: "Open WebUI"
         url: "https://openwebui.ai.{{ domain_name }}"
         icon: "sh:open-webui"
+      - name: "LiteLLM"
+        url: "https://llm.{{ domain_name }}"
+        icon: "sh:litellm"
   - title: "Media"
     sites:
       - name: "Jellyfin"
