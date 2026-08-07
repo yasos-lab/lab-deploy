@@ -4,6 +4,7 @@ services:
   # hermes:
   #   container_name: hermes
   #   image: nousresearch/hermes-agent:latest
+  #   mem_limit: 1g
   #   environment:
   #     - 'HERMES_DASHBOARD=1'
   #   volumes:
@@ -37,6 +38,7 @@ services:
   litellm:
     container_name: litellm
     image: docker.litellm.ai/berriai/litellm-database:latest
+    mem_limit: 2g
     restart: unless-stopped
     depends_on:
       litellm-db:
@@ -58,6 +60,7 @@ services:
     image: postgres:16
     container_name: litellm-db
     restart: unless-stopped
+    mem_limit: 512m
     environment:
       POSTGRES_USER: {{ litellm_db_user }}
       POSTGRES_PASSWORD: {{ litellm_db_password }}
@@ -74,6 +77,7 @@ services:
   # ollama:
   #   container_name: ollama
   #   image: ollama/ollama:latest
+  #   mem_limit: 1g
   #   volumes:
   #     - './data/ollama:/root/.ollama'
   #   restart: unless-stopped

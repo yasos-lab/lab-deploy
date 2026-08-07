@@ -4,6 +4,7 @@ services:
   jellyseerr:
     container_name: jellyseerr
     image: ghcr.io/fallenbagel/jellyseerr:latest
+    mem_limit: 512m
     volumes:
       - './config/jellyseerr:/app/config'
     environment:
@@ -23,6 +24,7 @@ services:
   prowlarr:
     container_name: prowlarr
     image: lscr.io/linuxserver/prowlarr:latest
+    mem_limit: 512m
     volumes:
       - './config/prowlarr:/config'
     environment:
@@ -42,6 +44,7 @@ services:
   flaresolverr:
     container_name: flaresolverr
     image: ghcr.io/flaresolverr/flaresolverr:latest
+    mem_limit: 512m
     environment:
       - 'TZ={{ timezone }}'
     restart: unless-stopped
@@ -50,6 +53,7 @@ services:
   radarr:
     container_name: radarr
     image: lscr.io/linuxserver/radarr:latest
+    mem_limit: 512m
     volumes:
       - './config/radarr:/config'
       - '{{ media_mount }}:/data'
@@ -71,6 +75,7 @@ services:
   sonarr:
     container_name: sonarr
     image: lscr.io/linuxserver/sonarr:latest
+    mem_limit: 512m
     volumes:
       - './config/sonarr:/config'
       - '{{ media_mount }}:/data'
@@ -92,6 +97,7 @@ services:
   bazarr:
     container_name: bazarr
     image: lscr.io/linuxserver/bazarr:latest
+    mem_limit: 512m
     volumes:
       - './config/bazarr:/config'
       - '{{ media_mount }}:/data'
@@ -110,6 +116,7 @@ services:
   media-vpn:
     container_name: media-vpn
     image: qmcgaw/gluetun:latest
+    mem_limit: 256m
     cap_add:
       - 'NET_ADMIN'
     devices:

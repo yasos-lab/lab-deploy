@@ -4,6 +4,7 @@ services:
   authelia:
     container_name: authelia
     image: authelia/authelia:latest
+    mem_limit: 256m
     environment: 
       - 'TZ={{ timezone }}'
     volumes: 
@@ -20,6 +21,7 @@ services:
   traefik:
     container_name: traefik
     image: traefik:v3
+    mem_limit: 512m
     volumes:
       - './config/traefik/ssl:/ssl:rw'
       - './config/traefik/traefik.yml:/etc/traefik/traefik.yml:ro'
@@ -42,6 +44,7 @@ services:
   whoami:
     container_name: whoami
     image: traefik/whoami
+    mem_limit: 64m
     restart: unless-stopped
     networks:
       - 'frontend'
@@ -51,6 +54,7 @@ services:
   cloudflare-ddns:
     container_name: cloudflare-ddns
     image: favonia/cloudflare-ddns:latest
+    mem_limit: 128m
     network_mode: host
     user: 1000:1000
     environment:
@@ -61,6 +65,7 @@ services:
   speedtest:
     image: lscr.io/linuxserver/speedtest-tracker:latest
     container_name: speedtest
+    mem_limit: 512m
     environment:
       - 'PUID=1000'
       - 'PGID=1000'
