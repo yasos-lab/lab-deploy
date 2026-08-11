@@ -1,15 +1,14 @@
 ---
 
 services:
-  jellyseerr:
-    container_name: jellyseerr
-    image: ghcr.io/fallenbagel/jellyseerr:latest
+  seerr:
+    container_name: seerr
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
     mem_limit: 512m
     volumes:
-      - './config/jellyseerr:/app/config'
+      - './config/seerr:/app/config'
     environment:
-      - 'PUID=1000'
-      - 'PGID=1000'
       - 'TZ={{ timezone }}'
     restart: unless-stopped
     depends_on:
@@ -17,8 +16,8 @@ services:
       - 'sonarr'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.media.{{ domain_name }}`)'
-      - 'traefik.http.services.jellyseerr.loadbalancer.server.port=5055'
+      - 'traefik.http.routers.seerr.rule=Host(`seerr.media.{{ domain_name }}`)'
+      - 'traefik.http.services.seerr.loadbalancer.server.port=5055'
     networks:
       - 'frontend'
   prowlarr:

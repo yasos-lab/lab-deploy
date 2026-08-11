@@ -146,8 +146,7 @@ docker_services:
         minute: "30"
   - stack_name: "04-media"
     services:
-      - "jellyfin"
-      - "jellyseerr"
+      - "seerr"
       - "prowlarr"
       - "flaresolverr"
       - "radarr"
