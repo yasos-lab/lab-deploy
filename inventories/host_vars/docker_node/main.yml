@@ -94,9 +94,7 @@ docker_services:
     crons: []
   - stack_name: "03-cloud"
     services:
-      - "nextcloud"
       - "redis"
-      - "maria-db"
       - "onlyoffice"
       - "paperless"
       - "seafile"
@@ -110,34 +108,15 @@ docker_services:
       - "dawarich-db"
       - "dawarich-app"
       - "dawarich-sidekiq"
-    templates:
-      - src: "docker/03-cloud/config/nextcloud/nextcloud.ini.j2"
-        dest: "{{ docker_services_directory }}/03-cloud/config/nextcloud/nextcloud.ini"
+    templates: [] 
     configs: []
     crons:
-      - name: "Nextcloud cron job"
-        service: "nextcloud"
-        service_user: "www-data"
-        job: "php /var/www/html/cron.php"
-        minute: "*/5"
-      - name: "Nextcloud MariaDB daily dump"
-        service: "maria-db"
-        service_user: "root"
-        job: "sh -c 'mysqldump --all-databases -u root -p\"{{ nextcloud_root_db_password }}\"' > {{ docker_services_directory }}/03-cloud/data/nextcloud-dump.sql"
-        hour: "0"
-        minute: "30"
       - name: "Seafile DB daily dump"
         service: "seafile-db"
         service_user: "root"
         job: "sh -c 'mysqldump --all-databases -u root -p\"{{ seafile_root_db_password }}\"' > {{ docker_services_directory }}/03-cloud/data/seafile-dump.sql"
         hour: "0"
         minute: "15"
-      - name: "Immich Postgres daily dump"
-        service: "immich_postgres"
-        service_user: "root"
-        job: "sh -c 'PGPASSWORD=\"{{ immich_db_password }}\" pg_dumpall -U immich' > {{ docker_services_directory }}/03-cloud/data/immich-dump.sql"
-        hour: "0"
-        minute: "0"
       - name: "Dawarich Postgres daily dump"
         service: "dawarich_db"
         service_user: "root"
@@ -232,7 +211,6 @@ restic_backup_configs:
     local_backup_repo: "{{ backup_mount }}"
     remote_backup_repo: "{{ restic_remote }}:docker_backup"
     excludes:
-      - "/opt/docker_services/03-cloud/data/nextcloud/data/appdata_*/preview"
       - "/opt/docker_services/03-cloud/data/immich-machine-learning"
     cron:
       hour: "4"

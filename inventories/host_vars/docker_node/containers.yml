@@ -36,23 +36,6 @@ authelia_oidc_clients:
         - "email"
       userinfo_signing_algorithm: "none"
       token_endpoint_auth_method: "client_secret_basic"
-  - id: "nextcloud"
-    properties:
-      description: "Nextcloud"
-      secret: "{{ authelia_oidc_clients_secrets.nextcloud.secret_hash }}"
-      public: false
-      authorization_policy: "two_factor"
-      require_pkce: true
-      pkce_challenge_method: "S256"
-      redirect_uris:
-        - "https://cloud.{{ domain_name }}/apps/oidc_login/oidc"
-      scopes:
-        - "openid"
-        - "profile"
-        - "groups"
-        - "email"
-      userinfo_signing_algorithm: "none"
-      token_endpoint_auth_method: "client_secret_basic"
   - id: "portainer"
     properties:
       description: "Portainer"
@@ -94,8 +77,6 @@ glance_monitor_services:
         url: "https://portainer.{{ domain_name }}"
   - title: "Services"
     sites:
-      - name: "Nextcloud"
-        url: "https://cloud.{{ domain_name }}"
       - name: "Seafile"
         url: "https://drive.{{ domain_name }}"
         icon: "si:seafile"
@@ -115,10 +96,8 @@ glance_monitor_services:
         icon: "sh:dawarich"
       - name: "Vaultwarden"
         url: "https://vaultwarden.{{ domain_name }}"
-      - name: "Home assistant"
-        url: "https://home-assistant.{{ domain_name }}"
-      - name: "N8n"
-        url: "https://n8n.{{ domain_name }}"
+  - title: "AI & Automation"
+    sites:
       - name: "Hermes Agent"
         url: "https://hermes.ai.{{ domain_name }}"
         icon: "auto-invert https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/hermes-agent.png"
@@ -126,8 +105,12 @@ glance_monitor_services:
         url: "https://openwebui.ai.{{ domain_name }}"
         icon: "sh:open-webui"
       - name: "LiteLLM"
-        url: "https://llm.{{ domain_name }}"
+        url: "https://llm.{{ domain_name }}/ui"
         icon: "sh:litellm"
+      - name: "Home assistant"
+        url: "https://home-assistant.{{ domain_name }}"
+      - name: "N8n"
+        url: "https://n8n.{{ domain_name }}"
   - title: "Media"
     sites:
       - name: "Jellyfin"

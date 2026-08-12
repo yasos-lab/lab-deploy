@@ -1,40 +1,6 @@
 ---
 
 services:
-  # nextcloud:
-  #   container_name: nextcloud
-  #   image: nextcloud:32
-  #   mem_limit: 1g
-  #   cpus: 2
-  #   volumes:
-  #     - './data/nextcloud:/var/www/html'
-  #     - './config/nextcloud/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini'
-  #   depends_on:
-  #     - 'redis'
-  #     - 'maria-db'
-  #     - 'onlyoffice'
-  #   environment:
-  #     - 'MYSQL_HOST=maria-db'
-  #     - 'MYSQL_PASSWORD={{ nextcloud_db_password }}'
-  #     - 'MYSQL_DATABASE={{ nextcloud_db }}'
-  #     - 'MYSQL_USER={{ nextcloud_db_user }}'
-  #     - 'REDIS_HOST=redis'
-  #     - 'TRUSTED_PROXIES={{ lan_prefix }}.22'
-  #     - 'NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ domain_name }}'
-  #     - 'OVERWRITECLIURL=https://cloud.{{ domain_name }}'
-  #     - 'OVERWRITEPROTOCOL=https'
-  #   restart: unless-stopped
-  #   networks:
-  #     - 'frontend'
-  #     - 'backend'
-  #   labels:
-  #     - 'traefik.enable=true'
-  #     - 'traefik.http.routers.nextcloud.rule=Host(`cloud.{{ domain_name }}`)'
-  #     - 'traefik.http.middlewares.secure_headers.headers.stsSeconds=15552000'
-  #     - 'traefik.http.middlewares.secure_headers.headers.stsIncludeSubdomains=true'
-  #     - 'traefik.http.middlewares.secure_headers.headers.stsPreload=true'
-  #     - 'traefik.http.routers.nextcloud.middlewares=secure_headers'
-  #     - 'traefik.docker.network=frontend'
   redis:
     container_name: redis
     image: redis:7
@@ -44,20 +10,6 @@ services:
       test: 'redis-cli ping || exit 1'
     networks:
       - 'backend'
-  # maria-db:
-  #   container_name: maria-db
-  #   image: mariadb:10
-  #   volumes:
-  #     - './data/maria-db:/var/lib/mysql'
-  #   command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --log-bin-trust-function-creators=1
-  #   environment:
-  #     - 'MYSQL_ROOT_PASSWORD={{ nextcloud_root_db_password }}'
-  #     - 'MYSQL_PASSWORD={{ nextcloud_db_password }}'
-  #     - 'MYSQL_DATABASE={{ nextcloud_db }}'
-  #     - 'MYSQL_USER={{ nextcloud_db_user }}'
-  #   restart: unless-stopped
-  #   networks:
-  #     - 'backend'
   onlyoffice:
     container_name: onlyoffice
     image: onlyoffice/documentserver:9.2
