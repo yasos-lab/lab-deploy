@@ -96,6 +96,8 @@ glance_monitor_services:
         icon: "sh:dawarich"
       - name: "Vaultwarden"
         url: "https://vaultwarden.{{ domain_name }}"
+      - name: "RestFS"
+        url: "https://s3-console.{{ domain_name }}"
   - title: "AI & Automation"
     sites:
       - name: "Hermes Agent"
