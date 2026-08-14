@@ -155,6 +155,8 @@ docker_services:
       - "ollama"
       - "litellm"
       - "litellm-db"
+      - "lobehub"
+      - "lobehub-db"
     templates: [] 
     configs: []
     crons: []

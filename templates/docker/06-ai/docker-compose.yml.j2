@@ -56,22 +56,74 @@ services:
     networks:
       - 'frontend'
       - 'backend'
+  lobehub:
+    container_name: lobehub
+    image: lobehub/lobehub:latest
+    mem_limit: 2g
+    restart: unless-stopped
+    depends_on:
+      lobehub-db:
+        condition: service_healthy
+    environment:
+      - 'KEY_VAULTS_SECRET={{ lobehub_key_vaults_secret }}'
+      - 'AUTH_SECRET={{ lobehub_auth_secret }}'
+      - 'DATABASE_URL=postgresql://{{ lobehub_db_user }}:{{ lobehub_db_password }}@lobehub-db:5432/{{ lobehub_db_name }}'
+      - 'APP_URL=https://chat.{{ domain_name }}'
+      - 'INTERNAL_APP_URL=http://lobehub:3210'
+      - 'S3_ENDPOINT=https://s3.{{ domain_name }}'
+      - 'S3_BUCKET={{ lobehub_s3_bucket }}'
+      - 'S3_ENABLE_PATH_STYLE=1'
+      - 'S3_ACCESS_KEY={{ lobehub_s3_access_key }}'
+      - 'S3_ACCESS_KEY_ID={{ lobehub_s3_access_key }}'
+      - 'S3_SECRET_ACCESS_KEY={{ lobehub_s3_secret_key }}'
+      - 'S3_SET_ACL=0'
+      - 'LLM_VISION_IMAGE_USE_BASE64=1'
+      - 'REDIS_URL=redis://redis:6379'
+      - 'REDIS_PREFIX=lobechat'
+      - 'REDIS_TLS=0'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.lobehub.rule=Host(`chat.{{ domain_name }}`)'
+      - 'traefik.http.services.lobehub.loadbalancer.server.port=3210'
+      - 'traefik.docker.network=frontend'
+    networks:
+      - 'frontend'
+      - 'backend'
+  lobehub-db:
+    image: paradedb/paradedb:latest-pg17
+    container_name: lobehub-db
+    restart: unless-stopped
+    mem_limit: 512m
+    command: ['postgres', '-c', 'shared_preload_libraries=pg_search']
+    environment:
+      - 'POSTGRES_USER={{ lobehub_db_user }}'
+      - 'POSTGRES_PASSWORD={{ lobehub_db_password }}'
+      - 'POSTGRES_DB={{ lobehub_db_name }}'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ lobehub_db_user }}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - './data/lobehub-db:/var/lib/postgresql/data'
+    networks:
+      - 'backend'
   litellm-db:
     image: postgres:16
     container_name: litellm-db
     restart: unless-stopped
     mem_limit: 512m
     environment:
-      POSTGRES_USER: {{ litellm_db_user }}
-      POSTGRES_PASSWORD: {{ litellm_db_password }}
-      POSTGRES_DB: {{ litellm_db_name }}
+      - 'POSTGRES_USER={{ litellm_db_user }}'
+      - 'POSTGRES_PASSWORD={{ litellm_db_password }}'
+      - 'POSTGRES_DB={{ litellm_db_name }}'
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U {{ litellm_db_user }}"]
       interval: 5s
       timeout: 5s
       retries: 10
     volumes:
-      - ./data/litellm-db:/var/lib/postgresql/data
+      - './data/litellm-db:/var/lib/postgresql/data'
     networks:
       - 'backend'
   # ollama:

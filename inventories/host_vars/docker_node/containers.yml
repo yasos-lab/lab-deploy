@@ -98,6 +98,7 @@ glance_monitor_services:
         url: "https://vaultwarden.{{ domain_name }}"
       - name: "RestFS"
         url: "https://s3-console.{{ domain_name }}"
+        icon: "si:rustfs"
   - title: "AI & Automation"
     sites:
       - name: "Hermes Agent"
@@ -106,6 +107,9 @@ glance_monitor_services:
       - name: "Open WebUI"
         url: "https://openwebui.ai.{{ domain_name }}"
         icon: "sh:open-webui"
+      - name: "LobeHub"
+        url: "https://chat.{{ domain_name }}"
+        icon: "sh:lobehub"
       - name: "LiteLLM"
         url: "https://llm.{{ domain_name }}/ui"
         icon: "sh:litellm"
