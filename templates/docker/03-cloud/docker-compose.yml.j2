@@ -1,15 +1,6 @@
 ---
 
 services:
-  redis:
-    container_name: redis
-    image: redis:7
-    mem_limit: 256m
-    restart: unless-stopped
-    healthcheck: 
-      test: 'redis-cli ping || exit 1'
-    networks:
-      - 'backend'
   onlyoffice:
     container_name: onlyoffice
     image: onlyoffice/documentserver:9.2
@@ -31,8 +22,6 @@ services:
   #   mem_limit: 1g
   #   cpus: 1
   #   restart: unless-stopped
-  #   depends_on:
-  #     - redis
   #   volumes:
   #     - './data/paperless:/usr/src/paperless/media'
   #     - './config/paperless:/usr/src/paperless/data'
@@ -72,7 +61,6 @@ services:
       - './data/seafile:/shared'
     depends_on:
       - 'seafile-db'
-      - 'redis'
     environment:
       - 'SEAFILE_SERVER_HOSTNAME=drive.{{ domain_name }}'
       - 'SEAFILE_SERVER_PROTOCOL=https'
@@ -107,7 +95,6 @@ services:
       - './data/immich-server:/data'
       - '/etc/localtime:/etc/localtime:ro'
     depends_on:
-      - 'immich-redis'
       - 'immich-postgres'
       - 'immich-machine-learning'
     environment:
@@ -116,7 +103,7 @@ services:
       - 'DB_USERNAME=immich'
       - 'DB_PASSWORD={{ immich_db_password }}'
       - 'DB_DATABASE_NAME=immich'
-      - 'REDIS_HOSTNAME=immich-redis'
+      - 'REDIS_HOSTNAME=redis'
       - 'IMMICH_MACHINE_LEARNING_URL=http://immich-machine-learning:3003'
     restart: unless-stopped
     networks:
@@ -136,15 +123,6 @@ services:
       - './data/immich-machine-learning:/cache'
     environment:
       - 'TZ={{ timezone }}'
-    restart: unless-stopped
-    networks:
-      - 'backend'
-  immich-redis:
-    container_name: immich_redis
-    image: docker.io/valkey/valkey:9
-    mem_limit: 256m    
-    healthcheck:
-      test: 'redis-cli ping || exit 1'
     restart: unless-stopped
     networks:
       - 'backend'
@@ -226,7 +204,6 @@ services:
       - './data/dawarich-app/storage:/var/app/storage'
     depends_on:
       - 'dawarich_db'
-      - 'redis'
     environment:
       - 'TZ={{ timezone }}'
       - 'RAILS_ENV=production'
@@ -264,7 +241,6 @@ services:
       - './data/dawarich-app/storage:/var/app/storage'
     depends_on:
       - 'dawarich_db'
-      - 'redis'
       - 'dawarich_app'
     entrypoint: sidekiq-entrypoint.sh
     command: ['sidekiq']

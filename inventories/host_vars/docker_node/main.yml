@@ -56,6 +56,7 @@ docker_services:
     services:
       - "portainer"
       - "vaultwarden"
+      - "redis"
     configs: []
     templates: []
     crons: []
@@ -94,14 +95,12 @@ docker_services:
     crons: []
   - stack_name: "03-cloud"
     services:
-      - "redis"
       - "onlyoffice"
       - "paperless"
       - "seafile"
       - "seafile-db"
       - "immich-server"
       - "immich-machine-learning"
-      - "immich-redis"
       - "immich-postgres"
       - "baikal"
       - "vikunja"
