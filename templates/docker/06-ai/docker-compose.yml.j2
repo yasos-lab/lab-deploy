@@ -81,6 +81,7 @@ services:
       - 'REDIS_URL=redis://redis:6379'
       - 'REDIS_PREFIX=lobechat'
       - 'REDIS_TLS=0'
+      - 'JWKS_KEY={{ lobehub_jwks_key }}'
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.lobehub.rule=Host(`chat.{{ domain_name }}`)'
