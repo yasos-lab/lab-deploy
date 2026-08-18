@@ -157,7 +157,15 @@ docker_services:
       - "litellm-db"
       - "lobehub"
       - "lobehub-db"
-    templates: [] 
+      - "librechat"
+      - "librechat-admin-panel"
+      - "librechat-rag-api"
+      - "meilisearch"
+      - "vectordb"
+      - "mongodb"
+    templates:
+      - src: "docker/06-ai/config/librechat/.env.j2"
+        dest: "{{ docker_services_directory }}/06-ai/config/librechat/.env"
     configs: []
     crons: []
 
