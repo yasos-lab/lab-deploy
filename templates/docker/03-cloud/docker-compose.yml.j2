@@ -273,6 +273,24 @@ services:
     networks:
       - 'frontend'
       - 'backend'
+  searxng:
+    container_name: searxng
+    image: docker.io/searxng/searxng:latest
+    restart: unless-stopped
+    mem_limit: 512m
+    volumes:
+      - './config/searxng:/etc/searxng/'
+      - './data/searxng:/var/cache/searxng/'
+    environment:
+      - 'SEARXNG_REDIS_URL=redis://redis:6379'
+    networks:
+      - 'frontend'
+      - 'backend'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.searxng.rule=Host(`search.{{ domain_name }}`)'
+      - 'traefik.http.services.searxng.loadbalancer.server.port=8080'
+      - 'traefik.docker.network=frontend'
 networks:
   frontend:
     external: True

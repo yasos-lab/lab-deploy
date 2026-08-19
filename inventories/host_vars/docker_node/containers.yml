@@ -101,6 +101,9 @@ glance_monitor_services:
       - name: "RestFS"
         url: "https://s3-console.{{ domain_name }}"
         icon: "si:rustfs"
+      - name: "SearXNG"
+        url: "https://search.{{ domain_name }}"
+        # icon: "si:searxng"
   - title: "AI & Automation"
     sites:
       - name: "Hermes Agent"
