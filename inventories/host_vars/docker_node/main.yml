@@ -101,6 +101,7 @@ docker_services:
       - "seafile"
       - "seafile-db"
       - "immich-server"
+      - 'immich-redis'
       - "immich-machine-learning"
       - "immich-postgres"
       - "baikal"

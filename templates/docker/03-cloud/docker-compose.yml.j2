@@ -95,6 +95,7 @@ services:
       - './data/immich-server:/data'
       - '/etc/localtime:/etc/localtime:ro'
     depends_on:
+      - 'immich-redis'
       - 'immich-postgres'
       - 'immich-machine-learning'
     environment:
@@ -103,7 +104,7 @@ services:
       - 'DB_USERNAME=immich'
       - 'DB_PASSWORD={{ immich_db_password }}'
       - 'DB_DATABASE_NAME=immich'
-      - 'REDIS_HOSTNAME=redis'
+      - 'REDIS_HOSTNAME=immich-redis'
       - 'IMMICH_MACHINE_LEARNING_URL=http://immich-machine-learning:3003'
     restart: unless-stopped
     networks:
@@ -114,6 +115,15 @@ services:
       - 'traefik.http.routers.immich.rule=Host(`photos.{{ domain_name }}`)'
       - 'traefik.http.services.immich.loadbalancer.server.port=2283'
       - 'traefik.docker.network=frontend'
+  immich-redis:
+    container_name: immich_redis
+    image: docker.io/valkey/valkey:9
+    mem_limit: 256m    
+    healthcheck:
+      test: 'redis-cli ping || exit 1'
+    restart: unless-stopped
+    networks:
+      - 'backend'
   immich-machine-learning:
     container_name: immich_machine_learning
     image: ghcr.io/immich-app/immich-machine-learning:release
