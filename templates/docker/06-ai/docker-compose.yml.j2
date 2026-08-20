@@ -22,19 +22,21 @@ services:
   #     - 'traefik.http.services.hermes-gw.loadbalancer.server.port=8642'
   #   networks:
   #     - 'frontend'
-  # openwebui:
-  #   container_name: openwebui
-  #   image: ghcr.io/open-webui/open-webui:main
-  #   volumes:
-  #     - './data/openwebui:/app/backend/data'
-  #   restart: unless-stopped
-  #   mem_limit: 1g
-  #   labels:
-  #     - 'traefik.enable=true'
-  #     - 'traefik.http.routers.openwebui.rule=Host(`openwebui.ai.{{ domain_name }}`)'
-  #     - 'traefik.http.services.openwebui.loadbalancer.server.port=8080'
-  #   networks:
-  #     - 'frontend'
+  openwebui:
+    container_name: openwebui
+    image: ghcr.io/open-webui/open-webui:main
+    volumes:
+      - './data/openwebui:/app/backend/data'
+    restart: unless-stopped
+    mem_limit: 1g
+    environment:
+      - 'WEBUI_SECRET_KEY={{ openwebui_secret_key }}'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.openwebui.rule=Host(`openwebui.ai.{{ domain_name }}`)'
+      - 'traefik.http.services.openwebui.loadbalancer.server.port=8080'
+    networks:
+      - 'frontend'
   # litellm:
   #   container_name: litellm
   #   image: docker.litellm.ai/berriai/litellm-database:latest
@@ -141,113 +143,113 @@ services:
   #   networks:
   #     - 'frontend'
 
-  librechat:
-    container_name: librechat
-    depends_on:
-      - mongodb
-      - librechat-rag-api
-    image: registry.librechat.ai/danny-avila/librechat:latest
-    mem_limit: 2g
-    restart: unless-stopped
-    user: 1000:1000
-    environment:
-      - 'HOST=0.0.0.0'
-      - 'RAG_PORT=8000'
-      - 'MONGO_URI=mongodb://mongodb:27017/LibreChat'
-      - 'MEILI_HOST=http://meilisearch:7700'
-      - 'RAG_API_URL=http://librechat-rag-api:8000'
-    volumes:
-      # - ./images:/app/client/public/images
-      # - ./uploads:/app/uploads
-      # - ./logs:/app/logs
-      # - ./skill:/app/skill
-      #########
-      - './data/librechat:/app/data'
-      - './config/librechat/.env:/app/.env:ro'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.librechat.rule=Host(`chat.{{ domain_name }}`)'
-      - 'traefik.http.services.librechat.loadbalancer.server.port=3080'
-      - 'traefik.docker.network=frontend'
-    networks:
-      - 'frontend'
-      - 'backend'
-  librechat-admin-panel:
-    container_name: librechat-admin-panel
-    image: registry.librechat.ai/clickhouse/librechat-admin-panel:latest
-    depends_on:
-      - librechat
-    restart: unless-stopped
-    mem_limit: 512m
-    environment:
-      - 'SESSION_SECRET={{ librechat_admin_panel_session_secret }}'
-      - 'API_SERVER_URL=http://librechat:3080'
-      - 'VITE_API_BASE_URL=https://chat.{{ domain_name }}'
-      # - 'BASE_PATH=/adminpanel'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.librechat-admin.rule=Host(`chat-adminpanel.{{ domain_name }}`)'
-      - 'traefik.http.services.librechat-admin.loadbalancer.server.port=3000'
-      - 'traefik.docker.network=frontend'
-    networks:
-      - 'frontend'
-      - 'backend'
-  mongodb:
-    container_name: mongodb
-    image: mongo:8.0.20
-    restart: unless-stopped
-    mem_limit: 1g
-    user: 1000:1000
-    volumes:
-      - './data/mongodb:/data/db'
-    command: mongod --noauth
-    networks:
-      - 'backend'
-  meilisearch:
-    container_name: meilisearch
-    image: getmeili/meilisearch:v1.35.1
-    restart: unless-stopped
-    mem_limit: 512m
-    user: 1000:1000
-    environment:
-      - 'MEILI_HOST=http://meilisearch:7700'
-      - 'MEILI_NO_ANALYTICS=true'
-      - 'MEILI_MASTER_KEY={{ librechat_meili_master_key }}'
-    volumes:
-      - './data/meilisearch:/meili_data'
-    networks:
-      - 'backend'
-  vectordb:
-    container_name: vectordb
-    image: pgvector/pgvector:0.8.0-pg15-trixie
-    mem_limit: 512m
-    environment:
-      - 'POSTGRES_DB={{ librechat_vectordb_db }}'
-      - 'POSTGRES_USER={{ librechat_vectordb_user }}'
-      - 'POSTGRES_PASSWORD={{ librechat_vectordb_password }}'
-    restart: unless-stopped
-    volumes:
-      - './data/pgvector:/var/lib/postgresql/data'
-    networks:
-      - 'backend'
-  librechat-rag-api:
-    container_name: librechat-rag-api
-    image: registry.librechat.ai/danny-avila/librechat-rag-api-dev-lite:latest
-    mem_limit: 512m
-    environment:
-      - 'DB_HOST=vectordb'
-      - 'RAG_PORT=8000'
-      - 'POSTGRES_DB={{ librechat_vectordb_db }}'
-      - 'POSTGRES_USER={{ librechat_vectordb_user }}'
-      - 'POSTGRES_PASSWORD={{ librechat_vectordb_password }}'
-      - 'RAG_OPENAI_BASEURL=https://openrouter.ai/api/v1'
-      - 'RAG_OPENAI_API_KEY={{ librechat_openrouter_api_key }}'
-      - 'EMBEDDINGS_MODEL=nvidia/nemotron-3-embed-1b:free'
-    restart: unless-stopped
-    depends_on:
-      - vectordb
-    networks:
-      - 'backend'
+  # librechat:
+  #   container_name: librechat
+  #   depends_on:
+  #     - mongodb
+  #     - librechat-rag-api
+  #   image: registry.librechat.ai/danny-avila/librechat:latest
+  #   mem_limit: 2g
+  #   restart: unless-stopped
+  #   user: 1000:1000
+  #   environment:
+  #     - 'HOST=0.0.0.0'
+  #     - 'RAG_PORT=8000'
+  #     - 'MONGO_URI=mongodb://mongodb:27017/LibreChat'
+  #     - 'MEILI_HOST=http://meilisearch:7700'
+  #     - 'RAG_API_URL=http://librechat-rag-api:8000'
+  #   volumes:
+  #     # - ./images:/app/client/public/images
+  #     # - ./uploads:/app/uploads
+  #     # - ./logs:/app/logs
+  #     # - ./skill:/app/skill
+  #     #########
+  #     - './data/librechat:/app/data'
+  #     - './config/librechat/.env:/app/.env:ro'
+  #   labels:
+  #     - 'traefik.enable=true'
+  #     - 'traefik.http.routers.librechat.rule=Host(`chat.{{ domain_name }}`)'
+  #     - 'traefik.http.services.librechat.loadbalancer.server.port=3080'
+  #     - 'traefik.docker.network=frontend'
+  #   networks:
+  #     - 'frontend'
+  #     - 'backend'
+  # librechat-admin-panel:
+  #   container_name: librechat-admin-panel
+  #   image: registry.librechat.ai/clickhouse/librechat-admin-panel:latest
+  #   depends_on:
+  #     - librechat
+  #   restart: unless-stopped
+  #   mem_limit: 512m
+  #   environment:
+  #     - 'SESSION_SECRET={{ librechat_admin_panel_session_secret }}'
+  #     - 'API_SERVER_URL=http://librechat:3080'
+  #     - 'VITE_API_BASE_URL=https://chat.{{ domain_name }}'
+  #     # - 'BASE_PATH=/adminpanel'
+  #   labels:
+  #     - 'traefik.enable=true'
+  #     - 'traefik.http.routers.librechat-admin.rule=Host(`chat-adminpanel.{{ domain_name }}`)'
+  #     - 'traefik.http.services.librechat-admin.loadbalancer.server.port=3000'
+  #     - 'traefik.docker.network=frontend'
+  #   networks:
+  #     - 'frontend'
+  #     - 'backend'
+  # mongodb:
+  #   container_name: mongodb
+  #   image: mongo:8.0.20
+  #   restart: unless-stopped
+  #   mem_limit: 1g
+  #   user: 1000:1000
+  #   volumes:
+  #     - './data/mongodb:/data/db'
+  #   command: mongod --noauth
+  #   networks:
+  #     - 'backend'
+  # meilisearch:
+  #   container_name: meilisearch
+  #   image: getmeili/meilisearch:v1.35.1
+  #   restart: unless-stopped
+  #   mem_limit: 512m
+  #   user: 1000:1000
+  #   environment:
+  #     - 'MEILI_HOST=http://meilisearch:7700'
+  #     - 'MEILI_NO_ANALYTICS=true'
+  #     - 'MEILI_MASTER_KEY={{ librechat_meili_master_key }}'
+  #   volumes:
+  #     - './data/meilisearch:/meili_data'
+  #   networks:
+  #     - 'backend'
+  # vectordb:
+  #   container_name: vectordb
+  #   image: pgvector/pgvector:0.8.0-pg15-trixie
+  #   mem_limit: 512m
+  #   environment:
+  #     - 'POSTGRES_DB={{ librechat_vectordb_db }}'
+  #     - 'POSTGRES_USER={{ librechat_vectordb_user }}'
+  #     - 'POSTGRES_PASSWORD={{ librechat_vectordb_password }}'
+  #   restart: unless-stopped
+  #   volumes:
+  #     - './data/pgvector:/var/lib/postgresql/data'
+  #   networks:
+  #     - 'backend'
+  # librechat-rag-api:
+  #   container_name: librechat-rag-api
+  #   image: registry.librechat.ai/danny-avila/librechat-rag-api-dev-lite:latest
+  #   mem_limit: 512m
+  #   environment:
+  #     - 'DB_HOST=vectordb'
+  #     - 'RAG_PORT=8000'
+  #     - 'POSTGRES_DB={{ librechat_vectordb_db }}'
+  #     - 'POSTGRES_USER={{ librechat_vectordb_user }}'
+  #     - 'POSTGRES_PASSWORD={{ librechat_vectordb_password }}'
+  #     - 'RAG_OPENAI_BASEURL=https://openrouter.ai/api/v1'
+  #     - 'RAG_OPENAI_API_KEY={{ librechat_openrouter_api_key }}'
+  #     - 'EMBEDDINGS_MODEL=nvidia/nemotron-3-embed-1b:free'
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - vectordb
+  #   networks:
+  #     - 'backend'
 
 networks:
   frontend:
