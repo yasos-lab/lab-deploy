@@ -282,7 +282,7 @@ services:
       - './config/searxng:/etc/searxng/'
       - './data/searxng:/var/cache/searxng/'
     environment:
-      - 'SEARXNG_REDIS_URL=redis://redis:6379'
+      - 'SEARXNG_VALKEY_URL=redis://redis:6379'
     networks:
       - 'frontend'
       - 'backend'
