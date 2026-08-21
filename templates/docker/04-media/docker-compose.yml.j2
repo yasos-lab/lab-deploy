@@ -143,9 +143,9 @@ services:
       - 'traefik.http.routers.qbittorrent.rule=Host(`torrent.{{ domain_name }}`)'
       - 'traefik.http.routers.qbittorrent.service=qbittorrent-service'
       - 'traefik.http.services.qbittorrent-service.loadbalancer.server.port=8080'
-      - 'traefik.http.routers.dispatcharr.rule=Host(`iptv.{{ domain_name }}`)'
-      - 'traefik.http.routers.dispatcharr.service=dispatcharr-service'
-      - 'traefik.http.services.dispatcharr-service.loadbalancer.server.port=9191'
+      # - 'traefik.http.routers.dispatcharr.rule=Host(`iptv.{{ domain_name }}`)'
+      # - 'traefik.http.routers.dispatcharr.service=dispatcharr-service'
+      # - 'traefik.http.services.dispatcharr-service.loadbalancer.server.port=9191'
     networks:
       - 'frontend'
   qbittorrent:

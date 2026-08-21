@@ -54,9 +54,8 @@ docker_services:
     crons: []
   - stack_name: "01-core"
     services:
-      - "portainer"
-      - "vaultwarden"
-      - "rustfs"
+      # - "vaultwarden"
+      # - "rustfs"
       - "redis"
     configs: []
     templates: []
@@ -97,7 +96,7 @@ docker_services:
   - stack_name: "03-cloud"
     services:
       - "onlyoffice"
-      - "paperless"
+      # - "paperless"
       - "seafile"
       - "seafile-db"
       - "immich-server"
@@ -135,14 +134,14 @@ docker_services:
       - "bazarr"
       - "media-vpn"
       - "qbittorrent"
-      - "dispatcharr"
+      # - "dispatcharr"
     templates: []
     configs: []
     crons: []
   - stack_name: "05-automation"
     services:
       - "home-assistant"
-      - "n8n"
+      # - "n8n"
     templates:
       - src: "docker/05-automation/config/home-assistant/configuration.yaml.j2"
         dest: "{{ docker_services_directory }}/05-automation/config/home-assistant/configuration.yaml"

@@ -1,59 +1,45 @@
 ---
 
 services:
-  # portainer:
-  #   container_name: portainer
-  #   image: portainer/portainer-ce:latest
-  #   mem_limit: 512m
+  # vaultwarden:
+  #   container_name: vaultwarden
+  #   image: vaultwarden/server:1.33.2
+  #   mem_limit: 256m
   #   volumes:
-  #     - './data/portainer:/data'
-  #     - '/var/run/docker.sock:/var/run/docker.sock'
+  #     - './data/vaultwarden:/data'
+  #     - '/etc/localtime:/etc/localtime'
+  #   environment:
+  #     - 'SIGNUPS_ALLOWED=false'
+  #     - 'TZ={{ timezone }}'
+  #     - 'ADMIN_TOKEN={{ vaultwarden_admin_token | replace('$', '$$') }}'
   #   restart: unless-stopped
   #   labels:
   #     - 'traefik.enable=true'
-  #     - 'traefik.http.routers.portainer.rule=Host(`portainer.{{ domain_name }}`)'
-  #     - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
+  #     - 'traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.{{ domain_name }}`)'
   #   networks:
   #     - 'frontend'
-  vaultwarden:
-    container_name: vaultwarden
-    image: vaultwarden/server:1.33.2
-    mem_limit: 256m
-    volumes:
-      - './data/vaultwarden:/data'
-      - '/etc/localtime:/etc/localtime'
-    environment:
-      - 'SIGNUPS_ALLOWED=false'
-      - 'TZ={{ timezone }}'
-      - 'ADMIN_TOKEN={{ vaultwarden_admin_token | replace('$', '$$') }}'
-    restart: unless-stopped
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.{{ domain_name }}`)'
-    networks:
-      - 'frontend'
-  rustfs:
-    container_name: rustfs
-    image: rustfs/rustfs:latest
-    user: 0:0
-    mem_limit: 512m
-    restart: unless-stopped
-    environment:
-      - 'RUSTFS_CONSOLE_ENABLE=true'
-      - 'RUSTFS_ACCESS_KEY={{ rustfs_access_key }}'
-      - 'RUSTFS_SECRET_KEY={{ rustfs_secret_key }}'
-    volumes:
-      - './data/rustfs:/data'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.rustfs.rule=Host(`s3.{{ domain_name }}`)'
-      - 'traefik.http.routers.rustfs.service=rustfs'
-      - 'traefik.http.services.rustfs.loadbalancer.server.port=9000'
-      - 'traefik.http.routers.rustfs-console.rule=Host(`s3-console.{{ domain_name }}`)'
-      - 'traefik.http.routers.rustfs-console.service=rustfs-console'
-      - 'traefik.http.services.rustfs-console.loadbalancer.server.port=9001'
-    networks:
-      - 'frontend'
+  # rustfs:
+  #   container_name: rustfs
+  #   image: rustfs/rustfs:latest
+  #   user: 0:0
+  #   mem_limit: 512m
+  #   restart: unless-stopped
+  #   environment:
+  #     - 'RUSTFS_CONSOLE_ENABLE=true'
+  #     - 'RUSTFS_ACCESS_KEY={{ rustfs_access_key }}'
+  #     - 'RUSTFS_SECRET_KEY={{ rustfs_secret_key }}'
+  #   volumes:
+  #     - './data/rustfs:/data'
+  #   labels:
+  #     - 'traefik.enable=true'
+  #     - 'traefik.http.routers.rustfs.rule=Host(`s3.{{ domain_name }}`)'
+  #     - 'traefik.http.routers.rustfs.service=rustfs'
+  #     - 'traefik.http.services.rustfs.loadbalancer.server.port=9000'
+  #     - 'traefik.http.routers.rustfs-console.rule=Host(`s3-console.{{ domain_name }}`)'
+  #     - 'traefik.http.routers.rustfs-console.service=rustfs-console'
+  #     - 'traefik.http.services.rustfs-console.loadbalancer.server.port=9001'
+  #   networks:
+  #     - 'frontend'
   redis:
     container_name: redis
     image: redis:7
@@ -64,7 +50,7 @@ services:
     networks:
       - 'backend'
 networks:
-  frontend:
-    external: True
+  # frontend:
+  #   external: True
   backend:
     external: True
