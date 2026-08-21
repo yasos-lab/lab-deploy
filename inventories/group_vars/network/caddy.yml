@@ -24,9 +24,6 @@ caddy_routes:
   - domain: "gateway.{{ domain_name }}"
     backend: "https://{{ gateway_hostname }}"
 
-  - domain: "*.cloud.{{ domain_name }}"
-    backend: "{{ lan_prefix }}.22:80"
-
   - domain: "*.media.{{ domain_name }}"
     backend: "{{ lan_prefix }}.22:80"
 
