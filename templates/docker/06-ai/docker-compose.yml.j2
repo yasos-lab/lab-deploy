@@ -15,7 +15,7 @@ services:
       - 'WEBUI_SECRET_KEY={{ openwebui_secret_key }}'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.openwebui.rule=Host(`openwebui.{{ domain_name }}`)'
+      - 'traefik.http.routers.openwebui.rule=Host(`chat.{{ domain_name }}`)'
       - 'traefik.http.services.openwebui.loadbalancer.server.port=8080'
       - 'traefik.docker.network=frontend'
     networks:
