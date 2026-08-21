@@ -152,22 +152,13 @@ docker_services:
     crons: []
   - stack_name: "06-ai"
     services:
-      - "hermes"
+      # - "hermes"
       - "openwebui"
-      - "ollama"
-      - "litellm"
-      - "litellm-db"
-      - "lobehub"
-      - "lobehub-db"
-      - "librechat"
-      - "librechat-admin-panel"
-      - "librechat-rag-api"
-      - "meilisearch"
-      - "vectordb"
-      - "mongodb"
-    templates:
-      - src: "docker/06-ai/config/librechat/.env.j2"
-        dest: "{{ docker_services_directory }}/06-ai/config/librechat/.env"
+      # - "kokoro-tts"
+      # - "ollama"
+      # - "litellm"
+      # - "litellm-db"
+    templates: [] 
     configs: []
     crons: []
 
